@@ -1,13 +1,17 @@
 import unittest
-from Query import Query, QueryGenerationRequest, RunQueryRequest, LikeQueryRequest, GetQueryResultRequest, CancelQueryRequest, DescribeQueryRequest
+from waii_sdk_py import WAII
+from waii_sdk_py.query import Query, GeneratedQuery, QueryGenerationRequest, RunQueryRequest, LikeQueryRequest, GetQueryResultRequest, CancelQueryRequest, DescribeQueryRequest
 
 class TestQuery(unittest.TestCase):
     def setUp(self):
-        self.query = Query()
+        WAII.initialize()
+        result = WAII.Database.get_connections()
+        self.result = result
+        WAII.Database.activate_connection(result.connectors[0].key)
 
     def test_generate(self):
-        params = QueryGenerationRequest()
-        result = self.query.generate(params)
+        params = QueryGenerationRequest(ask = "How many tables are there?")
+        result = WAII.Query.generate(params)
         self.assertIsInstance(result, GeneratedQuery)
 
     def test_run(self):

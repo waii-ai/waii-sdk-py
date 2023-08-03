@@ -1,1 +1,1 @@
-from .SemanticContext import SemanticContext
+from .semantic_context import *

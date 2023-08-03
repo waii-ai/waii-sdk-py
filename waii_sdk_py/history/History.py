@@ -1,7 +1,7 @@
 from typing import List, Optional
 from dataclasses import dataclass
-from WaiiHttpClient import WaiiHttpClient  # Assuming WaiiHttpClient is properly imported
-from Query import GeneratedQuery, QueryGenerationRequest  # Assuming these are the correct imports
+from ..waii_http_client import WaiiHttpClient
+from ..query import GeneratedQuery, QueryGenerationRequest
 
 GET_ENDPOINT = 'get-generated-query-history'
 
@@ -25,4 +25,4 @@ class GetGeneratedQueryHistoryResponse:
 class History:
     @staticmethod
     def list(params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest()) -> GetGeneratedQueryHistoryResponse:
-        return WaiiHttpClient.getInstance().commonFetch(GET_ENDPOINT, params.__dict__)
+        return WaiiHttpClient.get_instance().common_fetch(GET_ENDPOINT, params.__dict__)

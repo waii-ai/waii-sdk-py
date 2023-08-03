@@ -1,8 +1,8 @@
 from typing import List, Optional
 from dataclasses import dataclass
-from WaiiHttpClient import WaiiHttpClient  # Assuming WaiiHttpClient is properly imported
-from Database import SearchContext, TableName, Column  # Assuming these are the correct imports
-from SemanticContext import SemanticStatement  # Assuming this is the correct import
+from ..waii_http_client import WaiiHttpClient
+from ..database import SearchContext, TableName, Column
+from ..semantic_context import SemanticStatement
 
 GENERATE_ENDPOINT = 'generate-query'
 RUN_ENDPOINT = 'run-query'
@@ -118,28 +118,28 @@ class LikeQueryResponse:
 class Query:
     @staticmethod
     def generate(params: QueryGenerationRequest) -> GeneratedQuery:
-        return WaiiHttpClient.getInstance().commonFetch(GENERATE_ENDPOINT, params.__dict__)
+        return WaiiHttpClient[GeneratedQuery].get_instance().common_fetch(GENERATE_ENDPOINT, params.__dict__)
 
     @staticmethod
     def run(params: RunQueryRequest) -> GetQueryResultResponse:
-        return WaiiHttpClient.getInstance().commonFetch(RUN_ENDPOINT, params.__dict__)
+        return WaiiHttpClient.get_instance().common_fetch(RUN_ENDPOINT, params.__dict__)
 
     @staticmethod
     def like(params: LikeQueryRequest) -> LikeQueryResponse:
-        return WaiiHttpClient.getInstance().commonFetch(FAVORITE_ENDPOINT, params.__dict__)
+        return WaiiHttpClient.get_instance().common_fetch(FAVORITE_ENDPOINT, params.__dict__)
 
     @staticmethod
     def submit(params: RunQueryRequest) -> RunQueryResponse:
-        return WaiiHttpClient.getInstance().commonFetch(SUBMIT_ENDPOINT, params.__dict__)
+        return WaiiHttpClient.get_instance().common_fetch(SUBMIT_ENDPOINT, params.__dict__)
 
     @staticmethod
-    def getResults(params: GetQueryResultRequest) -> GetQueryResultResponse:
-        return WaiiHttpClient.getInstance().commonFetch(RESULTS_ENDPOINT, params.__dict__)
+    def get_results(params: GetQueryResultRequest) -> GetQueryResultResponse:
+        return WaiiHttpClient.get_instance().common_fetch(RESULTS_ENDPOINT, params.__dict__)
 
     @staticmethod
     def cancel(params: CancelQueryRequest) -> CancelQueryResponse:
-        return WaiiHttpClient.getInstance().commonFetch(CANCEL_ENDPOINT, params.__dict__)
+        return WaiiHttpClient.get_instance().common_fetch(CANCEL_ENDPOINT, params.__dict__)
 
     @staticmethod
     def describe(params: DescribeQueryRequest) -> DescribeQueryResponse:
-        return WaiiHttpClient.getInstance().commonFetch(DESCRIBE_ENDPOINT, params.__dict__)
+        return WaiiHttpClient.get_instance().common_fetch(DESCRIBE_ENDPOINT, params.__dict__)

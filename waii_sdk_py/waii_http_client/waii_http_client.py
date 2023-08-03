@@ -1,6 +1,9 @@
 import requests
 import json
+from types import SimpleNamespace
 from typing import TypeVar, Generic, Optional, Dict
+from collections import namedtuple
+
 
 T = TypeVar('T')
 
@@ -20,21 +23,21 @@ class WaiiHttpClient(Generic[T]):
         self.userId = ''
 
     @classmethod
-    def getInstance(cls, url: str = 'http://localhost:9859/api/', apiKey: str = ''):
+    def get_instance(cls, url: str = 'http://localhost:9859/api/', apiKey: str = ''):
         if cls.instance is None:
             cls.instance = WaiiHttpClient(url, apiKey)
         return cls.instance
 
-    def setScope(self, scope: str):
+    def set_scope(self, scope: str):
         self.scope = scope
 
-    def setOrgId(self, orgId: str):
+    def set_org_id(self, orgId: str):
         self.orgId = orgId
 
-    def setUserId(self, userId: str):
+    def set_user_id(self, userId: str):
         self.userId = userId
 
-    def commonFetch(
+    def common_fetch(
             self, 
             endpoint: str,
             params: Dict,
@@ -55,7 +58,9 @@ class WaiiHttpClient(Generic[T]):
             except json.JSONDecodeError:
                 raise Exception(response.text)
         try:
-            result: T = response.json()
+            result: T = json.loads(response.text, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+            #result.__class__ = typing_inspect.get_bound(T)
+            #result: T = json.loads(response.text, object_hook=lambda d: T(**d))
             return result
         except json.JSONDecodeError:
             raise Exception("Invalid response received.")

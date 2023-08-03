@@ -1,1 +1,1 @@
-from .WaiiHttpClient import WaiiHttpClient
+from .waii_http_client import WaiiHttpClient

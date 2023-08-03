@@ -1,6 +1,6 @@
 from typing import List, Optional
 from dataclasses import dataclass
-from WaiiHttpClient import WaiiHttpClient  # Assuming WaiiHttpClient is properly imported
+from waii_sdk_py.waii_http_client import WaiiHttpClient
 
 MODIFY_DB_ENDPOINT = 'update-db-connect-info'
 GET_CATALOG_ENDPOINT = 'get-table-definitions'
@@ -135,17 +135,17 @@ class GetCatalogResponse:
 
 class Database:
     @staticmethod
-    def modifyConnections(params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse:
-        return WaiiHttpClient.getInstance().commonFetch(MODIFY_DB_ENDPOINT, params.__dict__)
+    def modify_connections(params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse:
+        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__)
 
     @staticmethod
-    def getConnections(params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse:
-        return WaiiHttpClient.getInstance().commonFetch(MODIFY_DB_ENDPOINT, params.__dict__)
+    def get_connections(params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse:
+        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__)
 
     @staticmethod
-    def activateConnection(key: str):
-        WaiiHttpClient.getInstance().setScope(key)
+    def activate_connection(key: str):
+        WaiiHttpClient.get_instance().set_scope(key)
 
     @staticmethod
-    def getCatalogs(params: GetCatalogRequest = GetCatalogRequest()) -> GetCatalogResponse:
-        return WaiiHttpClient.getInstance().commonFetch(GET_CATALOG_ENDPOINT, params.__dict__)
+    def get_catalogs(params: GetCatalogRequest = GetCatalogRequest()) -> GetCatalogResponse:
+        return WaiiHttpClient.get_instance().common_fetch(GET_CATALOG_ENDPOINT, params.__dict__)
