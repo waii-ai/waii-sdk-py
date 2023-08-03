@@ -25,7 +25,7 @@ class TestSemanticContext(unittest.TestCase):
         result = WAII.SemanticContext.get_semantic_context()
         # Check the result
         # Note: The specifics of this assertion would depend on what the function should return
-        self.assertGreater(len(result), 0)
+        self.assertGreater(len(result.semantic_context), 0)
 
 if __name__ == '__main__':
     unittest.main()

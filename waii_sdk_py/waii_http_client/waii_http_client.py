@@ -3,6 +3,7 @@ import json
 from types import SimpleNamespace
 from typing import TypeVar, Generic, Optional, Dict
 from collections import namedtuple
+from pydantic import BaseModel
 
 
 T = TypeVar('T')
@@ -41,7 +42,7 @@ class WaiiHttpClient(Generic[T]):
             self, 
             endpoint: str,
             params: Dict,
-            signal: Optional[str] = None
+            cls: BaseModel = None
         ) -> Optional[T]:
 
         params['scope'] = self.scope
@@ -58,7 +59,10 @@ class WaiiHttpClient(Generic[T]):
             except json.JSONDecodeError:
                 raise Exception(response.text)
         try:
-            result: T = json.loads(response.text, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+            if cls:
+                result: T = cls(**response.json())
+            else:
+                result: T = json.loads(response.text, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
             #result.__class__ = typing_inspect.get_bound(T)
             #result: T = json.loads(response.text, object_hook=lambda d: T(**d))
             return result
