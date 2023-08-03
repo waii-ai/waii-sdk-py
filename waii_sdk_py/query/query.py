@@ -1,4 +1,3 @@
-from typing import List, Optional
 from dataclasses import dataclass
 from ..waii_http_client import WaiiHttpClient
 from ..database import SearchContext, TableName, ColumnDefinition
@@ -7,8 +6,6 @@ from pydantic import BaseModel
 import re
 from typing import Optional, List, Dict, Any, Union
 from urllib.parse import urlparse, parse_qs
-
-
 
 GENERATE_ENDPOINT = 'generate-query'
 RUN_ENDPOINT = 'run-query'
