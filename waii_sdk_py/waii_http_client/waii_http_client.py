@@ -50,7 +50,7 @@ class WaiiHttpClient(Generic[T]):
         params['user_id'] = self.userId
 
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(self.url + endpoint, headers=headers, data=json.dumps(params), timeout=self.timeout/1000)  # timeout is in seconds
+        response = requests.post(self.url + endpoint, headers=headers, data=json.dumps(params, default=vars), timeout=self.timeout/1000)  # timeout is in seconds
 
         if response.status_code != 200:
             try:

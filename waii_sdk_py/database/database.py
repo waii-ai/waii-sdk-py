@@ -63,19 +63,19 @@ class CatalogDefinition(BaseModel):
 class DBConnection(BaseModel):
     key: str
     db_type: str
-    description: Optional[str]
-    account_name: Optional[str]
-    username: Optional[str]
-    password: Optional[str]
-    database: Optional[str]
-    warehouse: Optional[str]
-    role: Optional[str]
-    path: Optional[str]
-    parameters: Optional[Dict[str, Any]]
+    description: Optional[str] = None
+    account_name: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    database: Optional[str] = None
+    warehouse: Optional[str] = None
+    role: Optional[str] = None
+    path: Optional[str] = None
+    parameters: Optional[Dict[str, Any]] = None
 
 class ModifyDBConnectionRequest(BaseModel):
-    updated: Optional[List[DBConnection]]
-    removed: Optional[List[str]]
+    updated: Optional[List[DBConnection]] = None
+    removed: Optional[List[str]] = None
     validate_before_save: Optional[bool] = None
     user_id: Optional[str] = None
     default_db_connection_key: Optional[str] = None
