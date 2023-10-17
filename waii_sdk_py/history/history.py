@@ -6,12 +6,15 @@ from ..query import GeneratedQuery, QueryGenerationRequest
 
 GET_ENDPOINT = 'get-generated-query-history'
 
+
 class GeneratedQueryHistoryEntry(BaseModel):
     query: Optional[GeneratedQuery] = None
     request: Optional[QueryGenerationRequest] = None
 
+
 class GetGeneratedQueryHistoryRequest(BaseModel):
-    pass
+    limit: Optional[int] = None
+    offset: Optional[int] = None
 
 
 class GetGeneratedQueryHistoryResponse(BaseModel):

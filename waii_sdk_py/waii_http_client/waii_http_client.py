@@ -32,6 +32,9 @@ class WaiiHttpClient(Generic[T]):
     def set_scope(self, scope: str):
         self.scope = scope
 
+    def get_scope(self):
+        return self.scope
+
     def set_org_id(self, orgId: str):
         self.orgId = orgId
 

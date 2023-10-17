@@ -44,6 +44,6 @@ class TestDatabase(unittest.TestCase):
         # Note: The specifics of this assertion would depend on what the function should return
         #self.assertEqual(result, expected_result)
 
-
+# NEED TO ADD FOR UPDATE TABLE AND UPDATE SCHEMA
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,8 @@
 import unittest
 from waii_sdk_py import WAII
+from waii_sdk_py.history import *
 
-class TestDatabase(unittest.TestCase):
+class TestHistory(unittest.TestCase):
     def setUp(self):
         WAII.initialize()
         result = WAII.Database.get_connections()
@@ -14,6 +15,12 @@ class TestDatabase(unittest.TestCase):
         # Check the result
         # Note: The specifics of this assertion would depend on what the function should return
         self.assertGreater(len(result.history), 0)
+        # TODO: not working right now
+        params = GetGeneratedQueryHistoryRequest(limit=1, offset=1)
+        result = WAII.History.list(params)
+        # self.assertEqual(len(result.history), 1)
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -12,12 +12,17 @@ RUN_ENDPOINT = 'run-query'
 SUBMIT_ENDPOINT = 'submit-query'
 FAVORITE_ENDPOINT = 'like-query'
 DESCRIBE_ENDPOINT = 'describe-query'
+DIFF_ENDPOINT = "diff-query"
 RESULTS_ENDPOINT = 'get-query-result'
 CANCEL_ENDPOINT = 'cancel-query'
+AUTOCOMPLETE_ENDPOINT = 'auto-complete'
+PERF_ENDPOINT = 'get-query-performance'
+
 
 class Tweak(BaseModel):
     sql: Optional[str] = None
     ask: Optional[str] = None
+
 
 class QueryGenerationRequest(BaseModel):
     search_context: Optional[List[SearchContext]] = None
@@ -26,6 +31,7 @@ class QueryGenerationRequest(BaseModel):
     uuid: Optional[str] = None
     dialect: Optional[str] = None
     parent_uuid: Optional[str] = None
+
 
 class DescribeQueryRequest(BaseModel):
     search_context: Optional[List[SearchContext]] = None
@@ -38,9 +44,25 @@ class DescribeQueryResponse(BaseModel):
     detailed_steps: Optional[List[str]] = None
     tables: Optional[List[TableName]] = None
 
+
+class DiffQueryRequest(DescribeQueryRequest):
+    search_context: Optional[List[SearchContext]] = None
+    current_schema: Optional[str] = None
+    query: Optional[str] = None
+    previous_query: Optional[str] = None
+
+
+class DiffQueryResponse(DescribeQueryResponse):
+    summary: Optional[str] = None
+    tables: Optional[List[TableName]] = None
+    detailed_steps: Optional[List[str]] = None
+    what_changed: Optional[str] = None
+
+
 class CompilationError(BaseModel):
     message: str
-    line: Optional[List[int]] = None
+    line: Optional[int] = None
+
 
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
@@ -54,26 +76,36 @@ class GeneratedQuery(BaseModel):
     is_new: Optional[bool] = None
     timestamp_ms: Optional[int] = None
 
+
 class SyncRunQueryRequest(BaseModel):
     query: str
     timeout_ms: Optional[int] = None
     max_returned_rows: Optional[int] = None
+    current_schema: Optional[str] = None
+
 
 class RunQueryRequest(BaseModel):
     query: str
     session_id: Optional[str] = None
+    current_schema: Optional[str] = None
+    session_parameters: Optional[Dict[str, Any]] = None
+
 
 class RunQueryResponse(BaseModel):
     query_id: Optional[str] = None
 
+
 class GetQueryResultRequest(BaseModel):
     query_id: str
+
 
 class CancelQueryRequest(BaseModel):
     query_id: str
 
+
 class CancelQueryResponse(BaseModel):
     pass
+
 
 class GetQueryResultResponse(BaseModel):
     rows: Optional[List[object]] = None
@@ -81,12 +113,39 @@ class GetQueryResultResponse(BaseModel):
     column_definitions: Optional[List[ColumnDefinition]] = None
     query_uuid: Optional[str] = None
 
+
 class LikeQueryRequest(BaseModel):
     query_uuid: str
     liked: bool
 
+
 class LikeQueryResponse(BaseModel):
     pass
+
+
+class AutoCompleteRequest(BaseModel):
+    text: str
+    cursor_offset: Optional[int] = None
+    dialect: Optional[str] = None
+    search_context: Optional[List[SearchContext]] = None
+    max_output_tokens: Optional[int] = None
+
+
+class AutoCompleteResponse(BaseModel):
+    text: Optional[str] = None
+
+
+class QueryPerformanceRequest(BaseModel):
+    query_id: str
+
+
+class QueryPerformanceResponse(BaseModel):
+    summary: List[str]
+    recommendations: List[str]
+    query_text: str
+    execution_time_ms: Optional[int]
+    compilation_time_ms: Optional[int]
+
 
 class Query:
     @staticmethod
@@ -116,3 +175,15 @@ class Query:
     @staticmethod
     def describe(params: DescribeQueryRequest) -> DescribeQueryResponse:
         return WaiiHttpClient.get_instance().common_fetch(DESCRIBE_ENDPOINT, params.__dict__, DescribeQueryResponse)
+
+    @staticmethod
+    def auto_complete(params: AutoCompleteRequest) -> AutoCompleteResponse:
+        return WaiiHttpClient.get_instance().common_fetch(AUTOCOMPLETE_ENDPOINT, params.__dict__, AutoCompleteResponse)
+
+    @staticmethod
+    def diff(params: DiffQueryRequest) -> DiffQueryResponse:
+        return WaiiHttpClient.get_instance().common_fetch(DIFF_ENDPOINT, params.__dict__, DiffQueryResponse)
+
+    @staticmethod
+    def analyze_performance(params: QueryPerformanceRequest) -> QueryPerformanceResponse:
+        return WaiiHttpClient.get_instance().common_fetch(PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse)
