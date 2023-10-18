@@ -65,6 +65,13 @@ Database.activate_connection(key: str)
 
 This method sets the scope of the current database connection.
 
+#### Get Default Connection
+```python
+Database.get_default_connection()
+```
+
+This method gets the scope of the current database connection.
+
 #### Get Catalogs
 
 ```python
@@ -72,6 +79,15 @@ Database.get_catalogs(params: GetCatalogRequest = GetCatalogRequest()) -> GetCat
 ```
 
 This method retrieves the list of available catalogs.
+
+#### Update Table and Schema Descriptions
+
+```python
+Database.update_table_description(params: UpdateTableDescriptionRequest) -> UpdateTableDescriptionResponse
+Database.update_schema_description(params: UpdateSchemaDescriptionRequest) -> UpdateSchemaDescriptionResponse
+```
+
+These methods update the corresponding descriptions of the objects within the database
 
 ### Query
 
@@ -134,6 +150,31 @@ Query.describe(params: DescribeQueryRequest) -> DescribeQueryResponse
 ```
 
 This method fetches a description of a SQL query.
+
+#### Diff
+
+```python
+Query.diff(params: DiffQueryRequest) -> DiffQueryResponse
+```
+
+This method generates a description of the difference between two SQL queries
+
+#### Auto Complete
+
+```python
+Query.auto_complete(params: AutoCompleteRequest) -> AutoCompleteResponse
+```
+
+This method allows you to automatically complete a partial query
+
+
+#### Analyze Performance
+
+```python
+Query.analyze_performance(params: QueryPerformanceRequest) -> QueryPerformanceResponse
+```
+
+This method provides a summary of the runtime of a query as well as recommendations on how to make the query run faster
 
 ### Semantic Context
 
