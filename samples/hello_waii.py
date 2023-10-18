@@ -17,7 +17,6 @@ connection_data = DBConnection(
     database='<your database>',
     warehouse='<your warehouse>',
     role='<your role>'
-    
 )
 
 # Create a request object

@@ -11,5 +11,6 @@ class WAII:
     Database = Database
 
     @staticmethod
-    def initialize(url: str = 'http://localhost:9859/api/', api_key: str = ''):
+    def initialize(url: str = 'https://tweakit.waii.ai/api/', api_key: str = ''):
         WaiiHttpClient.get_instance(url, api_key)
+        Database.get_connections()

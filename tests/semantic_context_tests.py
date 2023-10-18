@@ -3,7 +3,7 @@ from waii_sdk_py import WAII
 
 class TestSemanticContext(unittest.TestCase):
     def setUp(self):
-        WAII.initialize()
+        WAII.initialize(url="http://localhost:9859/api/")
         result = WAII.Database.get_connections()
         self.result = result
         WAII.Database.activate_connection(result.connectors[0].key)
