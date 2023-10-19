@@ -13,4 +13,6 @@ class WAII:
     @staticmethod
     def initialize(url: str = 'https://tweakit.waii.ai/api/', api_key: str = ''):
         WaiiHttpClient.get_instance(url, api_key)
-        Database.get_connections()
+        conns = Database.get_connections().connectors
+        if len(conns) > 0:
+            Database.activate_connection(conns[0].key)

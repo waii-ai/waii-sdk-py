@@ -166,11 +166,15 @@ class Database:
 
     @staticmethod
     def get_connections(params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, GetDBConnectionResponse)
+        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, GetDBConnectionResponse, need_scope=False)
 
     @staticmethod
     def activate_connection(key: str):
         WaiiHttpClient.get_instance().set_scope(key)
+
+    @staticmethod
+    def get_activated_connection():
+        return WaiiHttpClient.get_instance().get_scope()
 
     @staticmethod
     def get_default_connection():

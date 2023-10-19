@@ -45,10 +45,14 @@ class WaiiHttpClient(Generic[T]):
             self, 
             endpoint: str,
             params: Dict,
-            cls: BaseModel = None
+            cls: BaseModel = None,
+            need_scope: bool = True,
         ) -> Optional[T]:
 
-        params['scope'] = self.scope
+        if need_scope:
+            if not self.scope or self.scope.strip() == '':
+                raise Exception("You need to activate connection first, use `WAII.Database.activate_connection(...)`")
+            params['scope'] = self.scope
         params['org_id'] = self.orgId
         params['user_id'] = self.userId
 

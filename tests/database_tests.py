@@ -97,6 +97,18 @@ class TestDatabase(unittest.TestCase):
         result = WAII.Database.get_catalogs()
         assert len(result.catalogs) > 0
 
+    def test_initial_connect(self):
+        # because now we select first connection by default
+        result = WAII.Database.get_catalogs()
+        assert len(result.catalogs) > 0
+
+        assert len(WAII.Database.get_activated_connection()) > 0
+
+    def test_call_without_activated_connection(self):
+        WAII.Database.activate_connection('')
+        with self.assertRaises(Exception):
+            result = WAII.Database.get_catalogs()
+
 # NEED TO ADD FOR UPDATE TABLE AND UPDATE SCHEMA
 if __name__ == '__main__':
     unittest.main()
