@@ -56,6 +56,13 @@ class TestQuery(unittest.TestCase):
         assert len(result.detailed_steps) > 0
         assert len(result.summary) > 0
 
+    def test_transcode(self):
+        params = TranscodeQueryRequest(source_dialect="mysql", target_dialect="postgres", source_query="SELECT 42")
+        result = WAII.Query.transcode(params)
+        self.assertIsInstance(result, GeneratedQuery)
+        assert len(result.query) > 0
+        assert '42' in result.query.lower()
+
 
 if __name__ == '__main__':
     unittest.main()

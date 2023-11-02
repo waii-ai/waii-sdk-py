@@ -11,11 +11,8 @@ T = TypeVar('T')
 class WaiiHttpClient(Generic[T]):
     instance = None
 
-    def __init__(self, url: str = 'http://localhost:9859/api/', apiKey: str = ''):
-        if WaiiHttpClient.instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            WaiiHttpClient.instance = self
+    def __init__(self, url: str, apiKey: str):
+        WaiiHttpClient.instance = self
         self.url = url
         self.apiKey = apiKey
         self.timeout = 150000000
@@ -24,8 +21,8 @@ class WaiiHttpClient(Generic[T]):
         self.userId = ''
 
     @classmethod
-    def get_instance(cls, url: str = 'http://localhost:9859/api/', apiKey: str = ''):
-        if cls.instance is None:
+    def get_instance(cls, url: str = None, apiKey: str = None):
+        if cls.instance is None or (url and url != cls.instance.url) or (apiKey and apiKey != cls.instance.apiKey):
             cls.instance = WaiiHttpClient(url, apiKey)
         return cls.instance
 
@@ -63,6 +60,7 @@ class WaiiHttpClient(Generic[T]):
 
         if response.status_code != 200:
             try:
+                print(response)
                 error = response.json()
                 raise Exception(error.get('detail', ''))
             except json.JSONDecodeError:

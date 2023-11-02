@@ -293,6 +293,24 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
 - `what_changed`: If you do a tweak, it will tell you what changed in the query
 - `compilation_error`: If there is any compilation error, it will show here. (Waii will try to fix the compilation error automatically, but if it tried multiple times and still cannot fix it, it will show here)
 
+### Transcode
+
+```python
+>>> WAII.Query.transcode(TranscodeQueryRequest(source_dialect="postgres", source_query="select ...;", target_dialect="snowflake", ask="..."))
+```
+
+Parameter fields:
+- `search_context`: Same as `Query.generate`, you can specify the search context to limit the tables/schemas used to transcode.
+- `source_dialect`: The dialect of the source query, such as `snowflake`, `postgresql`, `mongodb`
+- `source_query`: The source query you want to transcode
+- `target_dialect`: The dialect of the target query, such as `snowflake`, `postgresql`, `mongodb`
+- `ask`: The intructions you want to ask Waii to add when transcode the query, such as `place tables under schema1`. It is optional.
+
+
+#### `Query.transcode` returns `GeneratedQuery` object
+
+
+
 ### Run a query (sync)
 
 ```python

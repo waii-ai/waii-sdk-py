@@ -17,11 +17,20 @@ RESULTS_ENDPOINT = 'get-query-result'
 CANCEL_ENDPOINT = 'cancel-query'
 AUTOCOMPLETE_ENDPOINT = 'auto-complete'
 PERF_ENDPOINT = 'get-query-performance'
+TRANSCODE_ENDPOINT = 'transcode-query'
 
 
 class Tweak(BaseModel):
     sql: Optional[str] = None
     ask: Optional[str] = None
+
+
+class TranscodeQueryRequest(BaseModel):
+    search_context: Optional[List[SearchContext]] = None
+    ask: Optional[str] = ""
+    source_dialect: Optional[str] = None
+    source_query: Optional[str] = None
+    target_dialect: Optional[str] = None
 
 
 class QueryGenerationRequest(BaseModel):
@@ -187,3 +196,7 @@ class Query:
     @staticmethod
     def analyze_performance(params: QueryPerformanceRequest) -> QueryPerformanceResponse:
         return WaiiHttpClient.get_instance().common_fetch(PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse)
+
+    @staticmethod
+    def transcode(params: TranscodeQueryRequest) -> GeneratedQuery:
+        return WaiiHttpClient.get_instance().common_fetch(TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery)
