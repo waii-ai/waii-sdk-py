@@ -1,11 +1,10 @@
-from dataclasses import dataclass
-from ..waii_http_client import WaiiHttpClient
+from typing import Optional, List, Dict, Any
+
+from pydantic import BaseModel
+
 from ..database import SearchContext, TableName, ColumnDefinition
 from ..semantic_context import SemanticStatement
-from pydantic import BaseModel
-import re
-from typing import Optional, List, Dict, Any, Union
-from urllib.parse import urlparse, parse_qs
+from ..waii_http_client import WaiiHttpClient
 
 GENERATE_ENDPOINT = 'generate-query'
 RUN_ENDPOINT = 'run-query'
@@ -18,6 +17,7 @@ CANCEL_ENDPOINT = 'cancel-query'
 AUTOCOMPLETE_ENDPOINT = 'auto-complete'
 PERF_ENDPOINT = 'get-query-performance'
 TRANSCODE_ENDPOINT = 'transcode-query'
+PLOT_ENDPOINT = 'python-plot'
 
 
 class Tweak(BaseModel):
@@ -85,6 +85,9 @@ class GeneratedQuery(BaseModel):
     is_new: Optional[bool] = None
     timestamp_ms: Optional[int] = None
 
+    def run(self):
+        return Query.run(RunQueryRequest(query=self.query))
+
 
 class SyncRunQueryRequest(BaseModel):
     query: str
@@ -122,6 +125,9 @@ class GetQueryResultResponse(BaseModel):
     column_definitions: Optional[List[ColumnDefinition]] = None
     query_uuid: Optional[str] = None
 
+    def to_pandas_df(self):
+        import pandas as pd
+        return pd.DataFrame(self.rows, columns=[col.name for col in self.column_definitions])
 
 class LikeQueryRequest(BaseModel):
     query_uuid: str
@@ -154,6 +160,15 @@ class QueryPerformanceResponse(BaseModel):
     query_text: str
     execution_time_ms: Optional[int]
     compilation_time_ms: Optional[int]
+
+class PythonPlotRequest(BaseModel):
+    ask: Optional[str]
+    dataframe_rows: Optional[List[Dict[str, Any]]]
+    dataframe_cols: Optional[List[ColumnDefinition]]
+
+class PythonPlotResponse(BaseModel):
+    # based on the request, return N plot script
+    plots: Optional[List[str]]
 
 
 class Query:
@@ -200,3 +215,37 @@ class Query:
     @staticmethod
     def transcode(params: TranscodeQueryRequest) -> GeneratedQuery:
         return WaiiHttpClient.get_instance().common_fetch(TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery)
+
+    @staticmethod
+    def plot(df, ask=None, automatically_exec=True, return_plot_script=False):
+        # create ColumnDefinition from df.columns, use first row to get type
+        cols = []
+        for col in df.columns:
+            cols.append(ColumnDefinition(name=col, type=str(type(df[col][0]))))
+
+        params = PythonPlotRequest(dataframe_cols=cols, ask=ask)
+        plot_response = WaiiHttpClient.get_instance().common_fetch(PLOT_ENDPOINT, params.__dict__, PythonPlotResponse)
+        p = plot_response.plots[0]
+
+        # if the p include ``` ... ```, only include lines between them, handle the case like
+        # ```python
+        # ...
+        # ```
+        # or
+        # ```
+        # <python code>
+        # ```
+
+        if p.startswith("```"):
+            p = p[3:]
+            if p.startswith("python"):
+                p = p[6:]
+            p = p.strip()
+            p = p[:-3]
+            p = p.strip()
+
+        if automatically_exec:
+            exec(p)
+
+        if return_plot_script:
+            return p

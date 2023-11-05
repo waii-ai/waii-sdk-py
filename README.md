@@ -58,6 +58,10 @@ rows=[{'COUNT(DISTINCT TABLE_NAME)': 112}] more_rows=0 column_definitions=[Colum
 
 In order to know more details, you can check the following detailed API documentation.
 
+## Use Notebook
+
+You can also use the SDK in Notebooks like Jupyter, you can follow the the doc [here](USE_NOTEBOOK.md)
+
 ## Modules
 
 The SDK consists of the following modules:
