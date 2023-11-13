@@ -2,7 +2,7 @@
 
 Waii can be used in your favourite notebook environment, let's take an example with Jupyter Notebook.
 
-## Install Jupyter Notebook
+## Use Jupyter Notebook
 
 First, you need to install Jupyter Notebook. You can follow the [official documentation](https://jupyter.org/install) or use the following command:
 
@@ -17,6 +17,10 @@ jupyter notebook
 ```
 
 If you want to use Jupyter in a virtual environment, you can follow this [guide](https://medium.com/@eleroy/jupyter-notebook-in-a-virtual-environment-virtualenv-8f3c3448247)
+
+## Use Colab notebook
+
+Refer to [Use Colab notebook](USE_COLAB.md)
 
 ## Install Waii
 

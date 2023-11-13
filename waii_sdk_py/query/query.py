@@ -1,3 +1,7 @@
+import functools
+import threading
+import time
+import traceback
 from typing import Optional, List, Dict, Any
 
 from pydantic import BaseModel
@@ -170,14 +174,42 @@ class PythonPlotResponse(BaseModel):
     # based on the request, return N plot script
     plots: Optional[List[str]]
 
+def show_progress(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        verbose = kwargs.get('verbose', True)
+
+        if verbose:
+            stop_event = threading.Event()
+            dot_thread = threading.Thread(target=_print_dot, args=(stop_event,))
+            dot_thread.start()
+
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print("\nFailed:", e)
+            raise
+        finally:
+            if verbose:
+                stop_event.set()
+                dot_thread.join()
+
+    return wrapper
+
+def _print_dot(stop_event):
+    while not stop_event.is_set():
+        print('.', end='', flush=True)
+        time.sleep(1)
 
 class Query:
     @staticmethod
-    def generate(params: QueryGenerationRequest) -> GeneratedQuery:
+    @show_progress
+    def generate(params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
         return WaiiHttpClient[GeneratedQuery].get_instance().common_fetch(GENERATE_ENDPOINT, params.__dict__, GeneratedQuery)
 
     @staticmethod
-    def run(params: RunQueryRequest) -> GetQueryResultResponse:
+    @show_progress
+    def run(params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
         return WaiiHttpClient.get_instance().common_fetch(RUN_ENDPOINT, params.__dict__, GetQueryResultResponse)
 
     @staticmethod
@@ -217,11 +249,12 @@ class Query:
         return WaiiHttpClient.get_instance().common_fetch(TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery)
 
     @staticmethod
-    def plot(df, ask=None, automatically_exec=True, return_plot_script=False):
+    @show_progress
+    def plot(df, ask=None, automatically_exec=True, verbose=True, max_retry=2) -> str:
         # create ColumnDefinition from df.columns, use first row to get type
         cols = []
         for col in df.columns:
-            cols.append(ColumnDefinition(name=col, type=str(type(df[col][0]))))
+            cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
 
         params = PythonPlotRequest(dataframe_cols=cols, ask=ask)
         plot_response = WaiiHttpClient.get_instance().common_fetch(PLOT_ENDPOINT, params.__dict__, PythonPlotResponse)
@@ -245,7 +278,26 @@ class Query:
             p = p.strip()
 
         if automatically_exec:
-            exec(p)
-
-        if return_plot_script:
-            return p
+            retried = False
+            try:
+                exec(p)
+            except Exception as e:
+                if max_retry > 0:
+                    retried = True
+                    print(f"Trying to fix error={str(e)}, Retry with max_retry={max_retry}")
+                    fix_msg = "Fix the error and generate plot, find the following code and exception:"
+                    if not ask:
+                        ask = ''
+                    return Query.plot(df, ask=fix_msg + f'\"{ask}\"' + f'\ncode:```{p}```\nException:{str(e)}',
+                                      automatically_exec=automatically_exec, verbose=verbose, max_retry=max_retry - 1)
+                else:
+                    # print the code when not verbose (because finally will print the code if it is verbose)
+                    if not verbose:
+                        print("=== generated code ===")
+                        print(p)
+                    traceback.print_exc()
+                    raise e
+            finally:
+                if not retried and verbose:
+                    print("=== generated code ===")
+                    print(p)
