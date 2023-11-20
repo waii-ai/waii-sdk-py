@@ -34,7 +34,7 @@ from waii_sdk_py.query import *
 from google.colab import userdata
 api_key = userdata.get('waii_api_key')
 
-WAII.initialize(url='https://tweakit-dev.waii.ai/api/', api_key=api_key)
+WAII.initialize(url='https://tweakit.waii.ai/api/', api_key=api_key)
 ```
 
 # Get all connectors, generate query, and show chart
