@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 
 from pydantic import BaseModel
 
-from ..database import SearchContext, TableName, ColumnDefinition
+from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
 from ..waii_http_client import WaiiHttpClient
 
@@ -92,18 +92,10 @@ class GeneratedQuery(BaseModel):
     def run(self):
         return Query.run(RunQueryRequest(query=self.query))
 
-
-class SyncRunQueryRequest(BaseModel):
-    query: str
-    timeout_ms: Optional[int] = None
-    max_returned_rows: Optional[int] = None
-    current_schema: Optional[str] = None
-
-
 class RunQueryRequest(BaseModel):
     query: str
     session_id: Optional[str] = None
-    current_schema: Optional[str] = None
+    current_schema: Optional[SchemaName] = None
     session_parameters: Optional[Dict[str, Any]] = None
 
 

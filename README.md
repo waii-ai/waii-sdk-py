@@ -324,7 +324,7 @@ Query.run(params: RunQueryRequest) -> GetQueryResultResponse
 Request fields:
 - `query`: The SQL query you want to run
 - `session_id`: Session ID of the query, default is None (which means Waii will generate a new session ID for you)
-- `current_schema`: current schema to run the query, default is None (which means Waii will use the default schema of the connection)
+- `current_schema`: current schema to run the query, default is None (which means Waii will use the default schema of the connection). It is `SchemaName` object, which has `database_name` (optional), `schema_name` fields.
 - `session_parameter`: a key value pairs to set the connection parameters, such as auto_commit, isolation_level, etc. Default is None (which means Waii will use the default connection parameters of the connection)
 
 Response fields:
@@ -341,6 +341,11 @@ Example:
 rows=[{'COUNT(DISTINCT TABLE_NAME)': 112}] more_rows=0 column_definitions=[ColumnDefinition(name='COUNT(DISTINCT TABLE_NAME)', type='FIXED', comment=None, sample_values=None)] query_uuid='01afbd1e-0001-d31e-0022-ba8700a8209e'
 ```
 
+Run with default schema
+```python
+from waii_sdk_py.database import *
+>>> WAII.Query.run(RunQueryRequest(query='select current_schema(), current_database();', current_schema=SchemaName(schema_name='INFORMATION_SCHEMA')))
+```
 
 ### Async submit a query
 
