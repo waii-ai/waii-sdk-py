@@ -29,6 +29,7 @@ class ColumnDefinition(BaseModel):
     name: str
     type: str
     comment: Optional[str]
+    description: Optional[str]
     sample_values: Optional[ColumnSampleValues]
 
     def __lt__(self, other):
