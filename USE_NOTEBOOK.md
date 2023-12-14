@@ -99,8 +99,6 @@ You should be able to see result like this:
 
 ## Plot the result
 
-Note: Plot is a private preview feature, please contact us if you want to try it out.
-
 ```python
 WAII.Query.plot(df, "plot number of countries for each language")
 ```
