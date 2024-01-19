@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import re
 from typing import Optional, List, Dict, Any, Union
 from urllib.parse import urlparse, parse_qs
+from enum import Enum
 
 MODIFY_DB_ENDPOINT = 'update-db-connect-info'
 GET_CATALOG_ENDPOINT = 'get-table-definitions'
@@ -36,11 +37,24 @@ class ColumnDefinition(BaseModel):
         return self.name < other.name
 
 
+class ConstraintType(str, Enum):
+    primary = "primary"
+
+
+class ConstraintDetectorType(str, Enum):
+    database = "database"
+    inferred_llm = "inferred_llm"
+    inferred_static = "inferred_static"
+    inferred_query_history = "inferred_query_history"
+    manual = "manual"
+
+
 class TableReference(BaseModel):
-    src_table: Optional[TableName]
-    src_cols: Optional[List[str]]
-    ref_table: Optional[TableName]
-    ref_cols: Optional[List[str]]
+    src_table: Optional[TableName]  # table name
+    src_cols: Optional[List[str]]  # source table columns
+    ref_table: Optional[TableName]  # ref table name
+    ref_cols: Optional[List[str]]  # ref table columns
+    source: Optional[ConstraintDetectorType]
 
 
 class TableNameToDescription(BaseModel):
@@ -54,12 +68,22 @@ class SchemaDescription(BaseModel):
     common_tables: Optional[List[TableNameToDescription]]
 
 
+class Constraint(BaseModel):
+    source: Optional[ConstraintDetectorType]
+    table: Optional[TableName]
+    cols: Optional[List[str]]
+    constraint_type: Optional[ConstraintType]
+
+
 class TableDefinition(BaseModel):
     name: TableName
     columns: Optional[List[ColumnDefinition]]
     comment: Optional[str]
     last_altered_time: Optional[int]
     refs: Optional[List[TableReference]]
+    refs: Optional[List[TableReference]]
+    inferred_refs: Optional[List[TableReference]]
+    inferred_constraints: Optional[List[Constraint]]
     description: Optional[str]
 
 
@@ -119,7 +143,7 @@ class ModifyDBConnectionResponse(BaseModel):
 
 class SearchContext(BaseModel):
     db_name: Optional[str] = '*'
-    schema_name: Optional[str] = '*' 
+    schema_name: Optional[str] = '*'
     table_name: Optional[str] = '*'
 
 
@@ -163,11 +187,13 @@ class UpdateSchemaDescriptionResponse(BaseModel):
 class Database:
     @staticmethod
     def modify_connections(params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, ModifyDBConnectionResponse)
+        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__,
+                                                          ModifyDBConnectionResponse)
 
     @staticmethod
     def get_connections(params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, GetDBConnectionResponse, need_scope=False)
+        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, GetDBConnectionResponse,
+                                                          need_scope=False)
 
     @staticmethod
     def activate_connection(key: str):
@@ -187,8 +213,10 @@ class Database:
 
     @staticmethod
     def update_table_description(params: UpdateTableDescriptionRequest) -> UpdateTableDescriptionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(UPDATE_TABLE_DESCRIPTION_ENDPOINT, params.__dict__, GetCatalogResponse)
+        return WaiiHttpClient.get_instance().common_fetch(UPDATE_TABLE_DESCRIPTION_ENDPOINT, params.__dict__,
+                                                          GetCatalogResponse)
 
     @staticmethod
     def update_schema_description(params: UpdateSchemaDescriptionRequest) -> UpdateSchemaDescriptionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__, GetCatalogResponse)
+        return WaiiHttpClient.get_instance().common_fetch(UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__,
+                                                          GetCatalogResponse)

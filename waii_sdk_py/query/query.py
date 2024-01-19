@@ -3,6 +3,7 @@ import threading
 import time
 import traceback
 from typing import Optional, List, Dict, Any
+from enum import Enum
 
 from pydantic import BaseModel
 
@@ -22,6 +23,7 @@ AUTOCOMPLETE_ENDPOINT = 'auto-complete'
 PERF_ENDPOINT = 'get-query-performance'
 TRANSCODE_ENDPOINT = 'transcode-query'
 PLOT_ENDPOINT = 'python-plot'
+GENERATE_QUESTION_ENDPOINT = 'generate-questions'
 
 
 class Tweak(BaseModel):
@@ -166,6 +168,27 @@ class PythonPlotResponse(BaseModel):
     # based on the request, return N plot script
     plots: Optional[List[str]]
 
+
+class GeneratedQuestionComplexity(str, Enum):
+    easy = "easy"
+    medium = "medium"
+    hard = "hard"
+
+class GenerateQuestionRequest(BaseModel):
+    schema_name: str
+    n_questions: Optional[int] = 10  # number of questions to generate
+    complexity: Optional[GeneratedQuestionComplexity] = GeneratedQuestionComplexity.hard
+
+
+class GeneratedQuestion(BaseModel):
+    question: str
+    complexity: GeneratedQuestionComplexity
+
+
+class GenerateQuestionResponse(BaseModel):
+    questions: Optional[List[GeneratedQuestion]]
+
+
 def show_progress(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -293,3 +316,8 @@ class Query:
                 if not retried and verbose:
                     print("=== generated code ===")
                     print(p)
+
+    @staticmethod
+    def generate_question(params: GenerateQuestionRequest) -> GenerateQuestionResponse:
+        return WaiiHttpClient.get_instance().common_fetch(GENERATE_QUESTION_ENDPOINT, params.__dict__,
+                                                          GenerateQuestionResponse)
