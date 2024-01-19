@@ -200,10 +200,13 @@ To get catalogs, response fields:
         - `name`: Name of the table
         - `columns`: List of columns 
           - `name`: Name of the column 
-          - `type`: Type of the column 
+          - `type`: Type of the column
+          - `description`: Auto generated description of the column
         - `comment`: Comment of the table (fetched from underlying database) 
         - `last_altered_time`: Last altered time of the table 
-        - `refs`: List of referential constraints 
+        - `refs`: List of referential constraints
+        - `inferred_refs`: List of auto-inferred referential constraints
+        - `inferred_constraints`: List of auto-inferred constraints (pks, etc.)
         - `description`: Auto generated table description
 
 Waii automatically generate table/schema descriptions when you add them, you can fetch them by using `description` field of table and schema from `get_catalogs` method.
@@ -230,7 +233,7 @@ The `Query` module contains methods related to SQL query handling.
 
 Here are some of its methods:
 
-### Generate
+### Generate Query
 
 ```python
 Query.generate(params: QueryGenerationRequest) -> GeneratedQuery
@@ -297,6 +300,25 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
 - `what_changed`: If you do a tweak, it will tell you what changed in the query
 - `compilation_error`: If there is any compilation error, it will show here. (Waii will try to fix the compilation error automatically, but if it tried multiple times and still cannot fix it, it will show here)
 
+### Generate Question
+
+You can also generate questions based on your database schema, which can be useful when you want to show to your user what kind of questions can be asked to the database.
+
+```python
+>>> Query.generate_question(GenerateQuestionRequest(schema_name='PUBLIC',
+                                                    n_questions=10,
+                                                    complexity=GeneratedQuestionComplexity.hard))
+```
+
+Parameter fields:
+- `schema_name`: The schema name you want to generate questions. This is must be specified.
+- `n_questions`: Number of questions you want to generate. Default is 10. You can choose a number between 1 to 30. 
+- `complexity`: Complexity of the questions you want to generate. Default is `GeneratedQuestionComplexity.hard`. You can choose `easy`, `medium`, `hard`.
+
+Output `GenerateQuestionResponse`, fields:
+- `questions`: List of generated questions. For each question it has `question` (string content of the question), and `complexity` (complexity of the question)
+
+
 ### Transcode
 
 ```python
@@ -312,8 +334,6 @@ Parameter fields:
 
 
 #### `Query.transcode` returns `GeneratedQuery` object
-
-
 
 ### Run a query (sync)
 
@@ -464,7 +484,7 @@ text='WAII.WORLD.CITY WHERE POPULATION > 1000000'
 ```
 
 
-#### Analyze Performance
+#### Analyze Performance (Experimental)
 
 Note: this feature currently only support Snowflake
 
