@@ -183,6 +183,7 @@ class GenerateQuestionRequest(BaseModel):
 class GeneratedQuestion(BaseModel):
     question: str
     complexity: GeneratedQuestionComplexity
+    tables: Optional[List[TableName]] # tables used in the question
 
 
 class GenerateQuestionResponse(BaseModel):
