@@ -13,11 +13,29 @@ class SemanticStatement(BaseModel):
     labels: Optional[List[str]]
     scope: Optional[str]
 
+    # always include this statement in the context, if data_type is specified in statement, then always_include is True
+    # when data_type matches
+    always_include: Optional[bool] = True
+
+    # Search keys for this statement, if not specified, then use statement as search key
+    # you can specify multiple search keys, for example, if you have a CVE doc, you can search by CVE number, or library
+    # name, etc.
+    search_keys: Optional[List[str]]
+
+    # extract prompt from the statement, if not specified, then use statement as extract prompt
+    extract_prompt: Optional[str] = None
+
 
 class ModifySemanticContextRequest(BaseModel):
     updated: Optional[List[SemanticStatement]] = None
     deleted: Optional[List[str]] = None
 
+
+class GetSemanticContextRequestFilter(BaseModel):
+    # do we want to filter "always_include" rules or not?
+    # - True: only return rules with always_include=True
+    # - False: only return rules with always_include=False
+    always_include: bool = True
 
 class ModifySemanticContextResponse(BaseModel):
     updated: Optional[List[SemanticStatement]] = None
@@ -25,8 +43,10 @@ class ModifySemanticContextResponse(BaseModel):
 
 
 class GetSemanticContextRequest(BaseModel):
-    pass
-
+    filter: GetSemanticContextRequestFilter = GetSemanticContextRequestFilter()
+    offset = 0
+    limit = 1000
+    search_text: Optional[str] = None
 
 class GetSemanticContextResponse(BaseModel):
     semantic_context: Optional[List[SemanticStatement]] = None

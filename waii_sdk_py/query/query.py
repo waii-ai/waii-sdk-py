@@ -193,7 +193,7 @@ class GenerateQuestionResponse(BaseModel):
 def show_progress(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        verbose = kwargs.get('verbose', True)
+        verbose = kwargs.get('verbose', False)
 
         if verbose:
             stop_event = threading.Event()
