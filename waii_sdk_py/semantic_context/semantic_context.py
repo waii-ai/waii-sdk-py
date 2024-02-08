@@ -20,10 +20,10 @@ class SemanticStatement(BaseModel):
     # Search keys for this statement, if not specified, then use statement as search key
     # you can specify multiple search keys, for example, if you have a CVE doc, you can search by CVE number, or library
     # name, etc.
-    search_keys: Optional[List[str]]
+    lookup_summaries: Optional[List[str]]
 
     # extract prompt from the statement, if not specified, then use statement as extract prompt
-    extract_prompt: Optional[str] = None
+    summarization_prompt: Optional[str] = None
 
 
 class ModifySemanticContextRequest(BaseModel):
