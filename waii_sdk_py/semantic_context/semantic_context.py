@@ -51,6 +51,8 @@ class GetSemanticContextRequest(BaseModel):
 class GetSemanticContextResponse(BaseModel):
     semantic_context: Optional[List[SemanticStatement]] = None
 
+    available_statements: Optional[int] = 0
+
 
 class SemanticContext:
     @staticmethod
