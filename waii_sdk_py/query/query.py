@@ -7,6 +7,7 @@ from enum import Enum
 
 from pydantic import BaseModel
 
+from ..common import CommonRequest
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
 from ..waii_http_client import WaiiHttpClient
@@ -31,7 +32,7 @@ class Tweak(BaseModel):
     ask: Optional[str] = None
 
 
-class TranscodeQueryRequest(BaseModel):
+class TranscodeQueryRequest(CommonRequest):
     search_context: Optional[List[SearchContext]] = None
     ask: Optional[str] = ""
     source_dialect: Optional[str] = None
@@ -39,7 +40,7 @@ class TranscodeQueryRequest(BaseModel):
     target_dialect: Optional[str] = None
 
 
-class QueryGenerationRequest(BaseModel):
+class QueryGenerationRequest(CommonRequest):
     search_context: Optional[List[SearchContext]] = None
     tweak_history: Optional[List[Tweak]] = None
     ask: Optional[str] = None
@@ -48,7 +49,7 @@ class QueryGenerationRequest(BaseModel):
     parent_uuid: Optional[str] = None
 
 
-class DescribeQueryRequest(BaseModel):
+class DescribeQueryRequest(CommonRequest):
     search_context: Optional[List[SearchContext]] = None
     current_schema: Optional[str] = None
     query: Optional[str] = None
@@ -94,7 +95,7 @@ class GeneratedQuery(BaseModel):
     def run(self):
         return Query.run(RunQueryRequest(query=self.query))
 
-class RunQueryRequest(BaseModel):
+class RunQueryRequest(CommonRequest):
     query: str
     session_id: Optional[str] = None
     current_schema: Optional[SchemaName] = None
@@ -105,11 +106,11 @@ class RunQueryResponse(BaseModel):
     query_id: Optional[str] = None
 
 
-class GetQueryResultRequest(BaseModel):
+class GetQueryResultRequest(CommonRequest):
     query_id: str
 
 
-class CancelQueryRequest(BaseModel):
+class CancelQueryRequest(CommonRequest):
     query_id: str
 
 
@@ -127,7 +128,7 @@ class GetQueryResultResponse(BaseModel):
         import pandas as pd
         return pd.DataFrame(self.rows, columns=[col.name for col in self.column_definitions])
 
-class LikeQueryRequest(BaseModel):
+class LikeQueryRequest(CommonRequest):
     query_uuid: str
     liked: bool
 
@@ -136,7 +137,7 @@ class LikeQueryResponse(BaseModel):
     pass
 
 
-class AutoCompleteRequest(BaseModel):
+class AutoCompleteRequest(CommonRequest):
     text: str
     cursor_offset: Optional[int] = None
     dialect: Optional[str] = None
@@ -148,7 +149,7 @@ class AutoCompleteResponse(BaseModel):
     text: Optional[str] = None
 
 
-class QueryPerformanceRequest(BaseModel):
+class QueryPerformanceRequest(CommonRequest):
     query_id: str
 
 
@@ -159,7 +160,7 @@ class QueryPerformanceResponse(BaseModel):
     execution_time_ms: Optional[int]
     compilation_time_ms: Optional[int]
 
-class PythonPlotRequest(BaseModel):
+class PythonPlotRequest(CommonRequest):
     ask: Optional[str]
     dataframe_rows: Optional[List[Dict[str, Any]]]
     dataframe_cols: Optional[List[ColumnDefinition]]
@@ -174,7 +175,7 @@ class GeneratedQuestionComplexity(str, Enum):
     medium = "medium"
     hard = "hard"
 
-class GenerateQuestionRequest(BaseModel):
+class GenerateQuestionRequest(CommonRequest):
     schema_name: str
     n_questions: Optional[int] = 10  # number of questions to generate
     complexity: Optional[GeneratedQuestionComplexity] = GeneratedQuestionComplexity.hard
