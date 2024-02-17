@@ -79,6 +79,9 @@ class CompilationError(BaseModel):
     message: str
     line: Optional[int] = None
 
+class LLMUsageStatistics(BaseModel):
+    # total tokens consumed by the LLM model
+    token_total: Optional[int]
 
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
@@ -91,6 +94,7 @@ class GeneratedQuery(BaseModel):
     compilation_errors: Optional[List[CompilationError]] = None
     is_new: Optional[bool] = None
     timestamp_ms: Optional[int] = None
+    llm_usage_stats: Optional[LLMUsageStatistics] = None
 
     def run(self):
         return Query.run(RunQueryRequest(query=self.query))
