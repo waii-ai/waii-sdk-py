@@ -299,6 +299,10 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
 - `detailed_steps`: Detailed steps of how the query work (in natural language)
 - `what_changed`: If you do a tweak, it will tell you what changed in the query
 - `compilation_error`: If there is any compilation error, it will show here. (Waii will try to fix the compilation error automatically, but if it tried multiple times and still cannot fix it, it will show here)
+- `confidence_score`: returns logprob confidence score based on the tokens from generated queries.
+- `llm_usage_stats`: token consumption during the query generation.
+  - `token_total`: total token usage (prompt + completed), this doesn't include cached tokens. So if you see the total_total = 0, the query is fetched from the cache.
+- `elapsed_time_ms`: total elapsed time (in milli-seconds) between RPC request/response.
 
 ### Generate Question
 
