@@ -1,32 +1,34 @@
-from .history import  HistoryManager
-from .query import QueryManager
-from .database import DatabaseManager
+from .history import HistoryImpl
+from .query import QueryImpl
+from .database import DatabaseImpl
 from .semantic_context import SemanticContext
 from .waii_http_client import WaiiHttpClient
 
 
-
 class Waii:
-    def __init__(self):
+    def __init__(self, initialize_legacy_fields: bool = False):
         self.history = None
         self.query = None
         self.database = None
         self.semantic_context = None
+        self.initialize_legacy_fields = initialize_legacy_fields
 
-    def initialize(self,url: str = 'https://tweakit.waii.ai/api/', api_key: str = '' ):
-        http_client = WaiiHttpClient.get_instance(url,api_key)
-        self.history = HistoryManager(http_client)
-        self.History = self.history
-        self.query = QueryManager(http_client)
-        self.Query = self.query
-        self.database = DatabaseManager(http_client)
-        self.Database = self.database
+    def initialize(self, url: str = "https://tweakit.waii.ai/api/", api_key: str = ""):
+        http_client = WaiiHttpClient.get_instance(url, api_key)
+        self.history = HistoryImpl(http_client)
+        self.query = QueryImpl(http_client)
+        self.database = DatabaseImpl(http_client)
         self.semantic_context = SemanticContext(http_client)
-        self.SemanticContext = self.semantic_context
+
+        if self.initialize_legacy_fields:
+            self.History = self.history
+            self.Query = self.query
+            self.Database = self.database
+            self.SemanticContext = self.semantic_context
 
         conns = self.database.get_connections().connectors
         if len(conns) > 0:
             self.database.activate_connection(conns[0].key)
 
 
-WAII = Waii()
+WAII = Waii(True)
