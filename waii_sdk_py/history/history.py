@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from ..waii_http_client import WaiiHttpClient
 from ..query import GeneratedQuery, QueryGenerationRequest
 
-GET_ENDPOINT = 'get-generated-query-history'
+GET_ENDPOINT = "get-generated-query-history"
 
 
 class GeneratedQueryHistoryEntry(BaseModel):
@@ -21,16 +21,17 @@ class GetGeneratedQueryHistoryResponse(BaseModel):
     history: Optional[List[GeneratedQueryHistoryEntry]] = None
 
 
-# class History:
-#     @staticmethod
-#     def list(params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest()) -> GetGeneratedQueryHistoryResponse:
-#         return WaiiHttpClient.get_instance().common_fetch(GET_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse)
-
-class HistoryManager:
-    def __init__(self,http_client:WaiiHttpClient):
+class HistoryImpl:
+    def __init__(self, http_client: WaiiHttpClient):
         self.http_client = http_client
 
-    def list(self,params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest()) -> GetGeneratedQueryHistoryResponse:
-        return self.http_client.common_fetch(GET_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse)
+    def list(
+        self,
+        params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest(),
+    ) -> GetGeneratedQueryHistoryResponse:
+        return self.http_client.common_fetch(
+            GET_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse
+        )
 
 
+History = HistoryImpl(WaiiHttpClient.get_instance())

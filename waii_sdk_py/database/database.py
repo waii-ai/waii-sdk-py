@@ -5,10 +5,10 @@ from typing import Optional, List, Dict, Any, Union
 from urllib.parse import urlparse, parse_qs
 from enum import Enum
 
-MODIFY_DB_ENDPOINT = 'update-db-connect-info'
-GET_CATALOG_ENDPOINT = 'get-table-definitions'
-UPDATE_TABLE_DESCRIPTION_ENDPOINT = 'update-table-description'
-UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = 'update-schema-description'
+MODIFY_DB_ENDPOINT = "update-db-connect-info"
+GET_CATALOG_ENDPOINT = "get-table-definitions"
+UPDATE_TABLE_DESCRIPTION_ENDPOINT = "update-table-description"
+UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 
 
 class SchemaName(BaseModel):
@@ -142,9 +142,9 @@ class ModifyDBConnectionResponse(BaseModel):
 
 
 class SearchContext(BaseModel):
-    db_name: Optional[str] = '*'
-    schema_name: Optional[str] = '*'
-    table_name: Optional[str] = '*'
+    db_name: Optional[str] = "*"
+    schema_name: Optional[str] = "*"
+    table_name: Optional[str] = "*"
 
 
 class GetCatalogRequest(BaseModel):
@@ -184,44 +184,54 @@ class UpdateSchemaDescriptionResponse(BaseModel):
     pass
 
 
-class DatabaseManager:
+class DatabaseImpl:
 
-    def __init__(self,http_client:WaiiHttpClient):
+    def __init__(self, http_client: WaiiHttpClient):
         self.http_client = http_client
-    def modify_connections(self,params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse:
-        return self.http_client.common_fetch(MODIFY_DB_ENDPOINT, params.__dict__,
-                                                          ModifyDBConnectionResponse)
 
+    def modify_connections(
+        self, params: ModifyDBConnectionRequest
+    ) -> ModifyDBConnectionResponse:
+        return self.http_client.common_fetch(
+            MODIFY_DB_ENDPOINT, params.__dict__, ModifyDBConnectionResponse
+        )
 
-    def get_connections(self,params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse:
-        return self.http_client.common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, GetDBConnectionResponse,
-                                                          need_scope=False)
+    def get_connections(
+        self, params: GetDBConnectionRequest = GetDBConnectionRequest()
+    ) -> GetDBConnectionResponse:
+        return self.http_client.common_fetch(
+            MODIFY_DB_ENDPOINT,
+            params.__dict__,
+            GetDBConnectionResponse,
+            need_scope=False,
+        )
 
-
-    def activate_connection(self,key: str):
+    def activate_connection(self, key: str):
         self.http_client.set_scope(key)
-
 
     def get_activated_connection(self):
         return self.http_client.get_scope()
 
-
     def get_default_connection(self):
         return self.http_client.get_scope()
 
+    def get_catalogs(
+        self, params: GetCatalogRequest = GetCatalogRequest()
+    ) -> GetCatalogResponse:
+        return self.http_client.common_fetch(
+            GET_CATALOG_ENDPOINT, params.__dict__, GetCatalogResponse
+        )
 
-    def get_catalogs(self,params: GetCatalogRequest = GetCatalogRequest()) -> GetCatalogResponse:
-        return self.http_client.common_fetch(GET_CATALOG_ENDPOINT, params.__dict__, GetCatalogResponse)
+    def update_table_description(
+        self, params: UpdateTableDescriptionRequest
+    ) -> UpdateTableDescriptionResponse:
+        return self.http_client.common_fetch(
+            UPDATE_TABLE_DESCRIPTION_ENDPOINT, params.__dict__, GetCatalogResponse
+        )
 
-
-    def update_table_description(self,params: UpdateTableDescriptionRequest) -> UpdateTableDescriptionResponse:
-        return self.http_client.common_fetch(UPDATE_TABLE_DESCRIPTION_ENDPOINT, params.__dict__,
-                                                          GetCatalogResponse)
-
-
-    def update_schema_description(self,params: UpdateSchemaDescriptionRequest) -> UpdateSchemaDescriptionResponse:
-        return self.http_client.common_fetch(UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__,
-                                                          GetCatalogResponse)
-
-
-
+    def update_schema_description(
+        self, params: UpdateSchemaDescriptionRequest
+    ) -> UpdateSchemaDescriptionResponse:
+        return self.http_client.common_fetch(
+            UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__, GetCatalogResponse
+        )

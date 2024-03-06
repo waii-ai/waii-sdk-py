@@ -12,19 +12,19 @@ from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
 from ..waii_http_client import WaiiHttpClient
 
-GENERATE_ENDPOINT = 'generate-query'
-RUN_ENDPOINT = 'run-query'
-SUBMIT_ENDPOINT = 'submit-query'
-FAVORITE_ENDPOINT = 'like-query'
-DESCRIBE_ENDPOINT = 'describe-query'
+GENERATE_ENDPOINT = "generate-query"
+RUN_ENDPOINT = "run-query"
+SUBMIT_ENDPOINT = "submit-query"
+FAVORITE_ENDPOINT = "like-query"
+DESCRIBE_ENDPOINT = "describe-query"
 DIFF_ENDPOINT = "diff-query"
-RESULTS_ENDPOINT = 'get-query-result'
-CANCEL_ENDPOINT = 'cancel-query'
-AUTOCOMPLETE_ENDPOINT = 'auto-complete'
-PERF_ENDPOINT = 'get-query-performance'
-TRANSCODE_ENDPOINT = 'transcode-query'
-PLOT_ENDPOINT = 'python-plot'
-GENERATE_QUESTION_ENDPOINT = 'generate-questions'
+RESULTS_ENDPOINT = "get-query-result"
+CANCEL_ENDPOINT = "cancel-query"
+AUTOCOMPLETE_ENDPOINT = "auto-complete"
+PERF_ENDPOINT = "get-query-performance"
+TRANSCODE_ENDPOINT = "transcode-query"
+PLOT_ENDPOINT = "python-plot"
+GENERATE_QUESTION_ENDPOINT = "generate-questions"
 
 
 class Tweak(BaseModel):
@@ -79,9 +79,11 @@ class CompilationError(BaseModel):
     message: str
     line: Optional[int] = None
 
+
 class LLMUsageStatistics(BaseModel):
     # total tokens consumed by the LLM model
     token_total: Optional[int]
+
 
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
@@ -97,7 +99,8 @@ class GeneratedQuery(BaseModel):
     llm_usage_stats: Optional[LLMUsageStatistics] = None
 
     def run(self):
-        return QueryManager().run(RunQueryRequest(query=self.query))
+        return QueryImpl().run(RunQueryRequest(query=self.query))
+
 
 class RunQueryRequest(CommonRequest):
     query: str
@@ -130,7 +133,11 @@ class GetQueryResultResponse(BaseModel):
 
     def to_pandas_df(self):
         import pandas as pd
-        return pd.DataFrame(self.rows, columns=[col.name for col in self.column_definitions])
+
+        return pd.DataFrame(
+            self.rows, columns=[col.name for col in self.column_definitions]
+        )
+
 
 class LikeQueryRequest(CommonRequest):
     query_uuid: str
@@ -164,10 +171,12 @@ class QueryPerformanceResponse(BaseModel):
     execution_time_ms: Optional[int]
     compilation_time_ms: Optional[int]
 
+
 class PythonPlotRequest(CommonRequest):
     ask: Optional[str]
     dataframe_rows: Optional[List[Dict[str, Any]]]
     dataframe_cols: Optional[List[ColumnDefinition]]
+
 
 class PythonPlotResponse(BaseModel):
     # based on the request, return N plot script
@@ -179,6 +188,7 @@ class GeneratedQuestionComplexity(str, Enum):
     medium = "medium"
     hard = "hard"
 
+
 class GenerateQuestionRequest(CommonRequest):
     schema_name: str
     n_questions: Optional[int] = 10  # number of questions to generate
@@ -188,7 +198,7 @@ class GenerateQuestionRequest(CommonRequest):
 class GeneratedQuestion(BaseModel):
     question: str
     complexity: GeneratedQuestionComplexity
-    tables: Optional[List[TableName]] # tables used in the question
+    tables: Optional[List[TableName]]  # tables used in the question
 
 
 class GenerateQuestionResponse(BaseModel):
@@ -198,7 +208,7 @@ class GenerateQuestionResponse(BaseModel):
 def show_progress(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        verbose = kwargs.get('verbose', False)
+        verbose = kwargs.get("verbose", False)
 
         if verbose:
             stop_event = threading.Event()
@@ -217,71 +227,90 @@ def show_progress(func):
 
     return wrapper
 
+
 def _print_dot(stop_event):
     while not stop_event.is_set():
-        print('.', end='', flush=True)
+        print(".", end="", flush=True)
         time.sleep(1)
 
-class QueryManager:
+
+class QueryImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
         self.http_client = http_client
 
     @show_progress
-    def generate(self,params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
-        return self.http_client.common_fetch(GENERATE_ENDPOINT, params.__dict__, GeneratedQuery)
-
-
-    @show_progress
-    def run(self,params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
-        return self.http_client.common_fetch(RUN_ENDPOINT, params.__dict__, GetQueryResultResponse)
-
-
-    def like(self,params: LikeQueryRequest) -> LikeQueryResponse:
-        return self.http_client.common_fetch(FAVORITE_ENDPOINT, params.__dict__, LikeQueryResponse)
-
-
-    def submit(self,params: RunQueryRequest) -> RunQueryResponse:
-        return self.http_client.common_fetch(SUBMIT_ENDPOINT, params.__dict__, RunQueryResponse)
-
-
-    def get_results(self,params: GetQueryResultRequest) -> GetQueryResultResponse:
-        return self.http_client.common_fetch(RESULTS_ENDPOINT, params.__dict__, GetQueryResultResponse)
-
-
-    def cancel(self,params: CancelQueryRequest) -> CancelQueryResponse:
-        return self.http_client.common_fetch(CANCEL_ENDPOINT, params.__dict__, CancelQueryResponse)
-
-
-    def describe(self,params: DescribeQueryRequest) -> DescribeQueryResponse:
-        return self.http_client.common_fetch(DESCRIBE_ENDPOINT, params.__dict__, DescribeQueryResponse)
-
-
-    def auto_complete(self,params: AutoCompleteRequest) -> AutoCompleteResponse:
-        return self.http_client.common_fetch(AUTOCOMPLETE_ENDPOINT, params.__dict__, AutoCompleteResponse)
-
-
-    def diff(self,params: DiffQueryRequest) -> DiffQueryResponse:
-        return self.http_client.common_fetch(DIFF_ENDPOINT, params.__dict__, DiffQueryResponse)
-
-
-    def analyze_performance(self,params: QueryPerformanceRequest) -> QueryPerformanceResponse:
-        return self.http_client.common_fetch(PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse)
-
-
-    def transcode(self,params: TranscodeQueryRequest) -> GeneratedQuery:
-        return self.http_client.common_fetch(TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery)
-
+    def generate(self, params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
+        return self.http_client.common_fetch(
+            GENERATE_ENDPOINT, params.__dict__, GeneratedQuery
+        )
 
     @show_progress
-    def plot(self,df, ask=None, automatically_exec=True, verbose=True, max_retry=2) -> str:
+    def run(self, params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
+        return self.http_client.common_fetch(
+            RUN_ENDPOINT, params.__dict__, GetQueryResultResponse
+        )
+
+    def like(self, params: LikeQueryRequest) -> LikeQueryResponse:
+        return self.http_client.common_fetch(
+            FAVORITE_ENDPOINT, params.__dict__, LikeQueryResponse
+        )
+
+    def submit(self, params: RunQueryRequest) -> RunQueryResponse:
+        return self.http_client.common_fetch(
+            SUBMIT_ENDPOINT, params.__dict__, RunQueryResponse
+        )
+
+    def get_results(self, params: GetQueryResultRequest) -> GetQueryResultResponse:
+        return self.http_client.common_fetch(
+            RESULTS_ENDPOINT, params.__dict__, GetQueryResultResponse
+        )
+
+    def cancel(self, params: CancelQueryRequest) -> CancelQueryResponse:
+        return self.http_client.common_fetch(
+            CANCEL_ENDPOINT, params.__dict__, CancelQueryResponse
+        )
+
+    def describe(self, params: DescribeQueryRequest) -> DescribeQueryResponse:
+        return self.http_client.common_fetch(
+            DESCRIBE_ENDPOINT, params.__dict__, DescribeQueryResponse
+        )
+
+    def auto_complete(self, params: AutoCompleteRequest) -> AutoCompleteResponse:
+        return self.http_client.common_fetch(
+            AUTOCOMPLETE_ENDPOINT, params.__dict__, AutoCompleteResponse
+        )
+
+    def diff(self, params: DiffQueryRequest) -> DiffQueryResponse:
+        return self.http_client.common_fetch(
+            DIFF_ENDPOINT, params.__dict__, DiffQueryResponse
+        )
+
+    def analyze_performance(
+        self, params: QueryPerformanceRequest
+    ) -> QueryPerformanceResponse:
+        return self.http_client.common_fetch(
+            PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse
+        )
+
+    def transcode(self, params: TranscodeQueryRequest) -> GeneratedQuery:
+        return self.http_client.common_fetch(
+            TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery
+        )
+
+    @show_progress
+    def plot(
+        self, df, ask=None, automatically_exec=True, verbose=True, max_retry=2
+    ) -> str:
         # create ColumnDefinition from df.columns, use first row to get type
         cols = []
         for col in df.columns:
             cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
 
         params = PythonPlotRequest(dataframe_cols=cols, ask=ask)
-        plot_response = self.http_client.common_fetch(PLOT_ENDPOINT, params.__dict__, PythonPlotResponse)
+        plot_response = self.http_client.common_fetch(
+            PLOT_ENDPOINT, params.__dict__, PythonPlotResponse
+        )
         p = plot_response.plots[0]
 
         # if the p include ``` ... ```, only include lines between them, handle the case like
@@ -308,12 +337,21 @@ class QueryManager:
             except Exception as e:
                 if max_retry > 0:
                     retried = True
-                    print(f"Trying to fix error={str(e)}, Retry with max_retry={max_retry}")
+                    print(
+                        f"Trying to fix error={str(e)}, Retry with max_retry={max_retry}"
+                    )
                     fix_msg = "Fix the error and generate plot, find the following code and exception:"
                     if not ask:
-                        ask = ''
-                    return self.plot(df, ask=fix_msg + f'\"{ask}\"' + f'\ncode:```{p}```\nException:{str(e)}',
-                                      automatically_exec=automatically_exec, verbose=verbose, max_retry=max_retry - 1)
+                        ask = ""
+                    return self.plot(
+                        df,
+                        ask=fix_msg
+                        + f'"{ask}"'
+                        + f"\ncode:```{p}```\nException:{str(e)}",
+                        automatically_exec=automatically_exec,
+                        verbose=verbose,
+                        max_retry=max_retry - 1,
+                    )
                 else:
                     # print the code when not verbose (because finally will print the code if it is verbose)
                     if not verbose:
@@ -326,8 +364,9 @@ class QueryManager:
                     print("=== generated code ===")
                     print(p)
 
-
-    def generate_question(self,params: GenerateQuestionRequest) -> GenerateQuestionResponse:
-        return self.http_client.common_fetch(GENERATE_QUESTION_ENDPOINT, params.__dict__,
-                                                          GenerateQuestionResponse)
-
+    def generate_question(
+        self, params: GenerateQuestionRequest
+    ) -> GenerateQuestionResponse:
+        return self.http_client.common_fetch(
+            GENERATE_QUESTION_ENDPOINT, params.__dict__, GenerateQuestionResponse
+        )
