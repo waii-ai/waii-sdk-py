@@ -54,11 +54,17 @@ class GetSemanticContextResponse(BaseModel):
     available_statements: Optional[int] = 0
 
 
-class SemanticContext:
-    @staticmethod
-    def modify_semantic_context(params: ModifySemanticContextRequest) -> ModifySemanticContextResponse:
-        return WaiiHttpClient.get_instance().common_fetch(MODIFY_ENDPOINT, params.__dict__, ModifySemanticContextResponse)
+class SemanticContextImpl:
 
-    @staticmethod
-    def get_semantic_context(params: GetSemanticContextRequest = GetSemanticContextRequest()) -> GetSemanticContextResponse:
-        return WaiiHttpClient.get_instance().common_fetch(GET_ENDPOINT, params.__dict__, GetSemanticContextResponse)
+    def __init__(self, http_client: WaiiHttpClient):
+        self.http_client = http_client
+
+    def modify_semantic_context(self,params: ModifySemanticContextRequest) -> ModifySemanticContextResponse:
+        return self.http_client.common_fetch(MODIFY_ENDPOINT, params.__dict__, ModifySemanticContextResponse)
+
+
+    def get_semantic_context(self,params: GetSemanticContextRequest = GetSemanticContextRequest()) -> GetSemanticContextResponse:
+        return self.http_client.common_fetch(GET_ENDPOINT, params.__dict__, GetSemanticContextResponse)
+
+
+SemanticContext = SemanticContextImpl(WaiiHttpClient.get_instance())

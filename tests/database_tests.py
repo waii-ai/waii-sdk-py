@@ -24,7 +24,9 @@ class TestDatabase(unittest.TestCase):
             password=db_conn_json['pass'],
             database=db_conn_json['database'],
             warehouse=db_conn_json['warehouse'],
-            role=db_conn_json['role']
+            role=db_conn_json['role'],
+            host=db_conn_json['host'],
+            port = db_conn_json['port']
         )
 
     def setUp(self):
