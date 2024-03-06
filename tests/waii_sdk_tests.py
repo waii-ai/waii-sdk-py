@@ -3,7 +3,7 @@ import unittest
 from waii_sdk_py.query import *
 from waii_sdk_py.waii_sdk_py import Waii
 
-
+#movie and chinook are two database
 class WaiiSDKTests(unittest.TestCase):
     def setUp(self):
         movie_waii = Waii()
@@ -73,3 +73,4 @@ class WaiiSDKTests(unittest.TestCase):
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
         assert "...And Justice For All" in str(result.rows[0])
+

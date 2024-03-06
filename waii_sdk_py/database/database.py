@@ -235,3 +235,5 @@ class DatabaseImpl:
         return self.http_client.common_fetch(
             UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__, GetCatalogResponse
         )
+
+Database = DatabaseImpl(WaiiHttpClient.get_instance())

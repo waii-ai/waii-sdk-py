@@ -1,7 +1,7 @@
 from .history import HistoryImpl
 from .query import QueryImpl
 from .database import DatabaseImpl
-from .semantic_context import SemanticContext
+from .semantic_context import SemanticContextImpl
 from .waii_http_client import WaiiHttpClient
 
 
@@ -18,7 +18,7 @@ class Waii:
         self.history = HistoryImpl(http_client)
         self.query = QueryImpl(http_client)
         self.database = DatabaseImpl(http_client)
-        self.semantic_context = SemanticContext(http_client)
+        self.semantic_context = SemanticContextImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history

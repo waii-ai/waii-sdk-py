@@ -370,3 +370,5 @@ class QueryImpl:
         return self.http_client.common_fetch(
             GENERATE_QUESTION_ENDPOINT, params.__dict__, GenerateQuestionResponse
         )
+
+Query = QueryImpl(WaiiHttpClient.get_instance())
