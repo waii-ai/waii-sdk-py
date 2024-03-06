@@ -184,39 +184,44 @@ class UpdateSchemaDescriptionResponse(BaseModel):
     pass
 
 
-class Database:
-    @staticmethod
-    def modify_connections(params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__,
+class DatabaseManager:
+
+    def __init__(self,http_client:WaiiHttpClient):
+        self.http_client = http_client
+    def modify_connections(self,params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse:
+        return self.http_client.common_fetch(MODIFY_DB_ENDPOINT, params.__dict__,
                                                           ModifyDBConnectionResponse)
 
-    @staticmethod
-    def get_connections(params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, GetDBConnectionResponse,
+
+    def get_connections(self,params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse:
+        return self.http_client.common_fetch(MODIFY_DB_ENDPOINT, params.__dict__, GetDBConnectionResponse,
                                                           need_scope=False)
 
-    @staticmethod
-    def activate_connection(key: str):
-        WaiiHttpClient.get_instance().set_scope(key)
 
-    @staticmethod
-    def get_activated_connection():
-        return WaiiHttpClient.get_instance().get_scope()
+    def activate_connection(self,key: str):
+        self.http_client.set_scope(key)
 
-    @staticmethod
-    def get_default_connection():
-        return WaiiHttpClient.get_instance().get_scope()
 
-    @staticmethod
-    def get_catalogs(params: GetCatalogRequest = GetCatalogRequest()) -> GetCatalogResponse:
-        return WaiiHttpClient.get_instance().common_fetch(GET_CATALOG_ENDPOINT, params.__dict__, GetCatalogResponse)
+    def get_activated_connection(self):
+        return self.http_client.get_scope()
 
-    @staticmethod
-    def update_table_description(params: UpdateTableDescriptionRequest) -> UpdateTableDescriptionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(UPDATE_TABLE_DESCRIPTION_ENDPOINT, params.__dict__,
+
+    def get_default_connection(self):
+        return self.http_client.get_scope()
+
+
+    def get_catalogs(self,params: GetCatalogRequest = GetCatalogRequest()) -> GetCatalogResponse:
+        return self.http_client.common_fetch(GET_CATALOG_ENDPOINT, params.__dict__, GetCatalogResponse)
+
+
+    def update_table_description(self,params: UpdateTableDescriptionRequest) -> UpdateTableDescriptionResponse:
+        return self.http_client.common_fetch(UPDATE_TABLE_DESCRIPTION_ENDPOINT, params.__dict__,
                                                           GetCatalogResponse)
 
-    @staticmethod
-    def update_schema_description(params: UpdateSchemaDescriptionRequest) -> UpdateSchemaDescriptionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__,
+
+    def update_schema_description(self,params: UpdateSchemaDescriptionRequest) -> UpdateSchemaDescriptionResponse:
+        return self.http_client.common_fetch(UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__,
                                                           GetCatalogResponse)
+
+
+

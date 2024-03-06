@@ -97,7 +97,7 @@ class GeneratedQuery(BaseModel):
     llm_usage_stats: Optional[LLMUsageStatistics] = None
 
     def run(self):
-        return Query.run(RunQueryRequest(query=self.query))
+        return QueryManager().run(RunQueryRequest(query=self.query))
 
 class RunQueryRequest(CommonRequest):
     query: str
@@ -222,63 +222,66 @@ def _print_dot(stop_event):
         print('.', end='', flush=True)
         time.sleep(1)
 
-class Query:
-    @staticmethod
+class QueryManager:
+
+    def __init__(self, http_client: WaiiHttpClient):
+        self.http_client = http_client
+
     @show_progress
-    def generate(params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
-        return WaiiHttpClient[GeneratedQuery].get_instance().common_fetch(GENERATE_ENDPOINT, params.__dict__, GeneratedQuery)
+    def generate(self,params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
+        return self.http_client.common_fetch(GENERATE_ENDPOINT, params.__dict__, GeneratedQuery)
 
-    @staticmethod
+
     @show_progress
-    def run(params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
-        return WaiiHttpClient.get_instance().common_fetch(RUN_ENDPOINT, params.__dict__, GetQueryResultResponse)
+    def run(self,params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
+        return self.http_client.common_fetch(RUN_ENDPOINT, params.__dict__, GetQueryResultResponse)
 
-    @staticmethod
-    def like(params: LikeQueryRequest) -> LikeQueryResponse:
-        return WaiiHttpClient.get_instance().common_fetch(FAVORITE_ENDPOINT, params.__dict__, LikeQueryResponse)
 
-    @staticmethod
-    def submit(params: RunQueryRequest) -> RunQueryResponse:
-        return WaiiHttpClient.get_instance().common_fetch(SUBMIT_ENDPOINT, params.__dict__, RunQueryResponse)
+    def like(self,params: LikeQueryRequest) -> LikeQueryResponse:
+        return self.http_client.common_fetch(FAVORITE_ENDPOINT, params.__dict__, LikeQueryResponse)
 
-    @staticmethod
-    def get_results(params: GetQueryResultRequest) -> GetQueryResultResponse:
-        return WaiiHttpClient.get_instance().common_fetch(RESULTS_ENDPOINT, params.__dict__, GetQueryResultResponse)
 
-    @staticmethod
-    def cancel(params: CancelQueryRequest) -> CancelQueryResponse:
-        return WaiiHttpClient.get_instance().common_fetch(CANCEL_ENDPOINT, params.__dict__, CancelQueryResponse)
+    def submit(self,params: RunQueryRequest) -> RunQueryResponse:
+        return self.http_client.common_fetch(SUBMIT_ENDPOINT, params.__dict__, RunQueryResponse)
 
-    @staticmethod
-    def describe(params: DescribeQueryRequest) -> DescribeQueryResponse:
-        return WaiiHttpClient.get_instance().common_fetch(DESCRIBE_ENDPOINT, params.__dict__, DescribeQueryResponse)
 
-    @staticmethod
-    def auto_complete(params: AutoCompleteRequest) -> AutoCompleteResponse:
-        return WaiiHttpClient.get_instance().common_fetch(AUTOCOMPLETE_ENDPOINT, params.__dict__, AutoCompleteResponse)
+    def get_results(self,params: GetQueryResultRequest) -> GetQueryResultResponse:
+        return self.http_client.common_fetch(RESULTS_ENDPOINT, params.__dict__, GetQueryResultResponse)
 
-    @staticmethod
-    def diff(params: DiffQueryRequest) -> DiffQueryResponse:
-        return WaiiHttpClient.get_instance().common_fetch(DIFF_ENDPOINT, params.__dict__, DiffQueryResponse)
 
-    @staticmethod
-    def analyze_performance(params: QueryPerformanceRequest) -> QueryPerformanceResponse:
-        return WaiiHttpClient.get_instance().common_fetch(PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse)
+    def cancel(self,params: CancelQueryRequest) -> CancelQueryResponse:
+        return self.http_client.common_fetch(CANCEL_ENDPOINT, params.__dict__, CancelQueryResponse)
 
-    @staticmethod
-    def transcode(params: TranscodeQueryRequest) -> GeneratedQuery:
-        return WaiiHttpClient.get_instance().common_fetch(TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery)
 
-    @staticmethod
+    def describe(self,params: DescribeQueryRequest) -> DescribeQueryResponse:
+        return self.http_client.common_fetch(DESCRIBE_ENDPOINT, params.__dict__, DescribeQueryResponse)
+
+
+    def auto_complete(self,params: AutoCompleteRequest) -> AutoCompleteResponse:
+        return self.http_client.common_fetch(AUTOCOMPLETE_ENDPOINT, params.__dict__, AutoCompleteResponse)
+
+
+    def diff(self,params: DiffQueryRequest) -> DiffQueryResponse:
+        return self.http_client.common_fetch(DIFF_ENDPOINT, params.__dict__, DiffQueryResponse)
+
+
+    def analyze_performance(self,params: QueryPerformanceRequest) -> QueryPerformanceResponse:
+        return self.http_client.common_fetch(PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse)
+
+
+    def transcode(self,params: TranscodeQueryRequest) -> GeneratedQuery:
+        return self.http_client.common_fetch(TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery)
+
+
     @show_progress
-    def plot(df, ask=None, automatically_exec=True, verbose=True, max_retry=2) -> str:
+    def plot(self,df, ask=None, automatically_exec=True, verbose=True, max_retry=2) -> str:
         # create ColumnDefinition from df.columns, use first row to get type
         cols = []
         for col in df.columns:
             cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
 
         params = PythonPlotRequest(dataframe_cols=cols, ask=ask)
-        plot_response = WaiiHttpClient.get_instance().common_fetch(PLOT_ENDPOINT, params.__dict__, PythonPlotResponse)
+        plot_response = self.http_client.common_fetch(PLOT_ENDPOINT, params.__dict__, PythonPlotResponse)
         p = plot_response.plots[0]
 
         # if the p include ``` ... ```, only include lines between them, handle the case like
@@ -309,7 +312,7 @@ class Query:
                     fix_msg = "Fix the error and generate plot, find the following code and exception:"
                     if not ask:
                         ask = ''
-                    return Query.plot(df, ask=fix_msg + f'\"{ask}\"' + f'\ncode:```{p}```\nException:{str(e)}',
+                    return self.plot(df, ask=fix_msg + f'\"{ask}\"' + f'\ncode:```{p}```\nException:{str(e)}',
                                       automatically_exec=automatically_exec, verbose=verbose, max_retry=max_retry - 1)
                 else:
                     # print the code when not verbose (because finally will print the code if it is verbose)
@@ -323,7 +326,8 @@ class Query:
                     print("=== generated code ===")
                     print(p)
 
-    @staticmethod
-    def generate_question(params: GenerateQuestionRequest) -> GenerateQuestionResponse:
-        return WaiiHttpClient.get_instance().common_fetch(GENERATE_QUESTION_ENDPOINT, params.__dict__,
+
+    def generate_question(self,params: GenerateQuestionRequest) -> GenerateQuestionResponse:
+        return self.http_client.common_fetch(GENERATE_QUESTION_ENDPOINT, params.__dict__,
                                                           GenerateQuestionResponse)
+

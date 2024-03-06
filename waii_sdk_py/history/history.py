@@ -21,7 +21,16 @@ class GetGeneratedQueryHistoryResponse(BaseModel):
     history: Optional[List[GeneratedQueryHistoryEntry]] = None
 
 
-class History:
-    @staticmethod
-    def list(params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest()) -> GetGeneratedQueryHistoryResponse:
-        return WaiiHttpClient.get_instance().common_fetch(GET_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse)
+# class History:
+#     @staticmethod
+#     def list(params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest()) -> GetGeneratedQueryHistoryResponse:
+#         return WaiiHttpClient.get_instance().common_fetch(GET_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse)
+
+class HistoryManager:
+    def __init__(self,http_client:WaiiHttpClient):
+        self.http_client = http_client
+
+    def list(self,params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest()) -> GetGeneratedQueryHistoryResponse:
+        return self.http_client.common_fetch(GET_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse)
+
+
