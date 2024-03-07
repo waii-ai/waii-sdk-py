@@ -110,9 +110,9 @@ class WaiiSDKTests(unittest.TestCase):
         params = QueryGenerationRequest(
             ask="Give me 5 movie names sorted by movie name"
         )
-        result = self.movie_waii.query.generate(params)
+        result = WAII.Query.generate(params)
         params = RunQueryRequest(query=result.query)
-        result = self.movie_waii.query.run(params)
+        result = WAII.Query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
         assert "102 Dalmatians" in str(result.rows[0])
