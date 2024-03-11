@@ -37,6 +37,8 @@ class TestQuery(unittest.TestCase):
         assert len(result.column_definitions) > 0
         assert '42' in str(result.rows[0])
 
+
+
     def test_submit(self):
         params = RunQueryRequest(query="SELECT 42")
         result = WAII.Query.submit(params)
