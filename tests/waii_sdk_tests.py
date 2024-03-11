@@ -1,5 +1,6 @@
 import unittest
 
+from waii_sdk_py.database import Database
 from waii_sdk_py.query import *
 from waii_sdk_py.waii_sdk_py import Waii, WAII
 
@@ -117,6 +118,22 @@ class WaiiSDKTests(unittest.TestCase):
         assert len(result.column_definitions) > 0
         assert "102 Dalmatians" in str(result.rows[0])
 
+    def test_legacy_run_without_WAII(self):
+        Database.activate_connection(self.movie_conn.key)
+        params = QueryGenerationRequest(
+            ask="Give me 5 movie names sorted by movie name"
+        )
+        result = Query.generate(params)
+        params = RunQueryRequest(query=result.query)
+        result = Query.run(params)
+        self.assertIsInstance(result, GetQueryResultResponse)
+        assert len(result.column_definitions) > 0
+        assert "102 Dalmatians" in str(result.rows[0])
+
+    def test_activate_connection(self):
+        Database.activate_connection(self.movie_conn.key)
+        result = Database.get_activated_connection()
+        assert(self.movie_conn.key == result)
 
 
 

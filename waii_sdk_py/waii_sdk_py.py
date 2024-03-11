@@ -1,11 +1,12 @@
-from .history import HistoryImpl
-from .query import QueryImpl
-from .database import DatabaseImpl
-from .semantic_context import SemanticContextImpl
+from .history import HistoryImpl, History
+from .query import QueryImpl, Query
+from .database import DatabaseImpl, Database
+from .semantic_context import SemanticContextImpl, SemanticContext
 from .waii_http_client import WaiiHttpClient
 
 
 class Waii:
+
     def __init__(self, initialize_legacy_fields: bool = False):
         self.history = None
         self.query = None
@@ -25,6 +26,12 @@ class Waii:
             self.Query = self.query
             self.Database = self.database
             self.SemanticContext = self.semantic_context
+            Query.http_client = http_client
+            History.http_client = http_client
+            Database.http_client = http_client
+            SemanticContext.http_client = http_client
+
+
 
         conns = self.database.get_connections().connectors
         if len(conns) > 0:
