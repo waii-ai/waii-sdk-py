@@ -7,7 +7,7 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from ..common import CommonRequest
+from ..common import CommonRequest, LLMBasedRequest
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
 from ..waii_http_client import WaiiHttpClient
@@ -32,7 +32,7 @@ class Tweak(BaseModel):
     ask: Optional[str] = None
 
 
-class TranscodeQueryRequest(CommonRequest):
+class TranscodeQueryRequest(LLMBasedRequest):
     search_context: Optional[List[SearchContext]] = None
     ask: Optional[str] = ""
     source_dialect: Optional[str] = None
@@ -40,7 +40,7 @@ class TranscodeQueryRequest(CommonRequest):
     target_dialect: Optional[str] = None
 
 
-class QueryGenerationRequest(CommonRequest):
+class QueryGenerationRequest(LLMBasedRequest):
     search_context: Optional[List[SearchContext]] = None
     tweak_history: Optional[List[Tweak]] = None
     ask: Optional[str] = None
