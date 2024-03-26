@@ -261,7 +261,10 @@ Ask a new question:
 
 **Ask a complex question:**
 ```python
->>> WAII.Query.generate(QueryGenerationRequest(ask = "Give me all stores in California that have more than 1000 customers, include the store name, store address, and the number of customers."))
+>>> WAII.Query.generate(QueryGenerationRequest(ask = """
+    Give me all stores in California that have more than 1000
+    customers, include the store name, store address, and the number of 
+    customers."""))
 ```
 
 **Generate query with search context (limited to specific tables, schemas, etc.)**
