@@ -5,7 +5,7 @@ import traceback
 from typing import Optional, List, Dict, Any
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..common import CommonRequest, LLMBasedRequest
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
@@ -98,8 +98,10 @@ class GeneratedQuery(BaseModel):
     timestamp_ms: Optional[int] = None
     llm_usage_stats: Optional[LLMUsageStatistics] = None
 
+    http_client: Optional[Any] = Field(default=None, exclude=True)
+
     def run(self):
-        return QueryImpl().run(RunQueryRequest(query=self.query))
+        return QueryImpl(self.http_client).run(RunQueryRequest(query=self.query))
 
 
 class RunQueryRequest(CommonRequest):
@@ -241,9 +243,11 @@ class QueryImpl:
 
     @show_progress
     def generate(self, params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
-        return self.http_client.common_fetch(
+        generated = self.http_client.common_fetch(
             GENERATE_ENDPOINT, params.__dict__, GeneratedQuery
         )
+        generated.http_client = self.http_client
+        return generated
 
     @show_progress
     def run(self, params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
@@ -294,9 +298,11 @@ class QueryImpl:
         )
 
     def transcode(self, params: TranscodeQueryRequest) -> GeneratedQuery:
-        return self.http_client.common_fetch(
+        generated = self.http_client.common_fetch(
             TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery
         )
+        generated.http_client = self.http_client
+        return generated
 
     @show_progress
     def plot(
