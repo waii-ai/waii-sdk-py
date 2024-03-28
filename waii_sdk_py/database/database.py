@@ -9,6 +9,7 @@ MODIFY_DB_ENDPOINT = "update-db-connect-info"
 GET_CATALOG_ENDPOINT = "get-table-definitions"
 UPDATE_TABLE_DESCRIPTION_ENDPOINT = "update-table-description"
 UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
+UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 
 
 class SchemaName(BaseModel):
@@ -171,6 +172,29 @@ class UpdateTableDescriptionRequest(BaseModel):
     description: str
 
 
+class ColumnDescription(BaseModel):
+    column_name: str
+    description: Optional[str]
+
+
+class TableToColumnDescription(BaseModel):
+    table_name: TableName
+    column_descriptions: Optional[List[ColumnDescription]]
+
+
+class UpdateColumnDescriptionRequest(BaseModel):
+    col_descriptions: Optional[List[TableToColumnDescription]]
+
+
+class UpdatedTableToCol(BaseModel):
+    table_name: TableName
+    column_names: Optional[List[str]]
+
+
+class UpdateColumnDescriptionResponse(BaseModel):
+    updated_table_to_cols: Optional[List[UpdatedTableToCol]]
+
+
 class UpdateSchemaDescriptionRequest(BaseModel):
     schema_name: SchemaName
     description: str
@@ -234,6 +258,13 @@ class DatabaseImpl:
     ) -> UpdateSchemaDescriptionResponse:
         return self.http_client.common_fetch(
             UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params.__dict__, GetCatalogResponse
+        )
+
+    def update_column_description(
+        self, params: UpdateColumnDescriptionRequest
+    ) -> UpdateColumnDescriptionResponse:
+        return self.http_client.common_fetch(
+            UPDATE_COLUMN_DESCRIPTION_ENDPOINT, params.__dict__, UpdateColumnDescriptionResponse
         )
 
 Database = DatabaseImpl(WaiiHttpClient.get_instance())
