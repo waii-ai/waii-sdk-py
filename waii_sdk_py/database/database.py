@@ -10,6 +10,7 @@ GET_CATALOG_ENDPOINT = "get-table-definitions"
 UPDATE_TABLE_DESCRIPTION_ENDPOINT = "update-table-description"
 UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
+UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
 
 
 class SchemaName(BaseModel):
@@ -208,6 +209,21 @@ class UpdateSchemaDescriptionResponse(BaseModel):
     pass
 
 
+class TableConstraints(BaseModel):
+    table_name: TableName
+    constraints: Optional[List[Constraint]]
+    constraint_type: ConstraintType
+
+
+class UpdateConstraintRequest(BaseModel):
+    # updated constraints, it will replace the existing constraints
+    updated_constraints: Optional[List[TableConstraints]]
+
+
+class UpdateConstraintResponse(BaseModel):
+    updated_tables: Optional[List[TableName]]
+
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -265,6 +281,13 @@ class DatabaseImpl:
     ) -> UpdateColumnDescriptionResponse:
         return self.http_client.common_fetch(
             UPDATE_COLUMN_DESCRIPTION_ENDPOINT, params.__dict__, UpdateColumnDescriptionResponse
+        )
+
+    def update_constraint(
+        self, params: UpdateConstraintRequest
+    ) -> UpdateConstraintResponse:
+        return self.http_client.common_fetch(
+            UPDATE_CONSTRAINT_ENDPOINT, params.__dict__, UpdateConstraintResponse
         )
 
 Database = DatabaseImpl(WaiiHttpClient.get_instance())
