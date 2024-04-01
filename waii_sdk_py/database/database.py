@@ -41,6 +41,7 @@ class ColumnDefinition(BaseModel):
 
 class ConstraintType(str, Enum):
     primary = "primary"
+    foreign = "foreign"
 
 
 class ConstraintDetectorType(str, Enum):
