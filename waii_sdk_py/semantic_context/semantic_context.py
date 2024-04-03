@@ -33,9 +33,17 @@ class ModifySemanticContextRequest(BaseModel):
 
 class GetSemanticContextRequestFilter(BaseModel):
     # do we want to filter "always_include" rules or not?
+    # - None: both
     # - True: only return rules with always_include=True
     # - False: only return rules with always_include=False
-    always_include: bool = True
+    always_include: Optional[bool] = None
+
+    # Filter by labels, scope, statement.
+    # They are connected by "AND", and we use substring match for them
+    # Match is case insensitive
+    labels: Optional[List[str]]  # labels to filter the rules
+    scope: Optional[str]  # scope to filter the rules
+    statement: Optional[str]  # statement to filter the rules
 
 class ModifySemanticContextResponse(BaseModel):
     updated: Optional[List[SemanticStatement]] = None
