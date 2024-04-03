@@ -481,6 +481,7 @@ Query.like(params: LikeQueryRequest) -> LikeQueryResponse
     ask: Optional[str]
     query: Optional[str]
     liked: Optional[bool] = True
+    rewrite_question: Optional[bool] = True
 ```
 
 You can specify a query is liked or unliked by set `liked` to True/False
@@ -488,6 +489,9 @@ You can specify a query is liked or unliked by set `liked` to True/False
 You can either like an generated query by specifying `query_uuid` (the `uuid` from `GeneratedQuery, not the id from run query).
 
 Or, you can specify `ask` and `query` to like a query.
+
+Important: `rewrite_question` is optional, if you set it to True (default), the system will rewrite the ask based on query and the ask. Why we do this because sometimes the ask itself is wrong, ambiguous, etc. and we want to make sure the ask is clear. 
+However, sometimes you may want to keep the original ask, you can set it to False.
 
 Examples: 
 
@@ -503,6 +507,7 @@ WAII.Query.like(LikeQueryRequest(ask='How many tables are there?',
 ```
 
 You will get an exception if the call is failed.
+
 
 ### Describe
 
