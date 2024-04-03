@@ -142,8 +142,16 @@ class GetQueryResultResponse(BaseModel):
 
 
 class LikeQueryRequest(CommonRequest):
-    query_uuid: str
+    # you need to specify either query_uuid or ask/query
+    query_uuid: Optional[str]
+    ask: Optional[str]
+    query: Optional[str]
+
     liked: bool
+
+    # do we want to rewrite the question before storing it? by default, it is True. If it is False, then we will store
+    # the ask as-is
+    rewrite_question: Optional[bool] = True
 
 
 class LikeQueryResponse(BaseModel):

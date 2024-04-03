@@ -217,14 +217,78 @@ Description of table looks like:
 The CUSTOMER_ADDRESS table contains information about the addresses of customers. It includes details such as address ID, city, country, ... This table can be used to retrieve customer addresses for various purposes, such as shipping, billing, or demographic analysis.
 ```
 
-### Update Table and Schema Descriptions
+### Update Table, Schema Descriptions
 
-You can use the following two methods to update the descriptions of tables and schemas (if you are not satisfied with the auto generated descriptions)
+You can use the following methods to update the descriptions of tables and schemas (if you are not satisfied with the auto generated descriptions)
 
 ```python
 Database.update_table_description(params: UpdateTableDescriptionRequest) -> UpdateTableDescriptionResponse
 Database.update_schema_description(params: UpdateSchemaDescriptionRequest) -> UpdateSchemaDescriptionResponse
 ```
+
+Examples:
+
+```python
+response = WAII.Database.update_table_description(UpdateTableDescriptionRequest(
+    table_descriptions=[
+        TableDescription(
+            table_name=TableName(database_name='WAII', schema_name='PUBLIC', table_name='CUSTOMER_ADDRESS'),
+            description='The CUSTOMER_ADDRESS table contains information about the addresses of customers. It includes details such as address ID, city, country, ... This table can be used to retrieve customer addresses for various purposes, such as shipping, billing, or demographic analysis.'
+        )
+    ]
+))
+```
+
+### Update Column Description
+
+API:
+
+```python
+Database.update_column_description(params: UpdateColumnDescriptionRequest) -> UpdateColumnDescriptionResponse
+```
+
+Example:
+
+```python
+# update col description 
+col_desc = [
+    # you can add multiple tables in one request
+    TableToColumnDescription(
+        # table name, you need to include schema_name, database_name, and they are case sensitive
+        table_name=TableName(database_name='WAII', schema_name='BATTLE_DEATH', table_name='BATTLE'),
+      
+        # a list of column descriptions, you can add multiple columns in one request
+        column_descriptions=[
+            ColumnDescription(column_name='id', description='manual updated id'),
+            ColumnDescription(column_name='battle_deaths', description='Number of deaths in the battle'),
+            ColumnDescription(column_name='name', description='manual updated name'),
+            ColumnDescription(column_name='description', description='Description of the battle')
+        ]
+    )
+  
+    # more tables if you want
+]
+
+response = WAII.Database.update_column_description(UpdateColumnDescriptionRequest(
+    col_descriptions=col_desc
+))
+
+print(f"Successfully updated table to columns: {response.updated_table_to_cols}")
+```
+
+The response will be `UpdateColumnDescriptionResponse` object, which includes
+
+```
+class UpdatedTableToCol(BaseModel):
+    table_name: TableName
+    column_names: Optional[List[str]]
+
+
+class UpdateColumnDescriptionResponse(BaseModel):
+    updated_table_to_cols: Optional[List[UpdatedTableToCol]]
+```
+
+You should check the `updated_table_to_cols` to see which tables/columns are updated successfully. We will ignore the columns that are not found in the database.
 
 ## Query
 
@@ -411,7 +475,34 @@ Cancel a running query by providing `query_id`, it is a no-op if the query is co
 Query.like(params: LikeQueryRequest) -> LikeQueryResponse
 ```
 
-This method marks a query (by specifying `uuid` for generated query, not id from run query) as "liked", which you can fetch it from history.
+`LikeQueryRequest` has the following fields:
+```
+    query_uuid: Optional[str]
+    ask: Optional[str]
+    query: Optional[str]
+    liked: Optional[bool] = True
+```
+
+You can specify a query is liked or unliked by set `liked` to True/False
+
+You can either like an generated query by specifying `query_uuid` (the `uuid` from `GeneratedQuery, not the id from run query).
+
+Or, you can specify `ask` and `query` to like a query.
+
+Examples: 
+
+Like a generated query
+```python
+WAII.Query.like(LikeQueryRequest(query_uuid='01afbd1e-0001-d31e-0022-ba8700a8209e', liked=True))
+```
+
+Like a query by specifying `ask` and `query`
+```python
+WAII.Query.like(LikeQueryRequest(ask='How many tables are there?', 
+                                 query='SELECT COUNT(DISTINCT table_name) FROM waii.information_schema.tables', liked=True))
+```
+
+You will get an exception if the call is failed.
 
 ### Describe
 
@@ -618,6 +709,18 @@ This method fetches the current semantic context.
 
 Example: 
 
+Fetch all statements (with pagination)
+```python
+# first get how many statements are there
+s = WAII.SemanticContext.get_semantic_context(GetSemanticContextRequest(filter=GetSemanticContextRequestFilter(), limit=0))
+
+# then iterate through the statement using pagination (100 per page)
+for i in range(0, s.available_statements, 100):
+    s = WAII.SemanticContext.get_semantic_context(GetSemanticContextRequest(filter=GetSemanticContextRequestFilter(), limit=100, offset=i))
+    print(f"Retrieved {len(s.semantic_context)} statements, page {i//100+1}, remaining pages {s.available_statements//100 - i//100}")
+```
+
+Fetch always_include=False statements only
 ```python
 from waii_sdk_py.semantic_context import GetSemanticContextRequest, GetSemanticContextRequestFilter
 
@@ -626,6 +729,9 @@ s = WAII.SemanticContext.get_semantic_context(GetSemanticContextRequest(
     search_text='log4j CVE', 
     limit=5)
 )
+
+# print all statements
+print(s.semantic_context)
 ```
 
 The above example searches the semantic context with the search text `log4j CVE`, and limit the result to 5. If you don't specify search_text, it will apply to all statements. If you don't specify limit, it will return first 1000 statements.
