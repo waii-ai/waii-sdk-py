@@ -77,6 +77,20 @@ class Constraint(BaseModel):
     cols: Optional[List[str]]
     constraint_type: Optional[ConstraintType]
 
+    # for foreign key, it is the table and columns that the source table and cols
+    src_table: Optional[TableName]  # table name
+    src_cols: Optional[List[str]]  # source table columns
+
+    # comment for the constraint
+    comment: Optional[str]
+
+    def __repr__(self):
+        if self.constraint_type == ConstraintType.primary:
+            return f"PK {self.table} ({self.cols} [{self.source.name}]"
+        else:
+            return f"FK {self.src_table} ({self.src_cols}) -> {self.table} ({self.cols}) [{self.source.name}]"
+
+
 
 class TableDefinition(BaseModel):
     name: TableName
