@@ -390,6 +390,7 @@ class QueryImpl:
                 if not retried and verbose:
                     print("=== generated code ===")
                     print(p)
+                return p
 
     def generate_question(
         self, params: GenerateQuestionRequest
