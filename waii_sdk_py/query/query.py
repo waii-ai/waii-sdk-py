@@ -85,6 +85,12 @@ class LLMUsageStatistics(BaseModel):
     token_total: Optional[int]
 
 
+class Query(BaseModel):
+    uuid: str
+    ask: str
+    query: str
+
+
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
     liked: Optional[bool] = None
@@ -97,7 +103,7 @@ class GeneratedQuery(BaseModel):
     is_new: Optional[bool] = None
     timestamp_ms: Optional[int] = None
     llm_usage_stats: Optional[LLMUsageStatistics] = None
-
+    debug_info: Optional[Dict[str, Any]] = {}
     http_client: Optional[Any] = Field(default=None, exclude=True)
 
     def run(self):
