@@ -4,7 +4,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 (module.exports = {
     title: 'Waii Pythont SDK',
     tagline: 'World most accurate text-2-sql API',
-    url: 'https://docs.waii.ai',
+    url: 'https://python.docs.waii.ai',
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',

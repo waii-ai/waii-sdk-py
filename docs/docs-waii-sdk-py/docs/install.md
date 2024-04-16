@@ -16,6 +16,6 @@ pip install waii-sdk-py
 >>> from waii_sdk_py.query import *
 >>> WAII.initialize(api_key="<your-api-key>")
 ```
-You can get your API key from the `tweakit.waii.ai` (You need to register and get access from [waii.ai](waii.ai) first).
+You can get your API key from the `tweakit.waii.ai` (You need to register and get access from [waii.ai](https://waii.ai) first).
 
 ![img.png](img.png)
