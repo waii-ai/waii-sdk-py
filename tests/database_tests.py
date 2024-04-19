@@ -2,7 +2,8 @@ import json
 import os
 import unittest
 from waii_sdk_py import WAII
-from waii_sdk_py.database import ModifyDBConnectionRequest, DBConnection
+from waii_sdk_py.database import ModifyDBConnectionRequest, DBConnection, TableDefinition, TableName, ColumnDefinition, \
+    TableReference
 
 
 class TestDatabase(unittest.TestCase):
@@ -98,6 +99,45 @@ class TestDatabase(unittest.TestCase):
         # Call the function
         result = WAII.Database.get_catalogs()
         assert len(result.catalogs) > 0
+
+    def test_get_refs_from_api(self):
+        result = WAII.Database.get_catalogs()
+        catalog_def = result.catalogs[0]
+        schemas = catalog_def.schemas
+        refs = []
+        for schema in schemas:
+            if schema.name.schema_name == "INFORMATION_SCHEMA":
+                continue
+            for table in schema.tables:
+                refs.extend(table.refs)
+
+    def test_get_refs(self):
+        table_definition = TableDefinition(
+            name=TableName(database_name="db1", schema_name="schema1", table_name="table1"),
+            columns=[
+                ColumnDefinition(
+                    name="col1",
+                    type="int"
+                ),
+                ColumnDefinition(
+                    name="col2",
+                    type="int"
+                ),
+                ColumnDefinition(
+                    name="col3",
+                    type="int"
+                ),
+            ],
+            refs=[
+                TableReference(
+                    src_table=TableName(database_name="db1", schema_name="schema1", table_name="table1"),
+                    src_cols=["col3"],
+                    ref_table=TableName(database_name="db1", schema_name="schema1", table_name="table1"),
+                    ref_cols=["col3"]
+                ),
+            ]
+        )
+        print(table_definition.refs)
 
     def test_initial_connect(self):
         # because now we select first connection by default

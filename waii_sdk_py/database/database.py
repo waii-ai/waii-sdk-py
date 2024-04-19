@@ -1,5 +1,7 @@
+import warnings
+
 from waii_sdk_py.waii_http_client import WaiiHttpClient
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 import re
 from typing import Optional, List, Dict, Any, Union
 from urllib.parse import urlparse, parse_qs
@@ -83,11 +85,33 @@ class TableDefinition(BaseModel):
     columns: Optional[List[ColumnDefinition]]
     comment: Optional[str]
     last_altered_time: Optional[int]
-    refs: Optional[List[TableReference]]
-    refs: Optional[List[TableReference]]
+    _refs: Optional[List[TableReference]] = PrivateAttr(default=[])
+    constraints: Optional[List[Constraint]]
     inferred_refs: Optional[List[TableReference]]
     inferred_constraints: Optional[List[Constraint]]
     description: Optional[str]
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._refs = data.get('refs', None)
+
+    @property
+    def refs(self):
+        warnings.warn(
+            "The 'refs' attribute is deprecated and will be removed in a future release. Use 'constraints' instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self._refs
+
+    @refs.setter
+    def refs(self, value):
+        warnings.warn(
+            "The 'refs' attribute is deprecated and will be removed in a future release. Use 'constraints' instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        self._refs = value
 
 
 class SchemaDefinition(BaseModel):
