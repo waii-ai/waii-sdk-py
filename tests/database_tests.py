@@ -146,7 +146,7 @@ class TestDatabase(unittest.TestCase):
                 ),
             ],
         )
-        print(table_definition.refs)
+        assert len(table_definition.refs) > 0
 
     def test_initial_connect(self):
         # because now we select first connection by default
