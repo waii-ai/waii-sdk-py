@@ -93,14 +93,14 @@ class TableDefinition(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-        self._refs = data.get('refs', None)
+        self._refs = data.get("refs", None)
 
     @property
     def refs(self):
         warnings.warn(
             "The 'refs' attribute is deprecated and will be removed in a future release. Use 'constraints' instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self._refs
 
@@ -109,7 +109,7 @@ class TableDefinition(BaseModel):
         warnings.warn(
             "The 'refs' attribute is deprecated and will be removed in a future release. Use 'constraints' instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         self._refs = value
 
@@ -305,7 +305,9 @@ class DatabaseImpl:
         self, params: UpdateColumnDescriptionRequest
     ) -> UpdateColumnDescriptionResponse:
         return self.http_client.common_fetch(
-            UPDATE_COLUMN_DESCRIPTION_ENDPOINT, params.__dict__, UpdateColumnDescriptionResponse
+            UPDATE_COLUMN_DESCRIPTION_ENDPOINT,
+            params.__dict__,
+            UpdateColumnDescriptionResponse,
         )
 
     def update_constraint(
@@ -314,5 +316,6 @@ class DatabaseImpl:
         return self.http_client.common_fetch(
             UPDATE_CONSTRAINT_ENDPOINT, params.__dict__, UpdateConstraintResponse
         )
+
 
 Database = DatabaseImpl(WaiiHttpClient.get_instance())
