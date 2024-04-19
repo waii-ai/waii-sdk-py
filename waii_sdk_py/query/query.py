@@ -25,7 +25,7 @@ PERF_ENDPOINT = "get-query-performance"
 TRANSCODE_ENDPOINT = "transcode-query"
 PLOT_ENDPOINT = "python-plot"
 GENERATE_QUESTION_ENDPOINT = "generate-questions"
-
+GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
 
 class Tweak(BaseModel):
     sql: Optional[str] = None
@@ -89,6 +89,7 @@ class Query(BaseModel):
     uuid: str
     ask: str
     query: str
+    detailed_steps: Optional[List[str]]
 
 
 class GeneratedQuery(BaseModel):
@@ -219,6 +220,12 @@ class GeneratedQuestion(BaseModel):
 
 class GenerateQuestionResponse(BaseModel):
     questions: Optional[List[GeneratedQuestion]]
+
+
+class SimilarQueryResponse(BaseModel):
+    qid: Optional[int]
+    equivalent: Optional[bool]
+    query: Optional[Query]
 
 
 def show_progress(func):
@@ -389,6 +396,13 @@ class QueryImpl:
     ) -> GenerateQuestionResponse:
         return self.http_client.common_fetch(
             GENERATE_QUESTION_ENDPOINT, params.__dict__, GenerateQuestionResponse
+        )
+
+    def get_similar_query(
+        self, params: QueryGenerationRequest
+    ) -> SimilarQueryResponse:
+        return self.http_client.common_fetch(
+            GET_SIMILAR_QUERY_ENDPOINT, params.__dict__, SimilarQueryResponse
         )
 
 Query = QueryImpl(WaiiHttpClient.get_instance())
