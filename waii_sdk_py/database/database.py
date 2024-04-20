@@ -189,8 +189,11 @@ class SearchContext(BaseModel):
 
 
 class GetCatalogRequest(BaseModel):
-    pass
+    search_context: Optional[List[SearchContext]]
 
+    # ask is to perform semantic search, if it is provided, then we will use it to search the table definition
+    # we will try to find the same tables which can answer the ask
+    ask: Optional[str]
 
 class GetDBConnectionRequest(BaseModel):
     pass

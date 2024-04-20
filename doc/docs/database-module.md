@@ -110,11 +110,27 @@ Database.get_catalogs(params: GetCatalogRequest = GetCatalogRequest()) -> GetCat
 
 This method retrieves the list of available catalogs. It includes a hierarchical list of schemas and tables.
 
+Request fields:
+- `ask`: You can do semantic search by providing a question here. For example, "How many cars sold in 2021?". Waii will try to filter the tables/cols based on the question.
+  - Notes: It is possible that the question cannot be answered by the database, in that case, you will get an empty response.
+- `search_context`: List[SearchContext] - You can provide a list of search contexts to filter the tables/cols. For example, you can provide a list of table names, column names, etc. Waii will try to filter the tables/cols based on the search contexts.
+
 You can run 
 ```python
 >>> WAII.Database.get_catalogs()
 ```
-To get catalogs, response fields:
+To get all catalogs. 
+
+Or you can run
+```python
+tables = WAII.Database.get_catalogs(
+    GetCatalogRequest(ask=
+                      'give me tables which i can use to answer "how many ssh_keys do i have"'))
+```
+
+To do a semantic search.
+
+Response fields:
 
 **CatalogDefinition:**
 - `name`: Name of the catalog (database)
