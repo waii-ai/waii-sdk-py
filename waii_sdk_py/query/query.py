@@ -357,8 +357,8 @@ class QueryImpl:
             p = p[:-3]
             p = p.strip()
 
+        retried = False
         if automatically_exec:
-            retried = False
             try:
                 exec(p)
             except Exception as e:
@@ -386,11 +386,11 @@ class QueryImpl:
                         print(p)
                     traceback.print_exc()
                     raise e
-            finally:
-                if not retried and verbose:
-                    print("=== generated code ===")
-                    print(p)
-                return p
+
+        if not retried and verbose:
+            print("=== generated code ===")
+            print(p)
+        return p
 
     def generate_question(
         self, params: GenerateQuestionRequest
