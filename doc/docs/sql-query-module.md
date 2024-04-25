@@ -4,8 +4,12 @@ title: SQL Query
 ---
 
 
-The `Query` module contains methods related to SQL query handling. 
+The `Query` module contains methods related to SQL query handling.
+
 **Important:** You need to activate the database connection first before using the methods in this module. Otherwise you may trying to generate query from a wrong database.
+```python
+WAII.Database.activate_connection("snowflake://...&warehouse=COMPUTE_WH")
+```
 
 Here are some of its methods:
 
@@ -81,7 +85,8 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
 - `confidence_score`: returns logprob confidence score based on the tokens from generated queries.
 - `llm_usage_stats`: token consumption during the query generation.
   - `token_total`: total token usage (prompt + completed), this doesn't include cached tokens. So if you see the total_total = 0, the query is fetched from the cache.
-- `elapsed_time_ms`: total elapsed time (in milli-seconds) between RPC request/response.
+- `is_new`: whether the query is new or tweak
+- `timestamp_ms`: total elapsed time (in milli-seconds) between RPC request/response.
 
 ### Generate Question
 
@@ -99,7 +104,7 @@ Parameter fields:
 - `complexity`: Complexity of the questions you want to generate. Default is `GeneratedQuestionComplexity.hard`. You can choose `easy`, `medium`, `hard`.
 
 Output `GenerateQuestionResponse`, fields:
-- `questions`: List of generated questions. For each question it has `question` (string content of the question), and `complexity` (complexity of the question)
+- `questions`: List of generated questions. For each question it has `question` (string content of the question), `complexity` (complexity of the question) and tables (tables used in the question)
 
 
 ### Transcode
@@ -116,7 +121,7 @@ Parameter fields:
 - `ask`: The intructions you want to ask Waii to add when transcode the query, such as `place tables under schema1`. It is optional.
 
 
-#### `Query.transcode` returns `GeneratedQuery` object
+`Query.transcode` returns `GeneratedQuery` object
 
 ### Run a query (sync)
 
@@ -198,7 +203,7 @@ Query.like(params: LikeQueryRequest) -> LikeQueryResponse
 
 You can specify a query is liked or unliked by set `liked` to True/False
 
-You can either like an generated query by specifying `query_uuid` (the `uuid` from `GeneratedQuery, not the id from run query).
+You can either like an generated query by specifying `query_uuid` (the `uuid` from `GeneratedQuery`, not the id from run query).
 
 Or, you can specify `ask` and `query` to like a query.
 
@@ -234,6 +239,7 @@ This method fetches a description of a SQL query.
 Parameters:
 - `query`: The SQL query you want to describe
 - `search_context`: When describe the query, you may want to restrict which table/schema you want to use as context. Normally it is not required, and you should skip it.
+- `current_schema`: current schema of the query
 
 Output:
 - `summary`: A summary of the query

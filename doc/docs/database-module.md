@@ -88,7 +88,7 @@ Response fields:
 `connectors`: List of `DBConnection` objects (No password field)
 `connector_status`: Status of the connection, are they being indexed or not. 
 
-#### Activate Connection
+### Activate Connection
 
 ```python
 Database.activate_connection(key: str)
@@ -140,18 +140,18 @@ Response fields:
       - `summary`: generated description of the schema 
       - `common_questions`: list of generated common questions
       - `common_tables`: list of common tables used in the schema
-      - `tables`: all tables belong to the schema
-        - `name`: Name of the table
-        - `columns`: List of columns 
-          - `name`: Name of the column 
-          - `type`: Type of the column
-          - `description`: Auto generated description of the column
-        - `comment`: Comment of the table (fetched from underlying database) 
-        - `last_altered_time`: Last altered time of the table 
-        - `refs`: List of referential constraints
-        - `inferred_refs`: List of auto-inferred referential constraints
-        - `inferred_constraints`: List of auto-inferred constraints (pks, etc.)
-        - `description`: Auto generated table description
+    - `tables`: all tables belong to the schema
+      - `name`: Name of the table
+      - `columns`: List of columns
+        - `name`: Name of the column
+        - `type`: Type of the column
+        - `description`: Auto generated description of the column
+      - `comment`: Comment of the table (fetched from underlying database)
+      - `last_altered_time`: Last altered time of the table
+      - `refs`: List of referential constraints
+      - `inferred_refs`: List of auto-inferred referential constraints
+      - `inferred_constraints`: List of auto-inferred constraints (pks, etc.)
+      - `description`: Auto generated table description
 
 Waii automatically generate table/schema descriptions when you add them, you can fetch them by using `description` field of table and schema from `get_catalogs` method.
 
