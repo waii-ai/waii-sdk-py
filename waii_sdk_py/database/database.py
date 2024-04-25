@@ -107,7 +107,16 @@ class TableDefinition(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-        self._refs = data.get("refs", None)
+        refs_data = data.get("refs",None)
+        refs = []
+        if refs_data:
+            for ref in refs_data:
+                if type(ref) == TableReference:
+                    refs.append(ref)
+                else:
+                    refs.append(TableReference(**ref))
+
+        self._refs = refs
 
     @property
     def refs(self):
@@ -126,7 +135,6 @@ class TableDefinition(BaseModel):
             stacklevel=2,
         )
         self._refs = value
-
 
 class SchemaDefinition(BaseModel):
     name: SchemaName

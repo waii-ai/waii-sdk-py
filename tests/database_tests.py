@@ -86,6 +86,12 @@ class TestDatabase(unittest.TestCase):
         # list databases
         result = WAII.Database.get_catalogs()
         assert len(result.catalogs) > 0
+        for catalog in result.catalogs:
+            for schema in catalog.schemas:
+                for table in schema.tables:
+                    if len(table.refs)>0:
+                        assert type(table.refs[0]) == TableReference
+
 
     def test_get_connections(self):
         # Call the function
@@ -147,6 +153,18 @@ class TestDatabase(unittest.TestCase):
             ],
         )
         assert len(table_definition.refs) > 0
+        assert table_definition.refs[0] ==  TableReference(
+                    src_table=TableName(
+                        database_name="db1", schema_name="schema1", table_name="table1"
+                    ),
+                    src_cols=["col3"],
+                    ref_table=TableName(
+                        database_name="db1", schema_name="schema1", table_name="table1"
+                    ),
+                    ref_cols=["col3"],
+                )
+
+
 
     def test_initial_connect(self):
         # because now we select first connection by default
@@ -160,6 +178,21 @@ class TestDatabase(unittest.TestCase):
         with self.assertRaises(Exception):
             result = WAII.Database.get_catalogs()
 
+    def test_tabl_ref_deserialize(self):
+        table_dict = {'name': TableName(table_name='table1', schema_name='schema1', database_name='db1'), 'columns': [ColumnDefinition(name='col1', type='int', comment=None, description=None, sample_values=None), ColumnDefinition(name='col2', type='int', comment=None, description=None, sample_values=None), ColumnDefinition(name='col3', type='int', comment=None, description=None, sample_values=None)], 'comment': None, 'last_altered_time': None, 'constraints': None, 'inferred_refs': None, 'inferred_constraints': None, 'description': None,
+'refs': [{'ref_cols': ['col3'], 'ref_table': {'database_name': 'db1', 'schema_name': 'schema1', 'table_name': 'table1'}, 'source': None, 'src_cols': ['col3'], 'src_table': {'database_name': 'db1', 'schema_name': 'schema1', 'table_name': 'table1'}}]
+}
+        ref_dict = {'src_table': {'table_name': 'MATCHES', 'schema_name': 'WTA_1', 'database_name': 'SPIDER_DEV'}, 'src_cols': ['WINNER_ID'],
+                    'ref_table': {'table_name': 'PLAYERS', 'schema_name': 'WTA_1', 'database_name': 'SPIDER_DEV'}, 'ref_cols': ['PLAYER_ID'], 'source': 'database', 'score': None}
+        table_def = TableDefinition(**table_dict)
+        assert type(table_def.refs[0]) == TableReference
+        assert table_def.refs[0] ==  TableReference(src_table=TableName(database_name="db1", schema_name="schema1", table_name="table1"),
+                    src_cols=["col3"],
+                    ref_table=TableName(
+                        database_name="db1", schema_name="schema1", table_name="table1"
+                    ),
+                    ref_cols=["col3"],
+                )
 
 # NEED TO ADD FOR UPDATE TABLE AND UPDATE SCHEMA
 if __name__ == "__main__":
