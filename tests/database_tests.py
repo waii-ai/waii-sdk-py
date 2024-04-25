@@ -184,18 +184,15 @@ class TestDatabase(unittest.TestCase):
 }
         ref_dict = {'src_table': {'table_name': 'MATCHES', 'schema_name': 'WTA_1', 'database_name': 'SPIDER_DEV'}, 'src_cols': ['WINNER_ID'],
                     'ref_table': {'table_name': 'PLAYERS', 'schema_name': 'WTA_1', 'database_name': 'SPIDER_DEV'}, 'ref_cols': ['PLAYER_ID'], 'source': 'database', 'score': None}
-        table_ref = TableDefinition(**table_dict)
-        assert type(table_ref.refs[0]) == TableReference
-        assert table_ref.refs[0] ==  TableReference(src_table=TableName(database_name="db1", schema_name="schema1", table_name="table1"),
+        table_def = TableDefinition(**table_dict)
+        assert type(table_def.refs[0]) == TableReference
+        assert table_def.refs[0] ==  TableReference(src_table=TableName(database_name="db1", schema_name="schema1", table_name="table1"),
                     src_cols=["col3"],
                     ref_table=TableName(
                         database_name="db1", schema_name="schema1", table_name="table1"
                     ),
                     ref_cols=["col3"],
                 )
-
-
-
 
 # NEED TO ADD FOR UPDATE TABLE AND UPDATE SCHEMA
 if __name__ == "__main__":
