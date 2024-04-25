@@ -136,9 +136,6 @@ class TableDefinition(BaseModel):
         )
         self._refs = value
 
-
-
-
 class SchemaDefinition(BaseModel):
     name: SchemaName
     tables: Optional[List[TableDefinition]]
