@@ -35,27 +35,31 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 		alt: 'Waii Logo',
 		src: 'img/logo.png',
             },
-            items: [
-		{
-		    type: 'dropdown',
-		    label: 'API Language',
-		    position: 'right',
-		    items: [
-			{
-			    label: 'TypeScript/JavaScript',
-			    to: 'https://doc.waii.ai/js/',
-			},
-			{
-			    label: 'Python',
-			    to: 'https://doc.waii.ai/python/',
-			},
-			{
-			    label: 'CLI',
-			    to: 'https://doc.waii.ai/cli/', // URL to the REST docs
-			},
-		    ],
-		},
-            ],
+	    items: [
+					{
+						type: 'dropdown',
+						label: 'Select Documentation',
+						position: 'right',
+						items: [
+							{
+								label: 'TypeScript/JavaScript SDK',
+								to: 'https://doc.waii.ai/js/',
+							},
+							{
+								label: 'Python SDK',
+								to: 'https://doc.waii.ai/python/',
+							},
+							{
+								label: 'CLI',
+								to: 'https://doc.waii.ai/cli/',
+							},
+							{
+								label: 'Deployment & Architecture',
+								to: 'https://doc.waii.ai/deployment/',
+							}
+						],
+					},
+	    ],
 	},
 	footer: {
             style: 'dark',
