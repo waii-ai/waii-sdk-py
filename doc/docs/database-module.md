@@ -244,3 +244,29 @@ class UpdateColumnDescriptionResponse(BaseModel):
 ```
 
 You should check the `updated_table_to_cols` to see which tables/columns are updated successfully. We will ignore the columns that are not found in the database.
+
+### Add/Update Table definitions
+
+You can use the following method to update table definitions
+
+```python
+Database.update_table_definition(params: UpdateTableDefinitionRequest) -> UpdateTableDefinitionResponse
+```
+
+Examples:
+
+```python
+
+table_definition =  TableDefinition(
+            name=TableName(
+                database_name="db1", schema_name="schema2", table_name="table2"
+            ),
+            columns=[
+                ColumnDefinition(name="col1", type="int"),
+                ColumnDefinition(name="col2", type="int"),
+                ColumnDefinition(name="col3", type="int"),
+                ]
+            )
+update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition])
+result = WAII.Database.update_table_definition(update_table_req)
+```

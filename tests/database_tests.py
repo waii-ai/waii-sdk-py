@@ -8,7 +8,7 @@ from waii_sdk_py.database import (
     TableDefinition,
     TableName,
     ColumnDefinition,
-    TableReference,
+    TableReference, UpdateTableDefinitionRequest,
 )
 
 
@@ -221,6 +221,22 @@ class TestDatabase(unittest.TestCase):
                 )
 
     def test_update_table_definitions(self):
+
+        table_definition =  TableDefinition(
+            name=TableName(
+                database_name="db1", schema_name="schema2", table_name="table2"
+            ),
+            columns=[
+                ColumnDefinition(name="col1", type="int"),
+                ColumnDefinition(name="col2", type="int"),
+                ColumnDefinition(name="col3", type="int"),
+                ]
+            )
+        update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition])
+        result = WAII.Database.update_table_definition(update_table_req)
+        print(result)
+
+
 
 
 # NEED TO ADD FOR UPDATE TABLE AND UPDATE SCHEMA
