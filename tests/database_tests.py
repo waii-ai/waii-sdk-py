@@ -8,7 +8,8 @@ from waii_sdk_py.database import (
     TableDefinition,
     TableName,
     ColumnDefinition,
-    TableReference, UpdateTableDefinitionRequest,
+    TableReference,
+    UpdateTableDefinitionRequest,
 )
 
 
@@ -44,9 +45,8 @@ class TestDatabase(unittest.TestCase):
             db_type="snowflake",
             database="push",
             host="push_sdk_test",
-            push=True
+            push=True,
         )
-
 
     def setUp(self):
         WAII.initialize(url="http://localhost:9859/api/")
@@ -100,16 +100,16 @@ class TestDatabase(unittest.TestCase):
         for catalog in result.catalogs:
             for schema in catalog.schemas:
                 for table in schema.tables:
-                    if len(table.refs)>0:
+                    if len(table.refs) > 0:
                         assert type(table.refs[0]) == TableReference
 
     def test_modify_push_connection(self):
         result = WAII.Database.get_connections().connectors
         for conn in result:
             if (
-                    conn.db_type == self.push_db_conn.db_type
-                    and conn.host == self.push_db_conn.host
-                    and conn.push
+                conn.db_type == self.push_db_conn.db_type
+                and conn.host == self.push_db_conn.host
+                and conn.push
             ):
                 result = WAII.Database.modify_connections(
                     ModifyDBConnectionRequest(removed=[conn.key])
@@ -181,16 +181,16 @@ class TestDatabase(unittest.TestCase):
             ],
         )
         assert len(table_definition.refs) > 0
-        assert table_definition.refs[0] ==  TableReference(
-                    src_table=TableName(
-                        database_name="db1", schema_name="schema1", table_name="table1"
-                    ),
-                    src_cols=["col3"],
-                    ref_table=TableName(
-                        database_name="db1", schema_name="schema1", table_name="table1"
-                    ),
-                    ref_cols=["col3"],
-                )
+        assert table_definition.refs[0] == TableReference(
+            src_table=TableName(
+                database_name="db1", schema_name="schema1", table_name="table1"
+            ),
+            src_cols=["col3"],
+            ref_table=TableName(
+                database_name="db1", schema_name="schema1", table_name="table1"
+            ),
+            ref_cols=["col3"],
+        )
 
     def test_initial_connect(self):
         # because now we select first connection by default
@@ -205,24 +205,89 @@ class TestDatabase(unittest.TestCase):
             result = WAII.Database.get_catalogs()
 
     def test_tabl_ref_deserialize(self):
-        table_dict = {'name': TableName(table_name='table1', schema_name='schema1', database_name='db1'), 'columns': [ColumnDefinition(name='col1', type='int', comment=None, description=None, sample_values=None), ColumnDefinition(name='col2', type='int', comment=None, description=None, sample_values=None), ColumnDefinition(name='col3', type='int', comment=None, description=None, sample_values=None)], 'comment': None, 'last_altered_time': None, 'constraints': None, 'inferred_refs': None, 'inferred_constraints': None, 'description': None,
-'refs': [{'ref_cols': ['col3'], 'ref_table': {'database_name': 'db1', 'schema_name': 'schema1', 'table_name': 'table1'}, 'source': None, 'src_cols': ['col3'], 'src_table': {'database_name': 'db1', 'schema_name': 'schema1', 'table_name': 'table1'}}]
-}
-        ref_dict = {'src_table': {'table_name': 'MATCHES', 'schema_name': 'WTA_1', 'database_name': 'SPIDER_DEV'}, 'src_cols': ['WINNER_ID'],
-                    'ref_table': {'table_name': 'PLAYERS', 'schema_name': 'WTA_1', 'database_name': 'SPIDER_DEV'}, 'ref_cols': ['PLAYER_ID'], 'source': 'database', 'score': None}
+        table_dict = {
+            "name": TableName(
+                table_name="table1", schema_name="schema1", database_name="db1"
+            ),
+            "columns": [
+                ColumnDefinition(
+                    name="col1",
+                    type="int",
+                    comment=None,
+                    description=None,
+                    sample_values=None,
+                ),
+                ColumnDefinition(
+                    name="col2",
+                    type="int",
+                    comment=None,
+                    description=None,
+                    sample_values=None,
+                ),
+                ColumnDefinition(
+                    name="col3",
+                    type="int",
+                    comment=None,
+                    description=None,
+                    sample_values=None,
+                ),
+            ],
+            "comment": None,
+            "last_altered_time": None,
+            "constraints": None,
+            "inferred_refs": None,
+            "inferred_constraints": None,
+            "description": None,
+            "refs": [
+                {
+                    "ref_cols": ["col3"],
+                    "ref_table": {
+                        "database_name": "db1",
+                        "schema_name": "schema1",
+                        "table_name": "table1",
+                    },
+                    "source": None,
+                    "src_cols": ["col3"],
+                    "src_table": {
+                        "database_name": "db1",
+                        "schema_name": "schema1",
+                        "table_name": "table1",
+                    },
+                }
+            ],
+        }
+        ref_dict = {
+            "src_table": {
+                "table_name": "MATCHES",
+                "schema_name": "WTA_1",
+                "database_name": "SPIDER_DEV",
+            },
+            "src_cols": ["WINNER_ID"],
+            "ref_table": {
+                "table_name": "PLAYERS",
+                "schema_name": "WTA_1",
+                "database_name": "SPIDER_DEV",
+            },
+            "ref_cols": ["PLAYER_ID"],
+            "source": "database",
+            "score": None,
+        }
         table_def = TableDefinition(**table_dict)
         assert type(table_def.refs[0]) == TableReference
-        assert table_def.refs[0] ==  TableReference(src_table=TableName(database_name="db1", schema_name="schema1", table_name="table1"),
-                    src_cols=["col3"],
-                    ref_table=TableName(
-                        database_name="db1", schema_name="schema1", table_name="table1"
-                    ),
-                    ref_cols=["col3"],
-                )
+        assert table_def.refs[0] == TableReference(
+            src_table=TableName(
+                database_name="db1", schema_name="schema1", table_name="table1"
+            ),
+            src_cols=["col3"],
+            ref_table=TableName(
+                database_name="db1", schema_name="schema1", table_name="table1"
+            ),
+            ref_cols=["col3"],
+        )
 
     def test_update_table_definitions(self):
 
-        table_definition =  TableDefinition(
+        table_definition = TableDefinition(
             name=TableName(
                 database_name="db1", schema_name="schema2", table_name="table2"
             ),
@@ -230,22 +295,22 @@ class TestDatabase(unittest.TestCase):
                 ColumnDefinition(name="col1", type="int"),
                 ColumnDefinition(name="col2", type="int"),
                 ColumnDefinition(name="col3", type="int"),
-                ]
-            )
-        update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition])
+            ],
+        )
+        update_table_req = UpdateTableDefinitionRequest(
+            updated_tables=[table_definition]
+        )
         result = WAII.Database.update_table_definition(update_table_req)
 
     def test_remove_tables(self):
         table_to_be_removed = TableName(
-                database_name="db1", schema_name="schema2", table_name="table2"
-            )
+            database_name="db1", schema_name="schema2", table_name="table2"
+        )
 
-
-        update_table_req = UpdateTableDefinitionRequest(removed_tables = [table_to_be_removed])
+        update_table_req = UpdateTableDefinitionRequest(
+            removed_tables=[table_to_be_removed]
+        )
         result = WAII.Database.update_table_definition(update_table_req)
-
-
-
 
 
 # NEED TO ADD FOR UPDATE TABLE AND UPDATE SCHEMA
