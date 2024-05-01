@@ -26,12 +26,12 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `db_type`: Acceptable values are: `snowflake`, `postgresql`, `mongodb`, `mongodb+srv` (Mongo Atlas).
 - `description`: Description of the connection
 - `account_name`: Account name of the connection, apply to `Snowflake`
-- `username`: Username of the connection, can be None if no username needed (such as localhost database)
+- `username`: Username of the connection, can be None if no username needed (such as localhost database or push based database)
 - `password`: Password of the connection, can be None if no password. 
 - `database`: Database name of the connection, you must specify it. Please note that it is case sensitive for most of the databases.
-- `warehouse`: Warehouse name of the connection, apply to `Snowflake`
-- `role`: Role name of the connection, apply to `Snowflake`
-- `host`/`port`: Host/port of the connection, apply to `postgresql` and `mongodb`.
+- `warehouse`: Warehouse name of the connection, apply to `Snowflake` (not needed for push based database)
+- `role`: Role name of the connection, apply to `Snowflake` ((not needed for push based database))
+- `host`/`port`: Host/port of the connection, apply to `postgresql` and `mongodb`. For push based database it does not have to be correct host. It just needs to be unique identifier.
 - `sample_col_values`: Do you want to let Waii to sample your string/variant columns. True if you want to sample, False if you don't want to sample. Default is False. This is optional, which can help Waii to generate better queries.
 
 Examples of creating `DBConnection` Object
@@ -75,6 +75,17 @@ DBConnection(
     port = 27017 # if you are using Mongo Atlas, you shouldn't set port
 )
 ```
+Examples of creating push based `DBConnection` Object. It is same for `Snowflake` ,`postgresql` and `mongodb`
+```python
+DBConnection(
+    key = '',
+    db_type = 'snowflake'/'postgresql'/'mongodb', # depending on the db_type
+    database = 'database',
+    host = 'test_host', # it needs to be unique identifier
+    push = True # required for push based database
+)
+```
+
 
 ### Get Connections
 
