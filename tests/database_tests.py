@@ -234,7 +234,16 @@ class TestDatabase(unittest.TestCase):
             )
         update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition])
         result = WAII.Database.update_table_definition(update_table_req)
-        print(result)
+
+    def test_remove_tables(self):
+        table_to_be_removed = TableName(
+                database_name="db1", schema_name="schema2", table_name="table2"
+            )
+
+
+        update_table_req = UpdateTableDefinitionRequest(removed_tables = [table_to_be_removed])
+        result = WAII.Database.update_table_definition(update_table_req)
+
 
 
 

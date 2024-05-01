@@ -227,7 +227,6 @@ class UpdateTableDescriptionRequest(BaseModel):
 class UpdateTableDefinitionRequest(BaseModel):
     updated_tables: Optional[List[TableDefinition]]
     removed_tables: Optional[List[TableName]]
-    scope: str
 
 
 class ColumnDescription(BaseModel):

@@ -247,7 +247,7 @@ You should check the `updated_table_to_cols` to see which tables/columns are upd
 
 ### Add/Update Table definitions
 
-You can use the following method to update table definitions
+You can use the following method to update table definitions for push based database
 
 ```python
 Database.update_table_definition(params: UpdateTableDefinitionRequest) -> UpdateTableDefinitionResponse
@@ -267,6 +267,29 @@ table_definition =  TableDefinition(
                 ColumnDefinition(name="col3", type="int"),
                 ]
             )
-update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition])
+update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition]
+                                                )
+result = WAII.Database.update_table_definition(update_table_req)
+```
+
+### Remove Tables
+
+You can use the following method to remove tables from push based database
+
+```python
+Database.update_table_definition(params: UpdateTableDefinitionRequest) -> UpdateTableDefinitionResponse
+```
+
+Examples:
+
+```python
+
+table_name = TableName(
+                database_name="db1", schema_name="schema2", table_name="table2"
+            )
+
+
+update_table_req = UpdateTableDefinitionRequest(removed_tables = [table_name]
+                                                )
 result = WAII.Database.update_table_definition(update_table_req)
 ```
