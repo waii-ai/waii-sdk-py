@@ -13,6 +13,7 @@ UPDATE_TABLE_DESCRIPTION_ENDPOINT = "update-table-description"
 UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
+UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
 
 
 class SchemaName(BaseModel):
@@ -162,6 +163,7 @@ class DBConnection(BaseModel):
     port: Optional[int] = None
     parameters: Optional[Dict[str, Any]] = None
     sample_col_values: Optional[bool]
+    push:Optional[bool] = False
 
 
 class ModifyDBConnectionRequest(BaseModel):
@@ -222,6 +224,10 @@ class UpdateTableDescriptionRequest(BaseModel):
     table_name: TableName
     description: str
 
+class UpdateTableDefinitionRequest(BaseModel):
+    updated_tables: Optional[List[TableDefinition]]
+    removed_tables: Optional[List[TableName]]
+
 
 class ColumnDescription(BaseModel):
     column_name: str
@@ -244,6 +250,9 @@ class UpdatedTableToCol(BaseModel):
 
 class UpdateColumnDescriptionResponse(BaseModel):
     updated_table_to_cols: Optional[List[UpdatedTableToCol]]
+
+class UpdateTableDefinitionResponse(BaseModel):
+    updated_tables: Optional[List[TableName]]
 
 
 class UpdateSchemaDescriptionRequest(BaseModel):
@@ -317,6 +326,13 @@ class DatabaseImpl:
     ) -> UpdateTableDescriptionResponse:
         return self.http_client.common_fetch(
             UPDATE_TABLE_DESCRIPTION_ENDPOINT, params.__dict__, GetCatalogResponse
+        )
+
+    def update_table_definition(
+        self, params:UpdateTableDefinitionRequest
+    ) -> UpdateTableDefinitionResponse:
+        return self.http_client.common_fetch(
+            UPDATE_TABLE_DEFINITION_ENDPOINT, params.__dict__,UpdateTableDefinitionResponse
         )
 
     def update_schema_description(
