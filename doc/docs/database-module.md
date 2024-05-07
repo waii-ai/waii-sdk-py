@@ -310,6 +310,7 @@ Database.update_constraint(params: UpdateConstraintRequest) -> UpdateConstraintR
 - `constraint_type`: Type of constraint that needs to be updated.It could be either ConstraintType.primary or ConstraintType.foreign.
                      Note: Only one kind of Constraint can be updated at a time. So in list of constraint all constraints should be either of primary type or 
                      all constraint should be of foreign type.
+
 `Constraint` contains the following properties:
 - `table`: `TableName` for which constraints is getting updated.
 - `cols`: List of string representing column names of constraint.
@@ -319,17 +320,20 @@ Database.update_constraint(params: UpdateConstraintRequest) -> UpdateConstraintR
 - `comment`: Any comment you want to add for constraint(Optional)
 
 Update constraint function returns `UpdateConstraintResponse`.It containts following properties.
+
 `updated_tables`: List of `TableName` which got updated
 
 Examples:
 ```python
 --- For updating foreign key constraints
-Suppose there are two tables orders and products. There is column in  orders table called product_id which is a foreign key reference to id column in products table.
+Suppose there are two tables `orders` and `products`. There is a column in orders table called `product_id`
+which is a foreign key reference to `id` column in products table.
 If you want to add this constraint, our request will be 
 
 table_name = TableName(table_name= 'products', schema_name = 'schema1', database_name = 'db1')
 src_table_name = TableName(table_name= 'orders', schema_name = 'schema1', database_name = 'db1')
-constraint = Constraint(table=table_name, cols=['product_id'],constraint_type = ConstraintType.foreign, src_table = src_table_name, src_cols = ['id'])
+constraint = Constraint(table=table_name, cols=['product_id'],constraint_type = ConstraintType.foreign,
+                        src_table = src_table_name, src_cols = ['id'])
 table_constraints = TableConstraint(table_name = table_name, constraints = [constraint], constraint_type = ConstraintType.foreign)
 req = UpdateConstraintRequest(updated_constraints = [table_constraints])
 result = WAII.Database.update_constraint(req)
@@ -338,7 +342,8 @@ result = WAII.Database.update_constraint(req)
 Suppose we want to set id column as primary key in products table. The request would look like.
 table_name = TableName(table_name= 'products', schema_name = 'schema1', database_name = 'db1')
 constraint = Constraint(table=table_name, cols=['id'],constraint_type = ConstraintType.primary)
-table_constraints =  TableConstraint(table_name = table_name, constraints = [constraint], constraint_type = ConstraintType.primary)
+table_constraints =  TableConstraint(table_name = table_name, constraints = [constraint],
+                                     constraint_type = ConstraintType.primary)
 req = UpdateConstraintRequest(updated_constraints = [table_constraints])
 result = WAII.Database.update_constraint(req)
 
