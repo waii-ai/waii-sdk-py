@@ -343,10 +343,3 @@ req = UpdateConstraintRequest(updated_constraints = [table_constraints])
 result = WAII.Database.update_constraint(req)
 
 ```
-
-
-
-
-
-
-
