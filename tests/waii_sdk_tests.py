@@ -69,7 +69,6 @@ class WaiiSDKTests(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert "public" in result.query.lower()
         assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)

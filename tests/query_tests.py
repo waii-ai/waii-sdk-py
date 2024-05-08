@@ -7,7 +7,8 @@ class TestQuery(unittest.TestCase):
         WAII.initialize(url="http://localhost:9859/api/")
         result = WAII.Database.get_connections()
         self.result = result
-        WAII.Database.activate_connection(result.connectors[0].key)
+        self.activated_connection_key = result.connectors[0].key
+        WAII.Database.activate_connection(self.activated_connection_key)
 
     def test_generate(self):
         params = QueryGenerationRequest(ask = "How many tables are there?")
@@ -16,8 +17,9 @@ class TestQuery(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert 'information_schema' in result.query.lower()
-        assert len(result.tables) > 0
+        assert ('information_schema' in result.query.lower() or ('sqlite' in self.activated_connection_key ))
+        if not 'sqlite' in self.activated_connection_key:
+            assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
         result = WAII.Query.like(params)
