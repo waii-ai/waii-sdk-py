@@ -15,7 +15,7 @@ class Waii:
         self.initialize_legacy_fields = initialize_legacy_fields
 
     def initialize(self, url: str = "https://tweakit.waii.ai/api/", api_key: str = ""):
-        http_client = WaiiHttpClient.get_instance(url, api_key)
+        http_client = WaiiHttpClient(url, api_key)
         self.history = HistoryImpl(http_client)
         self.query = QueryImpl(http_client)
         self.database = DatabaseImpl(http_client)
