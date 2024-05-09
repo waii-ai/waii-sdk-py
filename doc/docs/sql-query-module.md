@@ -24,13 +24,16 @@ This method generates a SQL query based on the provided parameters.
 Parameter fields:
 - `ask`: The question you want to ask Waii to generate, such as `How many tables are there?`
 - `dialect`: What is the dialect of the generated query, such as `snowflake`, `postgresql`, `mongodb`
-- `tweak_history`: We can support both asking new question, or tweak the previous question. If you want to tweak the previous question, you can set this field. (It's list of `Tweak` object). Each of `Tweak` object looks like:
+- `tweak_history`: (array of `Tweak`) We can support both asking new question, or tweak the previous question. If you want to tweak the previous question, you can set this field. Each of `Tweak` object looks like:
   - `sql`: The SQL query you want to tweak
   - `ask`: The previous question you asked.
 - `search_context`: List of scopes to limit tables/schemas used to generate query (By default it searches all objects from the database). It's list of `SearchContext` object. Each of `SearchContext` object looks like:
   - `db_name`: Catalog name (database name), default is `*`
   - `schema_name`: Schema name, default is `*`
   - `table_name`: Table name, default is `*`
+- `tags`: List of tags to attach to LLM usage stats (which is available for users to query for on-premises version only, SaaS version will be able to query the usage stats in the future)
+  - It's a list of string, such as `["dev", "tenant-2", "team=analytics", ...]`
+  - `user_id=<user_email_login_to_waii>` is one of the default tag which is automatically added by the system (you don't need to add it)
 
 **Examples:**
     
@@ -87,6 +90,61 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
   - `token_total`: total token usage (prompt + completed), this doesn't include cached tokens. So if you see the total_total = 0, the query is fetched from the cache.
 - `is_new`: whether the query is new or tweak
 - `timestamp_ms`: total elapsed time (in milli-seconds) between RPC request/response.
+
+#### Tips to use tweak to update existing query
+
+When you tweak a query, you should provide the original query and the original ask. The system will figure out what you want to tweak based on the original query/ask and the new ask.
+
+Waii query generation is stateless, which means it doesn't remember the previously generated query. If you want Waii to remember the previous query, you can provide the original queries as Tweak and the original ask in the tweak.
+
+You can provide a list of tweaks to tweak the query multiple times. It's like a history of tweaks. For example, initial question is `Give me all orders`, and you want to tweak it to `in California`, and then `order by order_date`, you can provide a list of tweaks. Assume the new ask is `group by city and include the total order amount`, you can provide the following tweaks plus the new ask:
+
+```python
+>>> WAII.Query.generate(QueryGenerationRequest( 
+    tweak_history=[Tweak(sql="...", 
+                         # original ask
+                         ask="Give me all orders in California"),
+                   Tweak(sql="...", 
+                         # tweak #1
+                         ask="in California"),
+                   Tweak(sql="...",
+                         # tweak #2
+                         ask="order by order_date")]),
+  # new ask
+  ask = "group by city and include the total order amount")
+```
+
+(`tweak_history` is ordered by when the question is submitted, from the oldest to the newest)
+
+You don't need to worry about "context window" of the LLM during tweaking, the system will handle it for you. (it will include necessary previous context to try to get the best possible result).
+
+##### Handle `is_new` field of `GeneratedQuery`
+
+When you include tweak_history, the system will automatically decide whether the query is new or tweak. If the system thinks it is a new query, it will set `is_new` to True, otherwise it will set to False. You can use this field to decide whether you want to include previous asks for future query generation request or not.
+
+For example, if you include tweak_history like `["give me all orders in California", "order by order_date"]`, and the new ask is `give me all customers and stores`, the system will set `is_new` to `True` because the new ask doesn't have enough relationship with the previous asks. In this case, you may want to clean up the tweak_history for the future query generation request.
+
+Pseudo code to illustrate how to handle `is_new` field:
+
+```python
+tweak_history = []
+
+while True:
+    ask = get_user_input()
+    generated_query = WAII.Query.generate(QueryGenerationRequest(ask=ask, tweak_history=tweak_history))
+    
+    # handle the generated query, check the is_new field
+    if generated_query.is_new:
+        # if it is new, clean up the tweak_history, only include the newly generated query as tweak (For the next query generation)
+        tweak_history = [Tweak(sql=generated_query.query, ask=ask)]
+    else:
+        # if it is not new, append the tweak to the tweak_history so that we can keep the context
+        tweak_history.append(Tweak(sql=generated_query.query, ask=ask))
+```
+
+#### Handle concurrent query generation
+
+It's possible that you have multiple users generating queries at the same time. Waii will handle the concurrent query generation for you, but you need to make sure you maintain the `tweak_history` for each session separately.
 
 ### Generate Question
 
