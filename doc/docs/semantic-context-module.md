@@ -89,6 +89,15 @@ SemanticContext.get_semantic_context(params: GetSemanticContextRequest = GetSema
 
 This method fetches the current semantic context.
 
+Parameters of `GetSemanticContextRequest`:
+- `filter`: (`GetSemanticContextRequestFilter`) filter the semantic context by labels, scope, statement, and always_include.
+  - `always_include`: (bool) filter by always_include, default is None (which means no filter).
+  - `labels`: (List[str]) filter by labels, default is None (which means no filter).
+  - `scope`: (str) filter by scope, default is None (which means no filter).
+- `offset`: (int) offset of the result, default is 0.
+- `limit`: (int) limit of the result, default is 1000.
+- `search_text`: (str) search text to filter the semantic context.
+
 Example: 
 
 Fetch all statements (with pagination)
