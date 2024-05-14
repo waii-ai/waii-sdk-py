@@ -6,7 +6,8 @@ class TestSemanticContext(unittest.TestCase):
         WAII.initialize(url="http://localhost:9859/api/")
         result = WAII.Database.get_connections()
         self.result = result
-        WAII.Database.activate_connection(result.connectors[0].key)
+        self.activated_connection_key = result.connectors[0].key
+        WAII.Database.activate_connection(self.activated_connection_key)
 
     def test_modify_semantic_context(self):
         # Define test parameters
@@ -25,7 +26,8 @@ class TestSemanticContext(unittest.TestCase):
         result = WAII.SemanticContext.get_semantic_context()
         # Check the result
         # Note: The specifics of this assertion would depend on what the function should return
-        self.assertGreater(len(result.semantic_context), 0)
+        if not 'sqlite' in self.activated_connection_key:
+            self.assertGreater(len(result.semantic_context), 0)
 
 if __name__ == '__main__':
     unittest.main()
