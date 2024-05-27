@@ -1,7 +1,7 @@
 import warnings
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
-from pydantic import BaseModel, PrivateAttr
+from ..my_pydantic import BaseModel, PrivateAttr
 import re
 from typing import Optional, List, Dict, Any, Union
 from urllib.parse import urlparse, parse_qs

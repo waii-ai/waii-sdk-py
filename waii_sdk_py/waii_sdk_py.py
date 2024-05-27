@@ -3,7 +3,7 @@ from .query import QueryImpl, Query
 from .database import DatabaseImpl, Database
 from .semantic_context import SemanticContextImpl, SemanticContext
 from .waii_http_client import WaiiHttpClient
-
+import importlib.metadata
 
 class Waii:
 
@@ -31,11 +31,12 @@ class Waii:
             Database.http_client = http_client
             SemanticContext.http_client = http_client
 
-
-
         conns = self.database.get_connections().connectors
         if len(conns) > 0:
             self.database.activate_connection(conns[0].key)
 
+    @staticmethod
+    def version():
+        return importlib.metadata.version('waii-sdk-py')
 
 WAII = Waii(True)

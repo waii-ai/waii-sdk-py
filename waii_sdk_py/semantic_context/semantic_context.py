@@ -1,6 +1,5 @@
-from uuid import uuid4
-from typing import List, Dict, Optional
-from pydantic import BaseModel
+from typing import List, Optional
+from ..my_pydantic import BaseModel
 from ..waii_http_client import WaiiHttpClient
 
 MODIFY_ENDPOINT = 'update-semantic-context'

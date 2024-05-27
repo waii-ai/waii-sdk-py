@@ -5,7 +5,7 @@ import traceback
 from typing import Optional, List, Dict, Any
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from ..my_pydantic import BaseModel, Field
 
 from ..common import CommonRequest, LLMBasedRequest
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName

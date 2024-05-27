@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from ..my_pydantic import BaseModel
 
 from ..waii_http_client import WaiiHttpClient
 from ..query import GeneratedQuery, QueryGenerationRequest

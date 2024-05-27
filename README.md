@@ -10,12 +10,25 @@ To install the `waii-sdk-py`, you can use pip:
 pip install waii-sdk-py
 ```
 
+Waii Python SDK depends on pydantic, but to avoid it conflicting with other libraries, it is not included in the dependencies. You can install it separately:
+
+You can either install v1.10.15+
+```bash
+pip install pydantic==1.10.15
+```
+
+Or 2.7.1+
+```bash
+pip install pydantic==2.7.1
+```
+
 ## Importing & Initialize the SDK
 
 ```python
 >>> from waii_sdk_py import WAII
 >>> from waii_sdk_py.query import *
 >>> WAII.initialize(api_key="<your-api-key>")
+>>> print(WAII.version()) # Check the version of the SDK
 ```
 You can get your API key from the `tweakit.waii.ai` (You need to register and get access from [waii.ai](waii.ai) first).
 

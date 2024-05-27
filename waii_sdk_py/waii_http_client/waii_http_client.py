@@ -1,9 +1,8 @@
 import requests
 import json
-from types import SimpleNamespace
 from typing import TypeVar, Generic, Optional, Dict
 from collections import namedtuple
-from pydantic import BaseModel
+from ..my_pydantic import BaseModel
 
 
 T = TypeVar('T')
