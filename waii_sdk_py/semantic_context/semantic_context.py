@@ -1,4 +1,6 @@
 from typing import List, Optional
+
+from ..common import LLMBasedRequest
 from ..my_pydantic import BaseModel
 from ..waii_http_client import WaiiHttpClient
 
@@ -25,7 +27,7 @@ class SemanticStatement(BaseModel):
     summarization_prompt: Optional[str] = None
 
 
-class ModifySemanticContextRequest(BaseModel):
+class ModifySemanticContextRequest(LLMBasedRequest):
     updated: Optional[List[SemanticStatement]] = None
     deleted: Optional[List[str]] = None
 
@@ -49,7 +51,7 @@ class ModifySemanticContextResponse(BaseModel):
     deleted: Optional[List[str]] = None
 
 
-class GetSemanticContextRequest(BaseModel):
+class GetSemanticContextRequest(LLMBasedRequest):
     filter: GetSemanticContextRequestFilter = GetSemanticContextRequestFilter()
     offset = 0
     limit = 1000
