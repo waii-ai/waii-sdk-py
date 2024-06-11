@@ -1,6 +1,7 @@
 import warnings
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
+from ..common import LLMBasedRequest
 from ..my_pydantic import BaseModel, PrivateAttr
 import re
 from typing import Optional, List, Dict, Any, Union
@@ -198,7 +199,7 @@ class SearchContext(BaseModel):
     table_name: Optional[str] = "*"
 
 
-class GetCatalogRequest(BaseModel):
+class GetCatalogRequest(LLMBasedRequest):
     search_context: Optional[List[SearchContext]]
 
     # ask is to perform semantic search, if it is provided, then we will use it to search the table definition

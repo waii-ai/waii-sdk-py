@@ -189,7 +189,7 @@ class QueryPerformanceResponse(BaseModel):
     compilation_time_ms: Optional[int]
 
 
-class PythonPlotRequest(CommonRequest):
+class PythonPlotRequest(LLMBasedRequest):
     ask: Optional[str]
     dataframe_rows: Optional[List[Dict[str, Any]]]
     dataframe_cols: Optional[List[ColumnDefinition]]
