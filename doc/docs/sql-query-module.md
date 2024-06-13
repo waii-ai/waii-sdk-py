@@ -34,6 +34,7 @@ Parameter fields:
 - `tags`: List of tags to attach to LLM usage stats (which is available for users to query for on-premises version only, SaaS version will be able to query the usage stats in the future)
   - It's a list of string, such as `["dev", "tenant-2", "team=analytics", ...]`
   - `user_id=<user_email_login_to_waii>` is one of the default tag which is automatically added by the system (you don't need to add it)
+- `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
 
 **Examples:**
     

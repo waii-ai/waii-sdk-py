@@ -8,3 +8,5 @@ class CommonRequest(BaseModel):
 
 class LLMBasedRequest(CommonRequest):
     model: Optional[str]
+    # should we use cache?
+    use_cache: Optional[bool] = True
