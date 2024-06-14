@@ -22,9 +22,9 @@ class WaiiSDKTests(unittest.TestCase):
         movie_waii.initialize(url="http://localhost:9859/api/")
         chinook_waii.initialize(url="http://localhost:9859/api/")
         result = movie_waii.database.get_connections()
-        movie_conn = [conn for conn in result.connectors if conn.database == "movie"][0]
+        movie_conn = [conn for conn in result.connectors if conn.database == "movie" and conn.db_type == 'postgresql'][0]
         chinook_conn = [
-            conn for conn in result.connectors if conn.database == "chinook"
+            conn for conn in result.connectors if conn.database == "chinook" and conn.db_type == 'postgresql'
         ][0]
         WAII.initialize(url="http://localhost:9859/api/")
         self.movie_conn = movie_conn
@@ -62,7 +62,7 @@ class WaiiSDKTests(unittest.TestCase):
         assert "102 Dalmatians" in str(result.rows[0])
 
     def test_chinook_generate(self):
-        self.movie_waii.database.activate_connection(self.chinook_conn.key)
+        self.chinook_waii.database.activate_connection(self.chinook_conn.key)
         params = QueryGenerationRequest(ask="Give me 5 album names sorted by name")
         result = self.chinook_waii.query.generate(params)
         self.assertIsInstance(result, GeneratedQuery)
