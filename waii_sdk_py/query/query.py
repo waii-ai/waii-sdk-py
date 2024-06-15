@@ -329,6 +329,9 @@ class QueryImpl:
     def plot(
         self, df, ask=None, automatically_exec=True, verbose=True, max_retry=2
     ) -> str:
+        if not df:
+            raise ValueError("(Plot) Input dataframe is empty")
+
         # create ColumnDefinition from df.columns, use first row to get type
         cols = []
         for col in df.columns:
