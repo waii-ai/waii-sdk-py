@@ -1,7 +1,7 @@
 import warnings
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
-from ..common import LLMBasedRequest
+from ..common import LLMBasedRequest, CommonRequest
 from ..my_pydantic import BaseModel, PrivateAttr
 import re
 from typing import Optional, List, Dict, Any, Union
@@ -15,7 +15,7 @@ UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
 UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
-
+HANDLE_SEM_CONTEXT_EXPERIMENT_ENDPOINT = "handle-sem-context-experiment"
 
 class SchemaName(BaseModel):
     schema_name: str
@@ -287,6 +287,10 @@ class UpdateConstraintResponse(BaseModel):
     updated_tables: Optional[List[TableName]]
 
 
+class GenerateExperimentalSemContextRequest(CommonRequest):
+    mode: int
+
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -360,6 +364,13 @@ class DatabaseImpl:
     ) -> UpdateConstraintResponse:
         return self.http_client.common_fetch(
             UPDATE_CONSTRAINT_ENDPOINT, params.__dict__, UpdateConstraintResponse
+        )
+
+    def handle_sem_context_experiment(
+        self, params: GenerateExperimentalSemContextRequest
+    ) -> BaseModel:
+        return self.http_client.common_fetch(
+            HANDLE_SEM_CONTEXT_EXPERIMENT_ENDPOINT, params.__dict__, BaseModel
         )
 
 
