@@ -26,6 +26,7 @@ TRANSCODE_ENDPOINT = "transcode-query"
 PLOT_ENDPOINT = "python-plot"
 GENERATE_QUESTION_ENDPOINT = "generate-questions"
 GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
+RUN_QUERY_COMPILER_ENDPOINT = "run-query-compiler"
 
 class Tweak(BaseModel):
     sql: Optional[str] = None
@@ -227,6 +228,12 @@ class SimilarQueryResponse(BaseModel):
     equivalent: Optional[bool]
     query: Optional[Query]
 
+class RunQueryCompilerResponse(BaseModel):
+    query: str
+    errors: str
+    should_compile: bool
+    tables: Optional[List[TableName]]
+
 
 def show_progress(func):
     @functools.wraps(func)
@@ -407,6 +414,13 @@ class QueryImpl:
     ) -> SimilarQueryResponse:
         return self.http_client.common_fetch(
             GET_SIMILAR_QUERY_ENDPOINT, params.__dict__, SimilarQueryResponse
+        )
+
+    def run_query_compiler(
+            self, params: RunQueryRequest
+    ) -> RunQueryCompilerResponse:
+        return self.http_client.common_fetch(
+            RUN_QUERY_COMPILER_ENDPOINT, params.__dict__, RunQueryCompilerResponse
         )
 
 Query = QueryImpl(WaiiHttpClient.get_instance())
