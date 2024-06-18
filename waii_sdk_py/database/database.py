@@ -206,6 +206,8 @@ class GetCatalogRequest(LLMBasedRequest):
     # we will try to find the same tables which can answer the ask
     ask: Optional[str]
 
+    internal: bool = False
+
 class GetDBConnectionRequest(BaseModel):
     pass
 
@@ -219,6 +221,7 @@ class GetDBConnectionResponse(BaseModel):
 
 class GetCatalogResponse(BaseModel):
     catalogs: Optional[List[CatalogDefinition]] = None
+    debug_info: Optional[Dict[str, List[SearchContext]]]
 
 
 class UpdateTableDescriptionRequest(BaseModel):
