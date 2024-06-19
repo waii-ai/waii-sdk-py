@@ -289,6 +289,7 @@ class UpdateConstraintResponse(BaseModel):
 
 class GenerateExperimentalSemContextRequest(CommonRequest):
     mode: int
+    search_context: Optional[List[SearchContext]]
 
 
 class DatabaseImpl:
