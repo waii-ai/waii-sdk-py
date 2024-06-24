@@ -228,11 +228,24 @@ class SimilarQueryResponse(BaseModel):
     equivalent: Optional[bool]
     query: Optional[Query]
 
+
+class CompilationStateFromDBEngine(Enum):
+    UNKNOWN = 0,  # this happens when explain query itself failed (because of permission, etc.)
+    COMPILABLE = 1,
+    UNCOMPILABLE = 2
+
+
+class CompilationErrorMsgFromDBEngine(BaseModel):
+    state: CompilationStateFromDBEngine
+    msg: Optional[str]
+
+
 class RunQueryCompilerResponse(BaseModel):
     query: str
     errors: str
     should_compile: bool
     tables: Optional[List[TableName]]
+    explain_error_msg: CompilationErrorMsgFromDBEngine
 
 
 def show_progress(func):
@@ -334,7 +347,7 @@ class QueryImpl:
 
     @show_progress
     def plot(
-        self, df, ask=None, automatically_exec=True, verbose=True, max_retry=2
+        self, df, ask=None, automatically_exec=True, verbose=True, max_retry=2, model=None
     ) -> str:
         if df is None or df.empty:
             raise ValueError("(Plot) Input dataframe is empty")
@@ -344,7 +357,7 @@ class QueryImpl:
         for col in df.columns:
             cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
 
-        params = PythonPlotRequest(dataframe_cols=cols, ask=ask)
+        params = PythonPlotRequest(dataframe_cols=cols, ask=ask, model=model)
         plot_response = self.http_client.common_fetch(
             PLOT_ENDPOINT, params.__dict__, PythonPlotResponse
         )
