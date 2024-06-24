@@ -35,6 +35,7 @@ Parameter fields:
   - It's a list of string, such as `["dev", "tenant-2", "team=analytics", ...]`
   - `user_id=<user_email_login_to_waii>` is one of the default tag which is automatically added by the system (you don't need to add it)
 - `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
+- `model`: Which LLM to be used to generate queries. By default system will choose a model.
 
 **Examples:**
     
@@ -146,6 +147,31 @@ while True:
 #### Handle concurrent query generation
 
 It's possible that you have multiple users generating queries at the same time. Waii will handle the concurrent query generation for you, but you need to make sure you maintain the `tweak_history` for each session separately.
+
+#### Choose which LLM model to use
+
+By default, the system will choose the best model to generate the query. If you want to use a specific model, you can specify it in the request. The system will try to use the specified model, if the specified model is not available, it will fail the request.
+
+In order to choose which one to use, you need to get the list of available models first.
+
+```python
+WAII.get_models()
+```
+
+Which include a list of ModelType object with the following fields:
+- `name`: Name of the model
+- `description`: Description of the model
+- `vendor`: Vendor of the model
+
+The `name` field is the one you need to use to specify which model to use.
+
+In order to specify which model to use, you can set `model` field in the request.
+
+```python
+>>> WAII.Query.generate(QueryGenerationRequest(
+        ask = "How many tables are there?", 
+        model="GPT-4o"))
+```
 
 ### Generate Question
 
