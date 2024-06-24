@@ -28,6 +28,22 @@ GENERATE_QUESTION_ENDPOINT = "generate-questions"
 GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
 RUN_QUERY_COMPILER_ENDPOINT = "run-query-compiler"
 
+
+class DebugInfoType(str, Enum):
+    learned_template = "learned_template"
+    retry_info = "retry_info"
+    equivalent = "equivalent"
+    fixit_info = "fixit_info"
+    query_gen_source = "query_gen_source"
+    query_gen_model = "query_gen_model"
+    empty_table_selection = "empty_table_selection"
+    after_tweak_history = "after_considering_tweak_history"
+    after_info_schema_check = "after_info_schema_check"
+    after_embedding_match = "after_embedding_match"
+    after_initial_table_selection = "after_initial_table_selection"
+    after_iterative_table_selection = "after_iterative_table_selection"
+
+
 class Tweak(BaseModel):
     sql: Optional[str] = None
     ask: Optional[str] = None

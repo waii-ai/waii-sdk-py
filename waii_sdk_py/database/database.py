@@ -221,12 +221,13 @@ class GetDBConnectionResponse(BaseModel):
 
 class GetCatalogResponse(BaseModel):
     catalogs: Optional[List[CatalogDefinition]] = None
-    debug_info: Optional[Dict[str, List[SearchContext]]]
+    debug_info: Optional[Dict[str, Any]]
 
 
 class UpdateTableDescriptionRequest(BaseModel):
     table_name: TableName
     description: str
+
 
 class UpdateTableDefinitionRequest(BaseModel):
     updated_tables: Optional[List[TableDefinition]]
