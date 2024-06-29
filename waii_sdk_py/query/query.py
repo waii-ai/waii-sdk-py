@@ -24,6 +24,7 @@ AUTOCOMPLETE_ENDPOINT = "auto-complete"
 PERF_ENDPOINT = "get-query-performance"
 TRANSCODE_ENDPOINT = "transcode-query"
 PLOT_ENDPOINT = "python-plot"
+GENERATE_CHART_ENDPOINT = "generate-chart"
 GENERATE_QUESTION_ENDPOINT = "generate-questions"
 GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
 RUN_QUERY_COMPILER_ENDPOINT = "run-query-compiler"
@@ -211,6 +212,17 @@ class PythonPlotRequest(LLMBasedRequest):
     dataframe_rows: Optional[List[Dict[str, Any]]]
     dataframe_cols: Optional[List[ColumnDefinition]]
 
+
+class ChartGenerationRequest(LLMBasedRequest):
+    sql: Optional[str]
+    ask: Optional[str]
+    dataframe_rows: Optional[List[Dict[str, Any]]]
+    dataframe_cols: Optional[List[ColumnDefinition]]
+    chart_type: Optional[str]
+
+
+class ChartGenerationResponse(BaseModel):
+    chart_info: Optional[dict[str, Any]]
 
 class PythonPlotResponse(BaseModel):
     # based on the request, return N plot script
@@ -430,6 +442,23 @@ class QueryImpl:
             print("=== generated code ===")
             print(p)
         return p
+
+
+    def generate_chart(
+        self, df, ask=None, sql=None, chart_type=None
+    ) -> str:
+
+        cols = []
+        for col in df.columns:
+            cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
+
+
+        params = ChartGenerationRequest(dataframe_cols=cols,dataframe_rows=df.to_dict(orient='records'),ask=ask,chart_type=chart_type)
+
+        return self.http_client.common_fetch(
+            GENERATE_CHART_ENDPOINT, params.__dict__, ChartGenerationResponse
+        )
+
 
     def generate_question(
         self, params: GenerateQuestionRequest
