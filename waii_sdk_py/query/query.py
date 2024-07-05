@@ -3,7 +3,7 @@ import threading
 import time
 import traceback
 from typing import Optional, List, Dict, Any
-from enum import Enum
+from enum import Enum, IntEnum
 
 from ..my_pydantic import BaseModel, Field
 
@@ -257,7 +257,7 @@ class SimilarQueryResponse(BaseModel):
     query: Optional[Query]
 
 
-class CompilationStateFromDBEngine(Enum):
+class CompilationStateFromDBEngine(IntEnum):
     UNKNOWN = 0,  # this happens when explain query itself failed (because of permission, etc.)
     COMPILABLE = 1,
     UNCOMPILABLE = 2
