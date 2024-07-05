@@ -18,6 +18,9 @@ class SemanticStatement(BaseModel):
     # when data_type matches
     always_include: Optional[bool] = True
 
+    # Check the application of the rule in a second step after query gen when the rule is within scope
+    critical: Optional[bool] = False
+
     # Search keys for this statement, if not specified, then use statement as search key
     # you can specify multiple search keys, for example, if you have a CVE doc, you can search by CVE number, or library
     # name, etc.

@@ -28,6 +28,7 @@ GENERATE_CHART_ENDPOINT = "generate-chart"
 GENERATE_QUESTION_ENDPOINT = "generate-questions"
 GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
 RUN_QUERY_COMPILER_ENDPOINT = "run-query-compiler"
+SEMANTIC_CONTEXT_CHECKER_ENDPOINT = "semantic-context-checker"
 
 
 class DebugInfoType(str, Enum):
@@ -276,6 +277,14 @@ class RunQueryCompilerResponse(BaseModel):
     explain_error_msg: CompilationErrorMsgFromDBEngine
 
 
+class SemanticContextCheckerRequest(LLMBasedRequest):
+    ask: Optional[str]
+    query: Optional[str]
+    dialect: Optional[str]
+    search_context: Optional[List[SearchContext]]
+    flags: Optional[Dict[str, Any]]
+
+
 def show_progress(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -480,5 +489,13 @@ class QueryImpl:
         return self.http_client.common_fetch(
             RUN_QUERY_COMPILER_ENDPOINT, params.__dict__, RunQueryCompilerResponse
         )
+
+    def handle_semantic_context_checker(
+            self, params: SemanticContextCheckerRequest
+    ) -> GeneratedQuery:
+        return self.http_client.common_fetch(
+            SEMANTIC_CONTEXT_CHECKER_ENDPOINT, params.__dict__, GeneratedQuery
+        )
+
 
 Query = QueryImpl(WaiiHttpClient.get_instance())
