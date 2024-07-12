@@ -257,8 +257,6 @@ class ChartGenerationResponse(BaseModel):
     chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
 
 
-class ChartGenerationResponse(BaseModel):
-    chart_info: Optional[dict[str, Any]]
 
 class PythonPlotResponse(BaseModel):
     # based on the request, return N plot script
