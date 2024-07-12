@@ -2,7 +2,7 @@ import functools
 import threading
 import time
 import traceback
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 from enum import Enum, IntEnum
 
 from ..my_pydantic import BaseModel, Field
@@ -214,12 +214,47 @@ class PythonPlotRequest(LLMBasedRequest):
     dataframe_cols: Optional[List[ColumnDefinition]]
 
 
+class ChartType(Enum):
+    METABASE = "metabase"
+    SUPERSET = "superset"
+
+class SuperSetChartSpec(BaseModel):
+    plot_type: Optional[str]
+    metrics: Optional[List[str]]
+    dimensions: Optional[List[str]]
+    chart_name: Optional[str]
+    color_hex: Optional[str]
+    x_axis: Optional[str]
+    y_axis: Optional[str]
+    grid_style: Optional[str]
+    stacked: Optional[bool]
+    width: Optional[int]
+    height: Optional[int]
+
+class MetabaseChartSpec(BaseModel):
+    plot_type: Optional[str]
+    metric: Optional[str]
+    dimension: Optional[str]
+    name: Optional[str]
+    color_hex: Optional[str]
+
+class ChartTweak(BaseModel):
+    ask: Optional[str]
+    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
+
 class ChartGenerationRequest(LLMBasedRequest):
     sql: Optional[str]
     ask: Optional[str]
     dataframe_rows: Optional[List[Dict[str, Any]]]
     dataframe_cols: Optional[List[ColumnDefinition]]
-    chart_type: Optional[str]
+    chart_type: Optional[ChartType]
+    parent_uuid: Optional[str]
+    tweak_history: Optional[List[ChartTweak]]
+
+class ChartGenerationResponse(BaseModel):
+    uuid: str
+    timestamp: Optional[int]
+    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
 
 
 class ChartGenerationResponse(BaseModel):
@@ -454,7 +489,7 @@ class QueryImpl:
 
 
     def generate_chart(
-        self, df, ask=None, sql=None, chart_type=None
+        self, df, ask=None, sql=None, chart_type=None, parent_uuid=None, tweak_history=None,
     ) -> str:
 
         cols = []
@@ -462,7 +497,12 @@ class QueryImpl:
             cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
 
 
-        params = ChartGenerationRequest(dataframe_cols=cols,dataframe_rows=df.to_dict(orient='records'),ask=ask,chart_type=chart_type)
+        params = ChartGenerationRequest(dataframe_cols=cols,
+                                        dataframe_rows=df.to_dict(orient='records'),
+                                        ask=ask,
+                                        chart_type=chart_type,
+                                        parent_uuid=parent_uuid,
+                                        tweak_history=tweak_history)
 
         return self.http_client.common_fetch(
             GENERATE_CHART_ENDPOINT, params.__dict__, ChartGenerationResponse
