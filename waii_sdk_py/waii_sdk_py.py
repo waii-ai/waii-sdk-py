@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+from .chat import ChatImpl
 from .history import HistoryImpl, History
 from .query import QueryImpl, Query
 from .database import DatabaseImpl, Database
@@ -32,6 +33,7 @@ class Waii:
         self.query = None
         self.database = None
         self.semantic_context = None
+        self.chat = None
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
@@ -42,6 +44,7 @@ class Waii:
         self.query = QueryImpl(http_client)
         self.database = DatabaseImpl(http_client)
         self.semantic_context = SemanticContextImpl(http_client)
+        self.chat = ChatImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history
