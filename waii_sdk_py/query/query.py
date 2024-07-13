@@ -242,6 +242,9 @@ class ChartTweak(BaseModel):
     ask: Optional[str]
     chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
 
+    def __str__(self):
+        return f"previous ask={self.ask}, previous chart_spec={self.chart_spec})\n"
+
 class ChartGenerationRequest(LLMBasedRequest):
     sql: Optional[str]
     ask: Optional[str]
@@ -490,6 +493,9 @@ class QueryImpl:
         self, df, ask=None, sql=None, chart_type=None, parent_uuid=None, tweak_history=None,
     ) -> str:
 
+        #Remove duplicate columns
+        df = df.loc[:, ~df.columns.duplicated()]
+
         cols = []
         for col in df.columns:
             cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
@@ -502,8 +508,10 @@ class QueryImpl:
                                         parent_uuid=parent_uuid,
                                         tweak_history=tweak_history)
 
+        params_dict = {k: v.value if isinstance(v, Enum) else v for k, v in params.dict().items() if v is not None}
+
         return self.http_client.common_fetch(
-            GENERATE_CHART_ENDPOINT, params.__dict__, ChartGenerationResponse
+            GENERATE_CHART_ENDPOINT, params_dict, ChartGenerationResponse
         )
 
 
