@@ -2,7 +2,7 @@ import functools
 import threading
 import time
 import traceback
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, List, Dict, Any, Union, Literal
 from enum import Enum, IntEnum
 
 from ..my_pydantic import BaseModel, Field
@@ -219,6 +219,7 @@ class ChartType(Enum):
     SUPERSET = "superset"
 
 class SuperSetChartSpec(BaseModel):
+    spec_type: Literal['superset']
     plot_type: Optional[str]
     metrics: Optional[List[str]]
     dimensions: Optional[List[str]]
@@ -232,6 +233,7 @@ class SuperSetChartSpec(BaseModel):
     height: Optional[int]
 
 class MetabaseChartSpec(BaseModel):
+    spec_type: Literal['metabase']
     plot_type: Optional[str]
     metric: Optional[str]
     dimension: Optional[str]
