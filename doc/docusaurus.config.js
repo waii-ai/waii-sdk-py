@@ -45,6 +45,10 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 						href: 'https://doc.waii.ai/python/docs/intro',
 					},
 					{
+						label: 'Java SDK',
+						href: 'https://doc.waii.ai/java/docs/intro',
+					},
+					{
 						label: 'CLI',
 						href: 'https://doc.waii.ai/cli/docs/intro',
 					},
