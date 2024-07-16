@@ -14,8 +14,13 @@ pip install waii-sdk-py
 ```python
 >>> from waii_sdk_py import WAII
 >>> from waii_sdk_py.query import *
->>> WAII.initialize(api_key="<your-api-key>")
+>>> WAII.initialize(url='...', api_key="<your-api-key>")
 ```
-You can get your API key from the `tweakit.waii.ai` (You need to register and get access from [waii.ai](https://waii.ai) first).
+You can get your API key from the Waii server UI you have access to (You need to register and get access from [waii.ai](https://waii.ai) first).
+
+URL is the base URL of the WAII API, depends on the URL for the environment you are using: 
+- If you are using prod environment (sql.waii.ai, or tweakit.waii.ai), you can use 'https://sql.waii.ai/api/'
+- If you are using test environment (sql.test.waii.ai, or tweakit-test.waii.ai), you can use 'https://sql.test.waii.ai/api/'
+- If you are using local Docker environment, you can use 'http://<host>:<port>/api/'
 
 ![img.png](img.png)
