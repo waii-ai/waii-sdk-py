@@ -43,6 +43,7 @@ class WaiiHttpClient(Generic[T]):
             params: Dict,
             cls: BaseModel = None,
             need_scope: bool = True,
+            ret_json: bool = False
         ) -> Optional[T]:
 
         if need_scope:
@@ -68,9 +69,10 @@ class WaiiHttpClient(Generic[T]):
             if cls:
                 result: T = cls(**response.json())
             else:
-                result: T = json.loads(response.text, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
-            #result.__class__ = typing_inspect.get_bound(T)
-            #result: T = json.loads(response.text, object_hook=lambda d: T(**d))
+                if not ret_json:
+                    result: T = json.loads(response.text, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+                else:
+                    result: T = response.json()
             return result
         except json.JSONDecodeError:
             raise Exception("Invalid response received.")
