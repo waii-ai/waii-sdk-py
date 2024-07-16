@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+from .chart import ChartImpl
 from .chat import ChatImpl
 from .history import HistoryImpl, History
 from .query import QueryImpl, Query
@@ -34,6 +35,7 @@ class Waii:
         self.database = None
         self.semantic_context = None
         self.chat = None
+        self.chart = None
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
@@ -45,6 +47,7 @@ class Waii:
         self.database = DatabaseImpl(http_client)
         self.semantic_context = SemanticContextImpl(http_client)
         self.chat = ChatImpl(http_client)
+        self.chart = ChartImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history

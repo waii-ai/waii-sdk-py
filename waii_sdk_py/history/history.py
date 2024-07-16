@@ -3,7 +3,8 @@ from typing import List, Optional
 
 from ..chat import ChatRequest, ChatResponse
 from ..my_pydantic import BaseModel
-from ..query import GeneratedQuery, QueryGenerationRequest, ChartGenerationRequest, ChartGenerationResponse
+from ..query import GeneratedQuery, QueryGenerationRequest
+from ..chart import ChartGenerationRequest, ChartGenerationResponse
 from ..waii_http_client import WaiiHttpClient
 
 LIST_ENDPOINT = "get-generated-query-history"

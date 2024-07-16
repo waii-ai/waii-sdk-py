@@ -3,9 +3,10 @@ from typing import Optional
 from ..my_pydantic import BaseModel
 
 from ..common import LLMBasedRequest
-from ..query import GetQueryResultResponse, GeneratedQuery, ChartGenerationResponse
+from ..query import GetQueryResultResponse, GeneratedQuery
 from ..database import CatalogDefinition
 from ..semantic_context import GetSemanticContextResponse
+from ..chart import ChartGenerationResponse
 from ..waii_http_client import WaiiHttpClient
 
 CHAT_MESSAGE_ENDPOINT = "chat-message"
