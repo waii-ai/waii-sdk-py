@@ -13,6 +13,7 @@ GENERATE_CHART_ENDPOINT = "generate-chart"
 class ChartType(Enum):
     METABASE = "metabase"
     SUPERSET = "superset"
+    PLOTLY = "plotly"
 
 
 class SuperSetChartSpec(BaseModel):
@@ -70,7 +71,7 @@ class ChartImpl:
 
     def generate_chart(
         self, df, ask=None, sql=None, chart_type=None, parent_uuid=None, tweak_history=None,
-    ) -> str:
+    ) -> ChartGenerationResponse:
 
         #Remove duplicate columns
         df = df.loc[:, ~df.columns.duplicated()]

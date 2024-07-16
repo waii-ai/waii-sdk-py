@@ -1,0 +1,52 @@
+---
+id: chat-module
+title: Chat
+---
+
+
+The `Chat` module contains methods to interact with a SQL Chatbot.
+
+**Important:** You need to activate the database connection first before using the methods in this module. Otherwise, you may be conversing with the wrong database.
+```python
+WAII.Database.activate_connection("snowflake://...&warehouse=COMPUTE_WH")
+```
+
+Here are some of its methods:
+
+### Send Chat Message
+
+```python
+WAII.chat.chat_message(params: ChatRequest) -> ChatResponse
+```
+
+This method sends a message to the chatbot based on the provided parameters.
+
+- `ask`: The question you want to ask the chatbot regarding your database `How many tables are there?`
+- `parent_uuid`: The uuid of the previous chat message if you want to continue the conversation
+- `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
+- `model`: Which LLM to be used to generate queries. By default system will choose a model.
+
+The ChatResponse contains different objects that represent the answer to the question
+- `response`: A templated response representing the answer to the question. The values for the templates can be found in the chat_response_data. The possible templates will be listed in the template section
+- `chat_uuid`: The uuid of the message, use this uuid as the parent uuid to continue the conversation
+- `is_new`: If sql was generated to answer this question, this field is true if the sql has been identified as a new query, not a tweak of the previous query that was maintained during the conversation
+- `timestamp`: The timestamp of the chat response
+- `response_data`: A `ChatResponseData` object containing the generated info for the question. A `ChatResponseData` object looks like
+  - `semantic_context`: A `GetSemanticContextResponse` object containing the semantic context from the database related to the ask and generated query
+  - `catalog`: A `CatalogDefinition` object containing the related tables to the question, if created
+  - `sql`: A `GeneratedQuery` object containing the generated query to answer the question, if created
+  - `data`: A `GetQueryResultResponse` object containing the result of the generated query if it was run
+  - `chart_spec`: A `ChartGenerationResponse` object containing the information for the visualization
+
+**Examples:**
+    
+Ask a new question:
+```python
+>>> response = WAII.chat.chat_message(ChatRequest(ask = "How many tables are there?"))
+```
+
+**Ask a follow-up question:**
+```python
+>>> response = WAII.chat.chat_message(ChatRequest(ask = "tables with more than 100 rows?", 
+                                                  parent_uuid=response.chat_uuid))
+```
