@@ -6,7 +6,7 @@ from ..common import LLMBasedRequest
 from ..query import GetQueryResultResponse, GeneratedQuery
 from ..database import CatalogDefinition
 from ..semantic_context import GetSemanticContextResponse
-from ..chart import ChartGenerationResponse
+from ..chart import ChartGenerationResponse, ChartType
 from ..waii_http_client import WaiiHttpClient
 
 CHAT_MESSAGE_ENDPOINT = "chat-message"
@@ -21,6 +21,9 @@ class ChatRequest(LLMBasedRequest):
 
     # link to previous conversation, pick up where conversation left off
     parent_uuid: Optional[str]
+
+    # optional chart type, default to plotly
+    chart_type: Optional[ChartType]
 
 
 class ChatResponseData(BaseModel):

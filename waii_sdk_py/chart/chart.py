@@ -10,7 +10,7 @@ from ..waii_http_client import WaiiHttpClient
 GENERATE_CHART_ENDPOINT = "generate-chart"
 
 
-class ChartType(Enum):
+class ChartType(str, Enum):
     METABASE = "metabase"
     SUPERSET = "superset"
     PLOTLY = "plotly"
@@ -40,9 +40,14 @@ class MetabaseChartSpec(BaseModel):
     color_hex: Optional[str]
 
 
+class PlotlyChartSpec(BaseModel):
+    spec_type: Literal['plotly'] = 'plotly'
+    plot: Optional[str]
+
+
 class ChartTweak(BaseModel):
     ask: Optional[str]
-    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
+    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec]]
 
     def __str__(self):
         return f"previous ask={self.ask}, previous chart_spec={self.chart_spec})\n"
@@ -61,7 +66,7 @@ class ChartGenerationRequest(LLMBasedRequest):
 class ChartGenerationResponse(BaseModel):
     uuid: str
     timestamp: Optional[int]
-    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
+    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec]]
 
 
 class ChartImpl:
