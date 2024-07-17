@@ -21,6 +21,6 @@ You can get your API key from the Waii server UI you have access to (You need to
 URL is the base URL of the WAII API, depends on the URL for the environment you are using: 
 - If you are using prod environment (sql.waii.ai, or tweakit.waii.ai), you can use 'https://sql.waii.ai/api/'
 - If you are using test environment (sql.test.waii.ai, or tweakit-test.waii.ai), you can use 'https://sql.test.waii.ai/api/'
-- If you are using local Docker environment, you can use 'http://<host>:<port>/api/'
+- If you are using local Docker environment, you can use `http://host:port/api/` (host/port are point to Waii server)
 
 ![img.png](img.png)
