@@ -66,6 +66,7 @@ class QueryGenerationRequest(LLMBasedRequest):
     uuid: Optional[str] = None
     dialect: Optional[str] = None
     parent_uuid: Optional[str] = None
+    flags: Optional[Dict[str, Any]] = None
 
 
 class DescribeQueryRequest(CommonRequest):
