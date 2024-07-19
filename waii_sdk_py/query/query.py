@@ -1,4 +1,5 @@
 import functools
+import math
 import threading
 import time
 import traceback
@@ -110,6 +111,19 @@ class Query(BaseModel):
     detailed_steps: Optional[List[str]]
 
 
+class ConfidenceScore(BaseModel):
+    log_prob_sum: Optional[float]
+    token_count: Optional[int]
+
+    def get_linear_probability(self):
+        if self.token_count:
+            avg_log_prob = self.log_prob_sum / self.token_count
+
+            return math.exp(avg_log_prob)
+        else:
+            return 0.0
+
+
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
     liked: Optional[bool] = None
@@ -122,6 +136,7 @@ class GeneratedQuery(BaseModel):
     is_new: Optional[bool] = None
     timestamp_ms: Optional[int] = None
     llm_usage_stats: Optional[LLMUsageStatistics] = None
+    confidence_score: Optional[ConfidenceScore]
     debug_info: Optional[Dict[str, Any]] = {}
     http_client: Optional[Any] = Field(default=None, exclude=True)
 
