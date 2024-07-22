@@ -40,6 +40,7 @@ class ChatResponse(BaseModel):
     response_data: Optional[ChatResponseData]
     is_new: Optional[bool] = False
     timestamp: int
+    timestamp_ms: Optional[int]
     chat_uuid: str
 
 

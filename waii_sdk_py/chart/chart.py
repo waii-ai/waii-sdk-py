@@ -66,6 +66,7 @@ class ChartGenerationRequest(LLMBasedRequest):
 class ChartGenerationResponse(BaseModel):
     uuid: str
     timestamp: Optional[int]
+    timestamp_ms: Optional[int]
     chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec]]
 
 

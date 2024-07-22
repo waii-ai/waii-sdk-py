@@ -13,6 +13,8 @@ GET_ENDPOINT = "get-history"
 
 class GeneratedHistoryEntryBase(BaseModel):
     history_type: str
+    # milliseconds since epoch
+    timestamp_ms: Optional[int]
 
 
 class GeneratedChartHistoryEntry(GeneratedHistoryEntryBase):
@@ -31,7 +33,7 @@ class GeneratedHistoryEntryType(str, Enum):
     chat = "chat"
 
 
-class GeneratedQueryHistoryEntry(BaseModel):
+class GeneratedQueryHistoryEntry(GeneratedHistoryEntryBase):
     query: Optional[GeneratedQuery] = None
     request: Optional[QueryGenerationRequest] = None
 
