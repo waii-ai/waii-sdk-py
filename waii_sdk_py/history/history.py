@@ -3,7 +3,8 @@ from typing import List, Optional
 
 from ..chat import ChatRequest, ChatResponse
 from ..my_pydantic import BaseModel
-from ..query import GeneratedQuery, QueryGenerationRequest, ChartGenerationRequest, ChartGenerationResponse
+from ..query import GeneratedQuery, QueryGenerationRequest
+from ..chart import ChartGenerationRequest, ChartGenerationResponse
 from ..waii_http_client import WaiiHttpClient
 
 LIST_ENDPOINT = "get-generated-query-history"
@@ -12,6 +13,8 @@ GET_ENDPOINT = "get-history"
 
 class GeneratedHistoryEntryBase(BaseModel):
     history_type: str
+    # milliseconds since epoch
+    timestamp_ms: Optional[int]
 
 
 class GeneratedChartHistoryEntry(GeneratedHistoryEntryBase):
@@ -30,7 +33,7 @@ class GeneratedHistoryEntryType(str, Enum):
     chat = "chat"
 
 
-class GeneratedQueryHistoryEntry(BaseModel):
+class GeneratedQueryHistoryEntry(GeneratedHistoryEntryBase):
     query: Optional[GeneratedQuery] = None
     request: Optional[QueryGenerationRequest] = None
 

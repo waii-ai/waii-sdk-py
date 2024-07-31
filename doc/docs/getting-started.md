@@ -5,6 +5,14 @@ title: Getting Started
 
 First you can print the list of available databases:
 
+Install and initialize the SDK
+```python
+>>> from waii_sdk_py import WAII
+>>> from waii_sdk_py.query import *
+>>> WAII.initialize(url='...', api_key="<your-api-key>")
+```
+(Refer to the [Installation](install.md) section for more details how to set url and api_key)
+
 ```python
 >>> print([conn.key for conn in WAII.Database.get_connections().connectors])
 ```

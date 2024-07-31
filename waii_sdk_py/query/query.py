@@ -1,4 +1,5 @@
 import functools
+import math
 import threading
 import time
 import traceback
@@ -24,7 +25,6 @@ AUTOCOMPLETE_ENDPOINT = "auto-complete"
 PERF_ENDPOINT = "get-query-performance"
 TRANSCODE_ENDPOINT = "transcode-query"
 PLOT_ENDPOINT = "python-plot"
-GENERATE_CHART_ENDPOINT = "generate-chart"
 GENERATE_QUESTION_ENDPOINT = "generate-questions"
 GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
 RUN_QUERY_COMPILER_ENDPOINT = "run-query-compiler"
@@ -66,6 +66,7 @@ class QueryGenerationRequest(LLMBasedRequest):
     uuid: Optional[str] = None
     dialect: Optional[str] = None
     parent_uuid: Optional[str] = None
+    flags: Optional[Dict[str, Any]] = {}
 
 
 class DescribeQueryRequest(CommonRequest):
@@ -111,6 +112,19 @@ class Query(BaseModel):
     detailed_steps: Optional[List[str]]
 
 
+class ConfidenceScore(BaseModel):
+    log_prob_sum: Optional[float]
+    token_count: Optional[int]
+
+    def get_linear_probability(self):
+        if self.token_count:
+            avg_log_prob = self.log_prob_sum / self.token_count
+
+            return math.exp(avg_log_prob)
+        else:
+            return 0.0
+
+
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
     liked: Optional[bool] = None
@@ -123,6 +137,7 @@ class GeneratedQuery(BaseModel):
     is_new: Optional[bool] = None
     timestamp_ms: Optional[int] = None
     llm_usage_stats: Optional[LLMUsageStatistics] = None
+    confidence_score: Optional[ConfidenceScore]
     debug_info: Optional[Dict[str, Any]] = {}
     http_client: Optional[Any] = Field(default=None, exclude=True)
 
@@ -212,55 +227,6 @@ class PythonPlotRequest(LLMBasedRequest):
     ask: Optional[str]
     dataframe_rows: Optional[List[Dict[str, Any]]]
     dataframe_cols: Optional[List[ColumnDefinition]]
-
-
-class ChartType(Enum):
-    METABASE = "metabase"
-    SUPERSET = "superset"
-
-class SuperSetChartSpec(BaseModel):
-    spec_type: Literal['superset']
-    plot_type: Optional[str]
-    metrics: Optional[List[str]]
-    dimensions: Optional[List[str]]
-    chart_name: Optional[str]
-    color_hex: Optional[str]
-    x_axis: Optional[str]
-    y_axis: Optional[str]
-    grid_style: Optional[str]
-    stacked: Optional[bool]
-    width: Optional[int]
-    height: Optional[int]
-
-class MetabaseChartSpec(BaseModel):
-    spec_type: Literal['metabase']
-    plot_type: Optional[str]
-    metric: Optional[str]
-    dimension: Optional[str]
-    name: Optional[str]
-    color_hex: Optional[str]
-
-class ChartTweak(BaseModel):
-    ask: Optional[str]
-    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
-
-    def __str__(self):
-        return f"previous ask={self.ask}, previous chart_spec={self.chart_spec})\n"
-
-class ChartGenerationRequest(LLMBasedRequest):
-    sql: Optional[str]
-    ask: Optional[str]
-    dataframe_rows: Optional[List[Dict[str, Any]]]
-    dataframe_cols: Optional[List[ColumnDefinition]]
-    chart_type: Optional[ChartType]
-    parent_uuid: Optional[str]
-    tweak_history: Optional[List[ChartTweak]]
-
-class ChartGenerationResponse(BaseModel):
-    uuid: str
-    timestamp: Optional[int]
-    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec]]
-
 
 
 class PythonPlotResponse(BaseModel):
@@ -489,33 +455,6 @@ class QueryImpl:
             print("=== generated code ===")
             print(p)
         return p
-
-
-    def generate_chart(
-        self, df, ask=None, sql=None, chart_type=None, parent_uuid=None, tweak_history=None,
-    ) -> str:
-
-        #Remove duplicate columns
-        df = df.loc[:, ~df.columns.duplicated()]
-
-        cols = []
-        for col in df.columns:
-            cols.append(ColumnDefinition(name=col, type=df[col][0].__class__.__name__))
-
-
-        params = ChartGenerationRequest(dataframe_cols=cols,
-                                        dataframe_rows=df.to_dict(orient='records'),
-                                        ask=ask,
-                                        chart_type=chart_type,
-                                        parent_uuid=parent_uuid,
-                                        tweak_history=tweak_history)
-
-        params_dict = {k: v.value if isinstance(v, Enum) else v for k, v in params.dict().items() if v is not None}
-
-        return self.http_client.common_fetch(
-            GENERATE_CHART_ENDPOINT, params_dict, ChartGenerationResponse
-        )
-
 
     def generate_question(
         self, params: GenerateQuestionRequest
