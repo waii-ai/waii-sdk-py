@@ -76,7 +76,6 @@ class TestDatabase(unittest.TestCase):
                 break
 
         # then add the new connection
-        self.db_conn
         new_result = WAII.Database.modify_connections(
             ModifyDBConnectionRequest(updated=[self.db_conn])
         ).connectors

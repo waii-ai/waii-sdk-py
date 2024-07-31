@@ -165,9 +165,11 @@ class DBContentFilterActionType(str, Enum):
     sample_values = "sample_values"
 
 class SearchContext(BaseModel):
-    db_name: Optional[str] = '*'
-    schema_name: Optional[str] = '*'  # cannot use schema because it is an internal keyword of fastapi
-    table_name: Optional[str] = '*'
+    db_name: Optional[str] = "*"
+    schema_name: Optional[str] = "*"
+    table_name: Optional[str] = "*"
+
+
 
 class DBContentFilter(BaseModel):
     filter_scope: DBContentFilterScope
@@ -223,10 +225,6 @@ class ModifyDBConnectionResponse(BaseModel):
     connector_status: Optional[Dict[str, DBConnectionIndexingStatus]]
 
 
-class SearchContext(BaseModel):
-    db_name: Optional[str] = "*"
-    schema_name: Optional[str] = "*"
-    table_name: Optional[str] = "*"
 
 
 class GetCatalogRequest(LLMBasedRequest):
