@@ -148,6 +148,38 @@ class CatalogDefinition(BaseModel):
     name: str
     schemas: Optional[List[SchemaDefinition]]
 
+class DBContentFilterScope(str, Enum):
+    schema = "schema"
+    table = "table"
+    column = "column"
+
+class DBContentFilterType(str, Enum):
+    include = "include"
+    exclude = "exclude"
+
+class DBContentFilterActionType(str, Enum):
+    # this means we will include/exclude the content
+    visibility = "visibility"
+
+    # this means we will do sample value or not
+    sample_values = "sample_values"
+
+class SearchContext(BaseModel):
+    db_name: Optional[str] = "*"
+    schema_name: Optional[str] = "*"
+    table_name: Optional[str] = "*"
+
+
+
+class DBContentFilter(BaseModel):
+    filter_scope: DBContentFilterScope
+    filter_type: DBContentFilterType = DBContentFilterType.include
+    filter_action_type: DBContentFilterActionType = DBContentFilterActionType.visibility
+    ignore_case: Optional[bool] = True
+    pattern: str  # regex pattern
+    search_context: Optional[List[SearchContext]]
+
+
 
 class DBConnection(BaseModel):
     key: str
@@ -165,7 +197,7 @@ class DBConnection(BaseModel):
     parameters: Optional[Dict[str, Any]] = None
     sample_col_values: Optional[bool]
     push:Optional[bool] = False
-
+    db_content_filters: Optional[List[DBContentFilter]]
 
 class ModifyDBConnectionRequest(BaseModel):
     updated: Optional[List[DBConnection]] = None
@@ -193,10 +225,6 @@ class ModifyDBConnectionResponse(BaseModel):
     connector_status: Optional[Dict[str, DBConnectionIndexingStatus]]
 
 
-class SearchContext(BaseModel):
-    db_name: Optional[str] = "*"
-    schema_name: Optional[str] = "*"
-    table_name: Optional[str] = "*"
 
 
 class GetCatalogRequest(LLMBasedRequest):

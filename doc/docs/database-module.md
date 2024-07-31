@@ -33,6 +33,7 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `role`: Role name of the connection, apply to `Snowflake` ((not needed for push based database))
 - `host`/`port`: Host/port of the connection, apply to `postgresql` and `mongodb`. For push based database it does not have to be correct host. It just needs to be unique identifier.
 - `sample_col_values`: Do you want to let Waii to sample your string/variant columns. True if you want to sample, False if you don't want to sample. Default is False. This is optional, which can help Waii to generate better queries.
+- `db_content_filters`: If you want Waii to exclude certain columns , tables from database while generating the query, you can pass the db_content_filter. This is optional.
 
 Examples of creating `DBConnection` Object
 

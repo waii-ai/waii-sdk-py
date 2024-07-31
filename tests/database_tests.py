@@ -9,7 +9,7 @@ from waii_sdk_py.database import (
     TableName,
     ColumnDefinition,
     TableReference,
-    UpdateTableDefinitionRequest,
+    UpdateTableDefinitionRequest, DBContentFilter,
 )
 
 
@@ -37,6 +37,7 @@ class TestDatabase(unittest.TestCase):
             role=db_conn_json["role"],
             host=db_conn_json["host"],
             port=db_conn_json["port"],
+            db_content_filters = [DBContentFilter(filter_scope="column", filter_type="exclude", ignore_case=False, pattern = "ID")]
         )
 
     def _load_push_based_conn(self):
@@ -102,6 +103,8 @@ class TestDatabase(unittest.TestCase):
                 for table in schema.tables:
                     if len(table.refs) > 0:
                         assert type(table.refs[0]) == TableReference
+                    for col in table.columns:
+                        assert col.name != "ID"
 
     def test_modify_push_connection(self):
         result = WAII.Database.get_connections().connectors
