@@ -65,6 +65,11 @@ class TestQuery(unittest.TestCase):
         assert len(result.query) > 0
         assert '42' in result.query.lower()
 
+    def test_like_query(self):
+        params = LikeQueryRequest(liked=True,ask="like test ask", query="SELECT S_STATE FROM STORE",
+                                  detailed_steps=["step3", "step4"])
+        result = WAII.Query.like(params)
+        self.assertIsInstance(result, LikeQueryResponse)
 
 if __name__ == '__main__':
     unittest.main()
