@@ -192,7 +192,7 @@ class LikeQueryRequest(CommonRequest):
 
     # do we want to rewrite the question before storing it? by default, it is True. If it is False, then we will store
     # the ask as-is
-    rewrite_question: Optional[bool] = True
+    rewrite_question: Optional[bool] = False
     detailed_steps: Optional[List[str]] = []
 
 
