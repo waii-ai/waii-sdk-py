@@ -284,6 +284,8 @@ Query.like(params: LikeQueryRequest) -> LikeQueryResponse
     query: Optional[str]
     liked: Optional[bool] = True
     rewrite_question: Optional[bool] = True
+    detailed_steps: Optional[List[str]] = []
+    
 ```
 
 You can specify a query is liked or unliked by set `liked` to True/False
@@ -294,6 +296,8 @@ Or, you can specify `ask` and `query` to like a query.
 
 Important: `rewrite_question` is optional, if you set it to True (default), the system will rewrite the ask based on query and the ask. Why we do this because sometimes the ask itself is wrong, ambiguous, etc. and we want to make sure the ask is clear. 
 However, sometimes you may want to keep the original ask, you can set it to False.
+
+You can specify `detailed_steps` of generating the query in LikedQuery. This is optional.
 
 Examples: 
 
