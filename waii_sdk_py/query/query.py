@@ -115,6 +115,7 @@ class Query(BaseModel):
 class ConfidenceScore(BaseModel):
     log_prob_sum: Optional[float]
     token_count: Optional[int]
+    confidence_value: Optional[float]
 
     def get_linear_probability(self):
         if self.token_count:

@@ -18,6 +18,7 @@ class TestQuery(unittest.TestCase):
         assert len(result.query) > 0
         assert 'information_schema' in result.query.lower()
         assert len(result.tables) > 0
+        assert hasattr(result.confidence_score, "confidence_value")
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
         result = WAII.Query.like(params)
