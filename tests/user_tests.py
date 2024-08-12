@@ -103,7 +103,7 @@ class TestUser(unittest.TestCase):
         resp = WAII.user.list_users(params)
         user1 = [user for user in resp.users if user.id == "user1"]
         assert user1[0].name == "Pravin"
-        
+
         params = DeleteUserRequest(id="user1")
         resp = WAII.user.delete_user(params)
         assert isinstance(resp, CommonResponse)
