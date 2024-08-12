@@ -56,6 +56,16 @@ module.exports = {
 					type: 'doc',
 					id: 'chat-module',
 					label: 'Chat'
+				},
+				{
+					type: 'doc',
+					id: 'user-module',
+					label: 'User'
+				},
+				{
+					type: 'doc',
+					id: 'multi-tenant-client-module',
+					label: 'Multi-tenant Waii SDK Client'
 				}
             ],
         },

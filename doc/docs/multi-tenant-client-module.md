@@ -34,13 +34,13 @@ The table below summarizes how to access different modules in both the static an
 
 | Module          | Static Client          | Multi-Tenant Client            |
 |-----------------|------------------------|--------------------------------|
-| Database        | `WAII.Database`        | `client1_sdk.database`         |
-| History         | `WAII.History`         | `client1_sdk.history`          |
-| Query           | `WAII.Query`           | `client1_sdk.query`            |
-| SemanticContext | `WAII.SemanticContext` | `client1_sdk.semantic_context` |
-| User            | `WAII.user`            | `client1_sdk.user`             |
-| Chart           | `WAII.chart`           | `client1_sdk.chart`            |
-| Chat            | `WAII.chat`            | `client1_sdk.chat`             |
+| Database        | `WAII.Database`        | `<waii_sdk_client>.database`         |
+| History         | `WAII.History`         | `<waii_sdk_client>.history`          |
+| Query           | `WAII.Query`           | `<waii_sdk_client>.query`            |
+| SemanticContext | `WAII.SemanticContext` | `<waii_sdk_client>.semantic_context` |
+| User            | `WAII.User`            | `<waii_sdk_client>.user`             |
+| Chart           | `WAII.Chart`           | `<waii_sdk_client>.chart`            |
+| Chat            | `WAII.Chat`            | `<waii_sdk_client>.chat`             |
 
 This setup provides flexibility by allowing different clients to interact with different databases and configurations, all within the same application.
 

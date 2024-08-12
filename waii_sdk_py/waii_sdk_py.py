@@ -56,6 +56,9 @@ class Waii:
             self.Query = self.query
             self.Database = self.database
             self.SemanticContext = self.semantic_context
+            self.Chart = self.chart
+            self.Chat = self.chat
+            self.User = self.user
             Query.http_client = http_client
             History.http_client = http_client
             Database.http_client = http_client
