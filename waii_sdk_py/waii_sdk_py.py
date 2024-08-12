@@ -6,6 +6,7 @@ from .history import HistoryImpl, History
 from .query import QueryImpl, Query
 from .database import DatabaseImpl, Database
 from .semantic_context import SemanticContextImpl, SemanticContext
+from .user import UserImpl
 from .waii_http_client import WaiiHttpClient
 import importlib.metadata
 from pydantic import BaseModel
@@ -48,6 +49,7 @@ class Waii:
         self.semantic_context = SemanticContextImpl(http_client)
         self.chat = ChatImpl(http_client)
         self.chart = ChartImpl(http_client)
+        self.user = UserImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history
