@@ -40,7 +40,7 @@ class TestHistory(unittest.TestCase):
             parent_uuid = None
             for a in asks:
                 chat_request = ChatRequest(ask=a, parent_uuid=parent_uuid)
-                chat_response = WAII.chat.chat_message(chat_request)
+                chat_response = WAII.Chat.chat_message(chat_request)
                 print('Ask:', a)
                 print(chat_response.response)
                 if chat_response.response_data.sql:

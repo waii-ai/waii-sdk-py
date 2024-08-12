@@ -8,7 +8,7 @@ Here are some of its methods:
 
 ### Create Access Key
 ```python
-WAII.user.create_access_key(params: CreateAccessKeyRequest) -> GetAccessKeyResponse
+WAII.User.create_access_key(params: CreateAccessKeyRequest) -> GetAccessKeyResponse
 ```
 This method creates a new access key for a user.
 
@@ -37,7 +37,7 @@ response = Waii.user.create_access_key(params)
 
 ### List Access Keys
 ```python
-WAII.user.list_access_keys(params: GetAccessKeyRequest) -> GetAccessKeyResponse
+WAII.User.list_access_keys(params: GetAccessKeyRequest) -> GetAccessKeyResponse
 ```
 This method list access keys of the user.
 
@@ -49,14 +49,14 @@ For Example
 ```python
 
 params = GetAccessKeyRequest()
-resp = WAII.user.list_access_keys(params)
+resp = WAII.User.list_access_keys(params)
 
 >>> print(response.access_keys)  # List of  access keys
 ```
 
 ### Delete Access key
 ```python
-WAII.user.delete_access_key(params: DelAccessKeyRequest) -> DelAccessKeyResponse
+WAII.User.delete_access_key(params: DelAccessKeyRequest) -> DelAccessKeyResponse
 ```
 This method deletes the access key of the user.
 
@@ -69,12 +69,12 @@ For Example
 ```python
 
 params = DelAccessKeyRequest(names=["test2"])
-resp = WAII.user.delete_access_key(params)
+resp = WAII.User.delete_access_key(params)
 ```
 
 ### Get User Info
 ```python
-WAII.user.get_user_info(params: GetUserInfoRequest) -> GetUserInfoResponse
+WAII.User.get_user_info(params: GetUserInfoRequest) -> GetUserInfoResponse
 ```
 This method retrieves information about a user.
 
@@ -92,13 +92,13 @@ Response fields:
 For Example:
 ```python
 params = GetUserInfoRequest(user_id="user_1")
-response = WAII.user.get_user_info(params)
+response = WAII.User.get_user_info(params)
 >>> print(response.user_info)  # Details of the requested user
 ```
 
 ### Update Config
 ```python
-WAII.user.update_config(params: UpdateConfigRequest) -> UpdateConfigResponse
+WAII.User.update_config(params: UpdateConfigRequest) -> UpdateConfigResponse
 ```
 This method updates configuration settings for a user.
 
@@ -113,13 +113,13 @@ Response fields:
 For Example:
 ```python
 params = UpdateConfigRequest(updated={"key1": "value1", "key2": "value2"})
-response = WAII.user.update_config(params)
+response = WAII.User.update_config(params)
 >>> print(response)  
 ```
 
 ### Create User
 ```python
-WAII.user.create_user(params: CreateUserRequest) -> CommonResponse
+WAII.User.create_user(params: CreateUserRequest) -> CommonResponse
 ```
 This method creates a new user.
 
@@ -141,13 +141,13 @@ For Example:
 ```python
 
 params = CreateUserRequest(user=UserDTO( id="user1",name="John Doe",tenant_id="my_tenant_id",org_id="my_org_id"))
-response = WAII.user.create_user(params)
+response = WAII.User.create_user(params)
 >>> print(response)  # Confirmation of user creation
 ```
 
 ### Delete User
 ```python
-WAII.user.delete_user(params: DeleteUserRequest) -> CommonResponse
+WAII.User.delete_user(params: DeleteUserRequest) -> CommonResponse
 ```
 This method deletes an existing user.
 
@@ -160,13 +160,13 @@ Response fields:
 For Example:
 ```python
 params = DeleteUserRequest(id="user_1")
-response = WAII.user.delete_user(params)
+response = WAII.User.delete_user(params)
 >>> print(response)  
 ```
 
 ### Update User
 ```python
-WAII.user.update_user(params: UpdateUserRequest) -> CommonResponse
+WAII.User.update_user(params: UpdateUserRequest) -> CommonResponse
 ```
 This method updates information about an existing user.
 
@@ -181,13 +181,13 @@ Response fields:
 For Example:
 ```python
 params = UpdateUserRequest(user=UserDTO( id="user1",name="Pravin",tenant_id="my_tenant_id",org_id="my_org_id"))
-response = WAII.user.update_user(params)
+response = WAII.User.update_user(params)
 >>> print(response)  
 ```
 
 ### List Users
 ```python
-WAII.user.list_users(params: ListUsersRequest) -> ListUsersResponse
+WAII.User.list_users(params: ListUsersRequest) -> ListUsersResponse
 ```
 This method retrieves a list of users.
 
@@ -201,7 +201,7 @@ Response fields:
 For Example:
 ```python
 params = ListUsersRequest(lookup_org_id="my_org_id")
-response = WAII.user.list_users(params)
+response = WAII.User.list_users(params)
 >>> print(response.users)  # List of all users
 ```
 
