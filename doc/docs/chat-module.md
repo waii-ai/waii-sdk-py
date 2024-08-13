@@ -16,7 +16,7 @@ Here are some of its methods:
 ### Send Chat Message
 
 ```python
-WAII.chat.chat_message(params: ChatRequest) -> ChatResponse
+WAII.Chat.chat_message(params: ChatRequest) -> ChatResponse
 ```
 
 This method sends a message to the chatbot based on the provided parameters.
@@ -42,12 +42,12 @@ The ChatResponse contains different objects that represent the answer to the que
     
 Ask a new question:
 ```python
->>> response = WAII.chat.chat_message(ChatRequest(ask = "How many tables are there?"))
+>>> response = WAII.Chat.chat_message(ChatRequest(ask = "How many tables are there?"))
 ```
 
 **Ask a follow-up question:**
 ```python
->>> response = WAII.chat.chat_message(ChatRequest(ask = "tables with more than 100 rows?", 
+>>> response = WAII.Chat.chat_message(ChatRequest(ask = "tables with more than 100 rows?", 
                                                   parent_uuid=response.chat_uuid))
 ```
 

@@ -159,6 +159,7 @@ class RunQueryResponse(BaseModel):
 
 class GetQueryResultRequest(CommonRequest):
     query_id: str
+    max_returned_rows: Optional[int] = None
 
 
 class CancelQueryRequest(CommonRequest):

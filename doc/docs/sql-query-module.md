@@ -262,6 +262,7 @@ Query.get_results(params: GetQueryResultRequest) -> GetQueryResultResponse
 ```
 
 Return query result by providing uuid, same as `Query.run`, but you need to specify `query_id` instead of `query` in the request.
+You can optionally provide the max no of rows you want query to return  through `max_returned_rows` parameter. Default value of same is 10000
 
 #### Cancel
 

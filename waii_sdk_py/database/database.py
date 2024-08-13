@@ -198,6 +198,8 @@ class DBConnection(BaseModel):
     sample_col_values: Optional[bool]
     push:Optional[bool] = False
     db_content_filters: Optional[List[DBContentFilter]]
+    embedding_model: Optional[str]
+    always_include_tables: Optional[List[TableName]]
 
 class ModifyDBConnectionRequest(BaseModel):
     updated: Optional[List[DBConnection]] = None

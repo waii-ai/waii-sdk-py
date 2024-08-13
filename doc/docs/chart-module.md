@@ -11,7 +11,7 @@ Here are some of its methods:
 ### Generate Chart
 
 ```python
-WAII.chart.generate_chart(df, ask, sql, chart_type, tweak_history) -> ChartGenerationResponse
+WAII.Chart.generate_chart(df, ask, sql, chart_type, tweak_history) -> ChartGenerationResponse
 ```
 
 This method generates the necessary information for a plot of `plot_type` based on the provided parameters.
@@ -31,8 +31,8 @@ Parameter fields:
 ```python
 from waii_sdk_py.query import RunQueryRequest
 query = None
-run_query_response = WAII.query.run(RunQueryRequest(ask=query))
->>> chart = WAII.chart.generate_chart(df=run_query_response.to_pandas_df(), 
+run_query_response = WAII.Query.run(RunQueryRequest(ask=query))
+>>> chart = WAII.Chart.generate_chart(df=run_query_response.to_pandas_df(), 
                                       ask="Draw a bar graph",
                                       sql=query,
                                       chart_type=ChartType.METABASE)
@@ -40,7 +40,7 @@ run_query_response = WAII.query.run(RunQueryRequest(ask=query))
 
 **Ask a follow-up question:**
 ```python
->>> WAII.chart.generate_chart(df=run_query_response.to_pandas_df(), 
+>>> WAII.Chart.generate_chart(df=run_query_response.to_pandas_df(), 
                               ask="Title the graph trends per year, sort by year order descending",
                               sql=query,
                               chart_type=ChartType.METABASE,

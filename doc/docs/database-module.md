@@ -34,6 +34,8 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `host`/`port`: Host/port of the connection, apply to `postgresql` and `mongodb`. For push based database it does not have to be correct host. It just needs to be unique identifier.
 - `sample_col_values`: Do you want to let Waii to sample your string/variant columns. True if you want to sample, False if you don't want to sample. Default is False. This is optional, which can help Waii to generate better queries.
 - `db_content_filters`: If you want Waii to exclude certain columns , tables from database while generating the query, you can pass the db_content_filter. This is optional.
+- `always_include_tables`: If it is not None, then these tables will always be included, even if table selector doesn't select them
+- `embedding_model`: Embedding model used for similarity search within the knowledge graph.
 
 Examples of creating `DBConnection` Object
 

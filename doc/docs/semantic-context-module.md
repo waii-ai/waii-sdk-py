@@ -33,6 +33,7 @@ For `updated`, you should include a list of `SemanticStatement` object, which in
 - `statement`: (str), the statement you want to add. Such as `revenue is calculated by multiplying price and quantity`
 - `scope`: (str), the scope of the statement, such as `*` (which means it applies to all queries), or `db.schema.table.column` (which means it applies to specific column of specific table of specific schema of specific database). This is optional, if not specified, it will be `*`. When `always_include` is False, `scope` will be ignored.
 - `always_include`: should we always include this statement during query generation? True/False. Default is True. This is optional. When it is False, we will use embedding/LLM to do a RAG process and match statements during query generation.
+- `critical`: This is optional parameter whose default value is False.If set to True it checks the application of the rule in a second step after query generation if the rule is within scope
 - `lookup_summaries`: Only take effect when `always_include=False`, you can specify a list of search keys for this statement, if not specified, then use statement as search key. This is optional.
 - `summarization_prompt`: extract prompt from the statement, if not specified, then use statement as extract prompt. This is optional.
 
@@ -94,6 +95,7 @@ Parameters of `GetSemanticContextRequest`:
   - `always_include`: (bool) filter by always_include, default is None (which means no filter).
   - `labels`: (List[str]) filter by labels, default is None (which means no filter).
   - `scope`: (str) filter by scope, default is None (which means no filter).
+  - `statement`: (str) filter by statement, default is None (which means no filter).
 - `offset`: (int) offset of the result, default is 0.
 - `limit`: (int) limit of the result, default is 1000.
 - `search_text`: (str) search text to filter the semantic context.

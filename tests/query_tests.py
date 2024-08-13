@@ -71,6 +71,10 @@ class TestQuery(unittest.TestCase):
                                   detailed_steps=["step3", "step4"])
         result = WAII.Query.like(params)
         self.assertIsInstance(result, LikeQueryResponse)
+        params = QueryGenerationRequest(ask="like test ask")
+        result = WAII.Query.generate(params)
+        assert result.detailed_steps == ["step3", "step4"]
+
 
 if __name__ == '__main__':
     unittest.main()

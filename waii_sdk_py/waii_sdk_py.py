@@ -1,11 +1,13 @@
 from typing import Optional, List
 
-from .chart import ChartImpl
-from .chat import ChatImpl
+from .chart import ChartImpl, Chart
+from .chat import ChatImpl, Chat
 from .history import HistoryImpl, History
 from .query import QueryImpl, Query
 from .database import DatabaseImpl, Database
 from .semantic_context import SemanticContextImpl, SemanticContext
+from .user import UserImpl
+from .user.user_static import User
 from .waii_http_client import WaiiHttpClient
 import importlib.metadata
 from pydantic import BaseModel
@@ -36,6 +38,7 @@ class Waii:
         self.semantic_context = None
         self.chat = None
         self.chart = None
+        self.user = None
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
@@ -48,16 +51,24 @@ class Waii:
         self.semantic_context = SemanticContextImpl(http_client)
         self.chat = ChatImpl(http_client)
         self.chart = ChartImpl(http_client)
+        self.user = UserImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history
             self.Query = self.query
             self.Database = self.database
             self.SemanticContext = self.semantic_context
+            self.Chart = self.chart
+            self.Chat = self.chat
+            self.User = self.user
             Query.http_client = http_client
             History.http_client = http_client
             Database.http_client = http_client
             SemanticContext.http_client = http_client
+            User.http_client = http_client
+            Chat.http_client = http_client
+            Chart.http_client = http_client
+
 
         conns = self.database.get_connections().connectors
         if len(conns) > 0:
