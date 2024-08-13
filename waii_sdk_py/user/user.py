@@ -58,7 +58,7 @@ class UpdateConfigRequest(BaseModel):
 class UpdateConfigResponse(BaseModel):
     configs: Dict[str, Any]
 
-class UserDTO(BaseModel):
+class User(BaseModel):
     id: str  # unique id for the user
     name: Optional[str]  # display name for the user
     tenant_id: Optional[str]  # tenant id for the user
@@ -67,10 +67,10 @@ class UserDTO(BaseModel):
     roles: Optional[List[str]] = []  # roles for the user
 
 class CreateUserRequest(BaseModel):
-    user: UserDTO
+    user: User
 
 class UpdateUserRequest(BaseModel):
-    user: UserDTO
+    user: User
 
 class DeleteUserRequest(BaseModel):
     id: str
@@ -82,7 +82,7 @@ class ListUsersRequest(BaseModel):
     lookup_org_id: Optional[str]
 
 class ListUsersResponse(CommonResponse):
-    users: List[UserDTO]
+    users: List[User]
 
 
 
@@ -124,4 +124,3 @@ class UserImpl:
 
 
 
-User = UserImpl(WaiiHttpClient.get_instance())

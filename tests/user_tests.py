@@ -1,8 +1,9 @@
 import unittest
 
+from waii_sdk_py.user import User as UserModel,BaseModel
 from waii_sdk_py import WAII
 from waii_sdk_py.user import CreateAccessKeyRequest, DelAccessKeyRequest, DelAccessKeyResponse, GetAccessKeyRequest, \
-    GetUserInfoRequest, GetUserInfoResponse, UpdateConfigRequest, User, CreateUserRequest, UserDTO, DeleteUserRequest, \
+    GetUserInfoRequest, GetUserInfoResponse, UpdateConfigRequest, CreateUserRequest, User, DeleteUserRequest, \
     CommonResponse, ListUsersRequest, UpdateUserRequest
 
 
@@ -86,7 +87,7 @@ class TestUser(unittest.TestCase):
             resp = WAII.User.delete_user(params)
         except:
             pass
-        params = CreateUserRequest(user=UserDTO( id="user1",name="Wangda Tan",tenant_id="my_tenant_id",org_id="my_org_id"))
+        params = CreateUserRequest(user=UserModel( id="user1",name="Wangda Tan",tenant_id="my_tenant_id",org_id="my_org_id"))
         resp = WAII.User.create_user(params)
         assert isinstance(resp, CommonResponse)
 
@@ -95,7 +96,7 @@ class TestUser(unittest.TestCase):
         user1 = [user for user in resp.users if user.id == "user1"]
         assert len(user1) > 0
 
-        params = UpdateUserRequest(user=UserDTO( id="user1",name="Pravin",tenant_id="my_tenant_id",org_id="my_org_id"))
+        params = UpdateUserRequest(user=UserModel( id="user1",name="Pravin",tenant_id="my_tenant_id",org_id="my_org_id"))
         resp = WAII.User.update_user(params)
         assert isinstance(resp, CommonResponse)
 
