@@ -87,6 +87,10 @@ class GetHistoryRequest(BaseModel):
     # filter by uuid of the entry
     uuid_filter: Optional[str] = None
 
+    # filter by the liked query flag, by default it will include both liked and unliked queries.
+    # when this is set to not None, you must only include query as included_types.
+    liked_query_filter: Optional[bool] = None
+
 
 class HistoryImpl:
     def __init__(self, http_client: WaiiHttpClient):
