@@ -213,21 +213,21 @@ This method creates a new tenant.
 
 `CreateTenantRequest` has the following properties:
 
-	•	`tenant`: Tenant object
-	    •	`id`: (string) unique id of the tenant
-	    •	`name`: (string) Display name of the tenant to be created.
-	    •	`variables`: (Dict (str, Any)) variable of the tenant
-	    •	`org_id`: Org_id of the tenant
+- `tenant`: Tenant object
+  - `id`: (string) unique id of the tenant
+  - `name`: (string) Display name of the tenant to be created.
+  - `variables`: (Dict (str, Any)) variables of the tenant
+  - `org_id`: (string) Org ID of the tenant
 
 Response fields:
 
-	•	`CommonResponse`: Empty object
+- `CommonResponse`: Empty object
 
 For Example:
 ```python
-params = CreateTenantRequest(tenant=Tenant(id="tenant1", name="Example Tenant", variables={"key1": "value1"}, roles=["role1"]))
+params = CreateTenantRequest(tenant=Tenant(id="tenant1", name="Example Tenant", variables={"key1": "value1"}, org_id="org123"))
 response = WAII.User.create_tenant(params)
->>> print(response)  
+print(response)  
 ```
 
 ### Update Tenant
@@ -238,17 +238,17 @@ This method updates information about an existing tenant.
 
 `UpdateTenantRequest` has the following properties:
 
-	•	`tenant`: Tenant object as described in create tenant section
+- `tenant`: Tenant object as described in the create tenant section
 
 Response fields:
 
-	•	`CommonResponse`: Empty object
+- `CommonResponse`: Empty object
 
 For Example:
 ```python
-params = UpdateTenantRequest(tenant=Tenant(id="tenant1", name="Updated Tenant", variables={"key2": "value2"}, roles=["role2"]))
+params = UpdateTenantRequest(tenant=Tenant(id="tenant1", name="Updated Tenant", variables={"key2": "value2"}, org_id="org123"))
 response = WAII.User.update_tenant(params)
->>> print(response)  
+print(response)  
 ```
 
 ### Delete Tenant
@@ -259,17 +259,17 @@ This method deletes an existing tenant.
 
 `DeleteTenantRequest` has the following properties:
 
-	•	`id`: The tenant_id  to be deleted.
+- `id`: The tenant_id to be deleted.
 
 Response fields:
 
-	•	`CommonResponse`: Empty object
+- `CommonResponse`: Empty object
 
 For Example:
 ```python
 params = DeleteTenantRequest(id="tenant1")
 response = WAII.Tenant.delete_tenant(params)
->>> print(response)  
+print(response)  
 ```
 
 ### List Tenants
@@ -280,18 +280,18 @@ This method retrieves a list of tenants.
 
 `ListTenantsRequest` has the following properties:
 
-	•	`lookup_org_id`: (optional) org_id for which the tenants are to be retrieved.
+- `lookup_org_id`: (optional) org_id for which the tenants are to be retrieved.
 
 Response fields:
 
-	•	`ListTenantsResponse`:
-	    •	`tenants`: A list of Tenant objects.
+- `ListTenantsResponse`:
+  - `tenants`: A list of Tenant objects.
 
 For Example:
 ```python
 params = ListTenantsRequest(lookup_org_id="org123")
 response = WAII.User.list_tenants(params)
->>> print(response.tenants)  # List of all tenants
+print(response.tenants)  # List of all tenants
 ```
 
 ### Create Org
