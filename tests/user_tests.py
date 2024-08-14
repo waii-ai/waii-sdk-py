@@ -8,10 +8,6 @@ from waii_sdk_py.user import CreateAccessKeyRequest, DelAccessKeyRequest, DelAcc
     GetUserInfoRequest, GetUserInfoResponse, UpdateConfigRequest, CreateUserRequest, User, DeleteUserRequest, \
     CommonResponse, ListUsersRequest, UpdateUserRequest
 
-
-
-
-
 class TestUser(unittest.TestCase):
     def setUp(self):
         WAII.initialize(url="http://localhost:9859/api/")
@@ -179,32 +175,6 @@ class TestUser(unittest.TestCase):
         resp = WAII.User.list_tenants(params)
         tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"]
         assert len(tenant1) == 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
     unittest.main()
