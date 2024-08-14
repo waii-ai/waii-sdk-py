@@ -205,5 +205,178 @@ response = WAII.User.list_users(params)
 >>> print(response.users)  # List of all users
 ```
 
+### Create Tenant
+```python
+WAII.User.create_tenant(params: CreateTenantRequest) -> CommonResponse
+```
+This method creates a new tenant.
 
+`CreateTenantRequest` has the following properties:
+
+- `tenant`: Tenant object
+  - `id`: (string) unique id of the tenant
+  - `name`: (string) Display name of the tenant to be created.
+  - `variables`: (Dict (str, Any)) variables of the tenant
+  - `org_id`: (string) Org ID of the tenant
+
+Response fields:
+
+- `CommonResponse`: Empty object
+
+For Example:
+```python
+params = CreateTenantRequest(tenant=Tenant(id="tenant1", name="Example Tenant", variables={"key1": "value1"}, org_id="org123"))
+response = WAII.User.create_tenant(params)
+print(response)  
+```
+
+### Update Tenant
+```python
+WAII.User.update_tenant(params: UpdateTenantRequest) -> CommonResponse
+```
+This method updates information about an existing tenant.
+
+`UpdateTenantRequest` has the following properties:
+
+- `tenant`: Tenant object as described in the create tenant section
+
+Response fields:
+
+- `CommonResponse`: Empty object
+
+For Example:
+```python
+params = UpdateTenantRequest(tenant=Tenant(id="tenant1", name="Updated Tenant", variables={"key2": "value2"}, org_id="org123"))
+response = WAII.User.update_tenant(params)
+print(response)  
+```
+
+### Delete Tenant
+```python
+WAII.User.delete_tenant(params: DeleteTenantRequest) -> CommonResponse
+```
+This method deletes an existing tenant.
+
+`DeleteTenantRequest` has the following properties:
+
+- `id`: The tenant_id to be deleted.
+
+Response fields:
+
+- `CommonResponse`: Empty object
+
+For Example:
+```python
+params = DeleteTenantRequest(id="tenant1")
+response = WAII.Tenant.delete_tenant(params)
+print(response)  
+```
+
+### List Tenants
+```python
+WAII.User.list_tenants(params: ListTenantsRequest) -> ListTenantsResponse
+```
+This method retrieves a list of tenants.
+
+`ListTenantsRequest` has the following properties:
+
+- `lookup_org_id`: (optional) org_id for which the tenants are to be retrieved.
+
+Response fields:
+
+- `ListTenantsResponse`:
+  - `tenants`: A list of Tenant objects.
+
+For Example:
+```python
+params = ListTenantsRequest(lookup_org_id="org123")
+response = WAII.User.list_tenants(params)
+print(response.tenants)  # List of all tenants
+```
+
+### Create Org
+```python
+WAII.User.create_org(params: CreateOrganizationRequest) -> CommonResponse
+```
+This method creates a new org.
+
+`CreateOrganizationRequest` has the following properties:
+
+- `organization`: Organization object
+  - `id`: (string) unique id of the organization
+  - `name`: (string) Display name of the organization to be created.
+  - `variables`: (Dict (str, Any)) variables of the organization
+
+Response fields:
+
+- `CommonResponse`: Empty object
+
+For Example:
+```python
+params = CreateOrganizationRequest(organization=Organization(id="o1", name="My Org"))
+response = WAII.User.create_org(params)
+print(response)  
+```
+
+### Update Org
+```python
+WAII.User.update_org(params: UpdateOrganizationRequest) -> CommonResponse
+```
+This method updates information about an existing org.
+
+`UpdateOrganizationRequest` has the following properties:
+
+- `organization`: Organization object as described in the create org section
+
+Response fields:
+
+- `CommonResponse`: Empty object
+
+For Example:
+```python
+params = UpdateOrganizationRequest(organization=Organization(id="o1", name="My Org2"))
+response = WAII.User.update_org(params)
+print(response)  
+```
+
+### Delete Org
+```python
+WAII.User.delete_org(params: DeleteOrganizationRequest) -> CommonResponse
+```
+This method deletes an existing org.
+
+`DeleteOrganizationRequest` has the following properties:
+
+- `id`: The org_id to be deleted.
+
+Response fields:
+
+- `CommonResponse`: Empty object
+
+For Example:
+```python
+params = DeleteOrganizationRequest(id="org1")
+response = WAII.User.delete_org(params)
+print(response)  
+```
+
+### List Orgs
+```python
+WAII.User.list_orgs(params: ListOrganizationsRequest) -> ListOrganizationsResponse
+```
+This method retrieves a list of organizations.
+
+`ListOrganizationsRequest` is an empty object.
+
+Response fields:
+
+- `ListOrganizationsResponse`:
+  - `organizations`: A list of organization objects.
+
+For Example:
+```python
+params = ListOrganizationsRequest()
+response = WAII.User.list_orgs(params)
+print(response.organizations)  # List of all organizations
+```
 

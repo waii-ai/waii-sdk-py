@@ -1,11 +1,12 @@
 import unittest
 
-from waii_sdk_py.user import User as UserModel,BaseModel
+from waii_sdk_py.user import User as UserModel, BaseModel, DeleteTenantRequest, DeleteOrganizationRequest, \
+    CreateOrganizationRequest, Organization, ListOrganizationsRequest, UpdateOrganizationRequest, CreateTenantRequest, \
+    Tenant, ListTenantsRequest, UpdateTenantRequest
 from waii_sdk_py import WAII
 from waii_sdk_py.user import CreateAccessKeyRequest, DelAccessKeyRequest, DelAccessKeyResponse, GetAccessKeyRequest, \
     GetUserInfoRequest, GetUserInfoResponse, UpdateConfigRequest, CreateUserRequest, User, DeleteUserRequest, \
     CommonResponse, ListUsersRequest, UpdateUserRequest
-
 
 class TestUser(unittest.TestCase):
     def setUp(self):
@@ -114,19 +115,66 @@ class TestUser(unittest.TestCase):
         user1 = [user for user in resp.users if user.id == "user1"]
         assert len(user1) == 0
 
+    def test_manage_org(self):
+        params = DeleteOrganizationRequest(id ="o1")
+        try:
+            resp = WAII.User.delete_org(params)
+        except:
+            pass
+        params = CreateOrganizationRequest(organization = Organization(id="o1", name="My Org"))
+        resp = WAII.User.create_org(params)
+        assert isinstance(resp, CommonResponse)
+        params = ListOrganizationsRequest()
+        resp = WAII.User.list_orgs(params)
+        org1 = [org for org in resp.organizations if org.id == "o1"]
+        assert len(org1) > 0
+        params = UpdateOrganizationRequest(organization = Organization(id="o1", name="My Org2"))
+        resp = WAII.User.update_org(params)
+        assert isinstance(resp, CommonResponse)
+        params = ListOrganizationsRequest()
+        resp = WAII.User.list_orgs(params)
+        org1 = [org for org in resp.organizations if org.id == "o1"][0]
+        assert org1.name == "My Org2"
+        params = DeleteOrganizationRequest(id="o1")
+        resp = WAII.User.delete_org(params)
+        assert isinstance(resp, CommonResponse)
+        params = ListOrganizationsRequest()
+        resp = WAII.User.list_orgs(params)
+        org1 = [org for org in resp.organizations if org.id == "o1"]
+        assert len(org1) == 0
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def test_manage_tenant(self):
+        params = CreateOrganizationRequest(organization=Organization(id="o1", name="My Org"))
+        del_tenant = DeleteTenantRequest(id = "tenant1")
+        try:
+            resp = WAII.User.create_org(params)
+        except:
+            pass
+        try:
+            resp = WAII.User.delete_tenant(del_tenant)
+        except:
+            pass
+        params = CreateTenantRequest(tenant=Tenant(id="tenant1", name="Test Tenant", org_id="o1"))
+        resp = WAII.User.create_tenant(params)
+        assert isinstance(resp, CommonResponse)
+        params = ListTenantsRequest(lookup_org_id = "o1")
+        resp = WAII.User.list_tenants(params)
+        tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"]
+        assert len(tenant1) > 0
+        params = UpdateTenantRequest(tenant = Tenant(id="tenant1", name="Test Tenant2",org_id="o1"))
+        resp = WAII.User.update_tenant(params)
+        assert isinstance(resp, CommonResponse)
+        params = ListTenantsRequest(lookup_org_id = "o1")
+        resp = WAII.User.list_tenants(params)
+        tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"][0]
+        assert tenant1.name == "Test Tenant2"
+        params = DeleteTenantRequest(id="tenant1")
+        resp = WAII.User.delete_tenant(params)
+        assert isinstance(resp, CommonResponse)
+        params = ListTenantsRequest()
+        resp = WAII.User.list_tenants(params)
+        tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"]
+        assert len(tenant1) == 0
 
 if __name__ == '__main__':
     unittest.main()
