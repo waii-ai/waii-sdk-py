@@ -42,7 +42,7 @@ class Waii:
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
-    def initialize(self, url: str = "https://tweakit.waii.ai/api/", api_key: str = ""):
+    def initialize(self, url: str = "https://tweakit.waii.ai/api/", api_key: str = "", impersonate_enabled=False):
         http_client = WaiiHttpClient(url, api_key)
         self.http_client = http_client
         self.history = HistoryImpl(http_client)
@@ -52,6 +52,7 @@ class Waii:
         self.chat = ChatImpl(http_client)
         self.chart = ChartImpl(http_client)
         self.user = UserImpl(http_client)
+        self.impersonate_enabled = impersonate_enabled
 
         if self.initialize_legacy_fields:
             self.History = self.history
@@ -83,5 +84,11 @@ class Waii:
             GET_MODELS_ENDPOINT, params.__dict__, GetModelsResponse
         )
 
+    def impersonate_user(self, user_id: str):
+        if self.impersonate_enabled:
+            self.http_client.set_impersonate_user_id(user_id)
+
+    def clear_impersonation(self):
+        self.http_client.set_impersonate_user_id('')
 
 WAII = Waii(True)

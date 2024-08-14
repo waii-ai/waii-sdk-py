@@ -18,6 +18,7 @@ class WaiiHttpClient(Generic[T]):
         self.scope = ''
         self.orgId = ''
         self.userId = ''
+        self.impersonateUserId = ''
 
     @classmethod
     def get_instance(cls, url: str = None, apiKey: str = None):
@@ -36,6 +37,9 @@ class WaiiHttpClient(Generic[T]):
 
     def set_user_id(self, userId: str):
         self.userId = userId
+
+    def set_impersonate_user_id(self, userId: str):
+        self.impersonateUserId = userId
 
     def common_fetch(
             self, 
@@ -56,6 +60,8 @@ class WaiiHttpClient(Generic[T]):
         headers = {'Content-Type': 'application/json'}
         if self.apiKey:
             headers['Authorization'] = f'Bearer {self.apiKey}'
+        if self.impersonateUserId:
+            headers['x-waii-impersonate-user'] = self.impersonateUserId
         response = requests.post(self.url + endpoint, headers=headers, data=json.dumps(params, default=vars), timeout=self.timeout/1000)  # timeout is in seconds
 
         if response.status_code != 200:

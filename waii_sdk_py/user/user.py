@@ -113,74 +113,36 @@ class ListUsersRequest(CommonRequest):
 class ListUsersResponse(CommonResponse):
     users: List[User]
 
-class Tenant(BaseModel):
-    id: str  # unique id for the tenant
-    name: str  # display name for the tenant
-    org_id: Optional[str]  # org id for the tenant
-    variables: Optional[Dict[str, Any]]
+
 class CreateTenantRequest(BaseModel):
     tenant: Tenant
+
 
 class UpdateTenantRequest(BaseModel):
     tenant: Tenant
 
+
 class DeleteTenantRequest(BaseModel):
     id: str
 
+
 class ListTenantsRequest(CommonRequest):
     lookup_org_id: Optional[str]
+
 
 class ListTenantsResponse(CommonResponse):
     tenants: List[Tenant]
 
-class Organization(BaseModel):
-    id: str  # unique id for the organization
-    name: str  # display name for the organization
-    variables: Optional[Dict[str, Any]]  # variables for the organization
+
 class CreateOrganizationRequest(BaseModel):
     organization: Organization
 
+
 class UpdateOrganizationRequest(BaseModel):
     organization: Organization
+
+
 class DeleteOrganizationRequest(BaseModel):
-    id: str
-
-class ListOrganizationsRequest(CommonRequest):
-    pass
-
-class ListOrganizationsResponse(CommonResponse):
-    organizations: List[Organization]
-
-class CreateTenantRequest(CommonRequest):
-    tenant: Tenant
-
-
-class UpdateTenantRequest(CommonRequest):
-    tenant: Tenant
-
-
-class DeleteTenantRequest(CommonRequest):
-    id: str
-
-
-class ListTenantsRequest(CommonRequest):
-    lookup_org_id: Optional[str]
-
-
-class ListTenantsResponse(CommonResponse):
-    tenants: List[Tenant]
-
-
-# Organization API models
-class CreateOrganizationRequest(CommonRequest):
-    organization: Organization
-
-
-class UpdateOrganizationRequest(CommonRequest):
-    organization: Organization
-
-
-class DeleteOrganizationRequest(CommonRequest):
     id: str
 
 
@@ -246,24 +208,6 @@ class UserImpl:
 
     def delete_org(self, params: DeleteOrganizationRequest):
         return self.http_client.common_fetch(DELETE_ORG_ENDPOINT, params.__dict__, CommonResponse)
-
-    def list_orgs(self, params: ListOrganizationsRequest):
-        return self.http_client.common_fetch(LIST_ORGS_ENDPOINT, params.__dict__, ListOrganizationsResponse)
-
-    def update_tenant(self, params: UpdateTenantRequest):
-        return self.http_client.common_fetch(UPDATE_TENANT_ENDPOINT, params.__dict__, CommonResponse)
-
-    def list_tenants(self, params: ListTenantsRequest):
-        return self.http_client.common_fetch(LIST_TENANTS_ENDPOINT, params.__dict__, ListTenantsResponse)
-
-    def create_org(self, params: CreateOrganizationRequest):
-        return self.http_client.common_fetch(CREATE_ORG_ENDPOINT, params.__dict__, CommonResponse)
-
-    def delete_org(self, params: DeleteOrganizationRequest):
-        return self.http_client.common_fetch(DELETE_ORG_ENDPOINT, params.__dict__, CommonResponse)
-
-    def update_org(self, params: UpdateOrganizationRequest):
-        return self.http_client.common_fetch(UPDATE_ORG_ENDPOINT, params.__dict__, CommonResponse)
 
     def list_orgs(self, params: ListOrganizationsRequest):
         return self.http_client.common_fetch(LIST_ORGS_ENDPOINT, params.__dict__, ListOrganizationsResponse)
