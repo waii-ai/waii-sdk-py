@@ -302,20 +302,20 @@ This method creates a new org.
 
 `CreateOrganizationRequest` has the following properties:
 
-	•	`organization`: Organization object
-	    •	`id`: (string) unique id of the orgnaization
-	    •	`name`: (string) Display name of the orgnaization to be created.
-	    •	`variables`: (Dict (str, Any)) variable of the orgnaization
+- `organization`: Organization object
+  - `id`: (string) unique id of the organization
+  - `name`: (string) Display name of the organization to be created.
+  - `variables`: (Dict (str, Any)) variables of the organization
 
 Response fields:
 
-	•	`CommonResponse`: Empty object
+- `CommonResponse`: Empty object
 
 For Example:
 ```python
 params = CreateOrganizationRequest(organization=Organization(id="o1", name="My Org"))
 response = WAII.User.create_org(params)
->>> print(response)  
+print(response)  
 ```
 
 ### Update Org
@@ -326,17 +326,17 @@ This method updates information about an existing org.
 
 `UpdateOrganizationRequest` has the following properties:
 
-	•	`organization`: Organization object as described in create org section
+- `organization`: Organization object as described in the create org section
 
 Response fields:
 
-	•	`CommonResponse`: Empty object
+- `CommonResponse`: Empty object
 
 For Example:
 ```python
 params = UpdateOrganizationRequest(organization=Organization(id="o1", name="My Org2"))
 response = WAII.User.update_org(params)
->>> print(response)  
+print(response)  
 ```
 
 ### Delete Org
@@ -347,37 +347,36 @@ This method deletes an existing org.
 
 `DeleteOrganizationRequest` has the following properties:
 
-	•	`id`: The org_id to be deleted.
+- `id`: The org_id to be deleted.
 
 Response fields:
 
-	•	`CommonResponse`: Empty object
+- `CommonResponse`: Empty object
 
 For Example:
 ```python
-params = DeleteOrganizationRequest(id="tenant1")
+params = DeleteOrganizationRequest(id="org1")
 response = WAII.User.delete_org(params)
->>> print(response)  
+print(response)  
 ```
 
 ### List Orgs
 ```python
 WAII.User.list_orgs(params: ListOrganizationsRequest) -> ListOrganizationsResponse
 ```
-This method retrieves a list of tenants.
+This method retrieves a list of organizations.
 
-`ListOrganizationsRequest` is empty object
-
+`ListOrganizationsRequest` is an empty object.
 
 Response fields:
 
-	•	`ListOrganizationsResponse`:
-	    •	`organizations`: A list of organization objects.
+- `ListOrganizationsResponse`:
+  - `organizations`: A list of organization objects.
 
 For Example:
 ```python
 params = ListOrganizationsRequest()
 response = WAII.User.list_orgs(params)
->>> print(response.organizations)  # List of all organizations
+print(response.organizations)  # List of all organizations
 ```
 
