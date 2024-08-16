@@ -6,6 +6,12 @@ title: User
 The `User` module contains methods related to users in the system such as managing access keys, managing users.
 Here are some of its methods:
 
+### Overview
+
+In the WAII system, there's a hierarchical relationship between organizations, tenants, and users. At the top level, we have organizations (orgs), which represent the highest level of grouping. Each organization can contain multiple tenants, which are subgroups within the organization. Tenants, in turn, can have multiple users associated with them.
+
+Users are individual accounts within the system, each belonging to a specific tenant and, by extension, to an organization. This structure allows for flexible management of access and resources across different levels of the hierarchy. For example, a user's permissions and access rights may be determined by their associated tenant and organization.
+
 ### Create Access Key
 ```python
 WAII.User.create_access_key(params: CreateAccessKeyRequest) -> GetAccessKeyResponse
@@ -145,6 +151,9 @@ response = WAII.User.create_user(params)
 >>> print(response)  # Confirmation of user creation
 ```
 
+Note:
+- Tenant and Org must be created before creating a user.
+
 ### Delete User
 ```python
 WAII.User.delete_user(params: DeleteUserRequest) -> CommonResponse
@@ -229,6 +238,9 @@ params = CreateTenantRequest(tenant=Tenant(id="tenant1", name="Example Tenant", 
 response = WAII.User.create_tenant(params)
 print(response)  
 ```
+
+Note:
+- Org must be created before creating a tenant.
 
 ### Update Tenant
 ```python
@@ -379,4 +391,34 @@ params = ListOrganizationsRequest()
 response = WAII.User.list_orgs(params)
 print(response.organizations)  # List of all organizations
 ```
+
+### Impersonation
+
+Using Python SDK, you can impersonate as a user to perform actions on behalf of that user. This is useful when you want to perform actions that require the user's permissions and access rights.
+
+To impersonate an user, you need to be part of `waii-org-admin-user` role. If you are using SaaS, you need to reach out to Waii team to get this role assigned to you.
+
+Here is an example of how you can impersonate as a user (you can only use the multi-tenant sdk for this):
+
+```python
+client1_sdk = Waii()
+client1_sdk.initialize(url='...', api_key="<your-api-key>")
+client1_sdk.impersonate_user(user_id="user_id_1")
+```
+
+Even if you are the waii-org-admin-user, you can only impersonate as a user that belongs to the same org as you. And you cannot impersonate as a user that has more permissions than you.
+
+You can use the same client to impersonate as different users. If you want to stop impersonating, you can call the `impersonate_user` method with `None` as the user_id.
+
+```python
+client1_sdk.clear_impersonation()
+```
+
+Or update the user_id to impersonate as a different user:
+
+```python
+client1_sdk.impersonate_user(user_id="user_id_2")
+```
+
+Our best practice is don't reuse the client object for different users. Always create a new client object for each user you want to impersonate. (Client object doesn't have any state and have minimum memory footprint).
 

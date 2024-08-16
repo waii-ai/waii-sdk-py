@@ -29,6 +29,11 @@ class SemanticStatement(BaseModel):
     # extract prompt from the statement, if not specified, then use statement as extract prompt
     summarization_prompt: Optional[str] = None
 
+    # filters for user, tenant and org
+    user_id: Optional[str] = '*'
+    tenant_id: Optional[str] = '*'
+    org_id: Optional[str] = '*'
+
 
 class ModifySemanticContextRequest(LLMBasedRequest):
     updated: Optional[List[SemanticStatement]] = None

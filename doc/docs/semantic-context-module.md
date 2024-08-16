@@ -37,9 +37,14 @@ For `updated`, you should include a list of `SemanticStatement` object, which in
 - `lookup_summaries`: Only take effect when `always_include=False`, you can specify a list of search keys for this statement, if not specified, then use statement as search key. This is optional.
 - `summarization_prompt`: extract prompt from the statement, if not specified, then use statement as extract prompt. This is optional.
 
+For each semantic context, it can be applied to a specific set of users, which are determined by the `user_id`, `tenant_id`, and `org_id` fields. If you don't specify them, it will apply to all users.
+- `user_id`: (str) user id, default is `*` (which means it applies to all users).
+- `tenant_id`: (str) tenant id, default is `*` (which means it applies to all tenants).
+- `org_id`: (str) org id, default is `*` (which means it applies to all orgs).
+
 There're several usage patterns of the `SemanticStatement` object:
 
-**Add description to a database object (such as table, column, etc.)**
+#### Add description to a database object (such as table, column, etc.)
 - Normally you want to do this to add a "description" to a table or column, so that Waii can use it to generate better query. Unless you want to apply it to the entire database, we suggest to always add a scope to the statement, such as `db.schema.table.column`, so that it only applies to specific column of specific table of specific schema of specific database.
 - example: 
 ```python
@@ -51,7 +56,7 @@ statement = SemanticStatement(
 )
 ```
 
-**Add unstructured data source (such as json, or plain text document) as external knowledge base**
+#### Add unstructured data source (such as json, or plain text document) as external knowledge base
 
 There're some cases you want to add unstructured data source as external knowledge base, so that Waii can use it to generate better query. You can add a statement with `always_include=False`, and specify `lookup_summaries` to specify the "search summaries" for this statement.
 
@@ -81,6 +86,35 @@ You can specify multiple `lookup_summaries` to make sure it can match the statem
 `Summarization_prompt` is used to extract content from the statement, if not specified, then use the entire statement as-is during query generation. If your statement is too long, a good practice is to specify a summarization prompt, so that Waii can use it to extract content from the statement. Alternatively, you can pre-summarize the original documentation and add it as `statement` field. But that also loses the flexibility of using the original documentation. 
 
 There're two placeholders for `summarization_prompt`, `{statement}` and `{ask}`: You must include `{statement}` in the summarization prompt, which will be replaced by the statement. You can also include `{ask}` in the summarization prompt, which will be replaced by the ask in the query generation request.
+
+#### Add semantic context to a specific user
+
+Assume you want to add a statement to a specific user, you can specify the `user_id`, `tenant_id`, and `org_id` fields. For example, you want to add a statement to user `user_id_1`, tenant `tenant_id_1`, and org `org_id_1`, you can do like this:
+
+```python
+statement = SemanticStatement(
+    id = '',
+    statement = 'The CUSTOMER_ADDRESS table contains information about the addresses of customers. It includes details such as address ID, city, country, ... This table can be used to retrieve customer addresses for various purposes, such as shipping, billing, or demographic analysis.',
+    scope = 'my_db.finance.customer_address',
+    always_include = True,
+    user_id = 'user_id_1',
+    tenant_id = 'tenant_id_1',
+    org_id = 'org_id_1'
+)
+```
+
+Note:
+- In order to add a statement to a specific user, or a tenant which you are not part of. You must impersonate as the user (or the user belongs to the tenant). You can do this by setting the `impersonate_user` field in the request object. For example, if you want to add a statement to user `user_id_1` (refer to [user-module.md](user-module.md) impersonate as `user_id_1`), you can do like this:
+
+```python
+client1_sdk.initialize(url='...', api_key="<your-api-key>")
+client1_sdk.impersonate_user(user_id="user_id_1")
+client1_sdk.SemanticContext.modify_semantic_context(ModifySemanticContextRequest(
+    updated=[
+        # the statement object which mentioned above
+    ]
+))
+```
 
 ### Get Semantic Context
 
