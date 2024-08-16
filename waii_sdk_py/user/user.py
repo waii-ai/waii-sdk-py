@@ -2,7 +2,7 @@ from typing import Optional, List, Dict, Any
 
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.waii_http_client import WaiiHttpClient
-from pydantic import BaseModel
+from ..my_pydantic import BaseModel
 
 LIST_ACCESS_KEY_ENDPOINT = "list-access-keys"
 DELETE_ACCESS_KEY_ENDPOINT = "delete-access-keys"
@@ -159,25 +159,25 @@ class UserImpl:
     def __init__(self, http_client: WaiiHttpClient):
         self.http_client = http_client
 
-    def create_access_key(self, params:CreateAccessKeyRequest):
+    def create_access_key(self, params: CreateAccessKeyRequest):
         return self.http_client.common_fetch(
             CREATE_KEY_ENDPOINT, params.__dict__, GetAccessKeyResponse
         )
 
-    def list_access_keys(self, params:GetAccessKeyRequest):
-        return self.http_client.common_fetch(LIST_ACCESS_KEY_ENDPOINT,params.__dict__, GetAccessKeyResponse)
+    def list_access_keys(self, params: GetAccessKeyRequest):
+        return self.http_client.common_fetch(LIST_ACCESS_KEY_ENDPOINT, params.__dict__, GetAccessKeyResponse)
 
-    def delete_access_key(self, params:DelAccessKeyRequest):
-        return self.http_client.common_fetch(DELETE_ACCESS_KEY_ENDPOINT, params.__dict__,DelAccessKeyResponse)
+    def delete_access_key(self, params: DelAccessKeyRequest):
+        return self.http_client.common_fetch(DELETE_ACCESS_KEY_ENDPOINT, params.__dict__, DelAccessKeyResponse)
 
-    def get_user_info(self, params:GetUserInfoRequest):
-        return self.http_client.common_fetch(GET_USER_INFO_ENDPOINT, params.__dict__,GetUserInfoResponse)
+    def get_user_info(self, params: GetUserInfoRequest):
+        return self.http_client.common_fetch(GET_USER_INFO_ENDPOINT, params.__dict__, GetUserInfoResponse)
 
     def update_config(self, params: UpdateConfigRequest):
-        return self.http_client.common_fetch(UPDATE_CONFIG_ENDPOINT, params.__dict__,UpdateConfigResponse)
+        return self.http_client.common_fetch(UPDATE_CONFIG_ENDPOINT, params.__dict__, UpdateConfigResponse)
 
     def create_user(self, params: CreateUserRequest):
-        return self.http_client.common_fetch(CREATE_USER_ENDPOINT, params.__dict__,CommonResponse)
+        return self.http_client.common_fetch(CREATE_USER_ENDPOINT, params.__dict__, CommonResponse)
 
     def delete_user(self, params: DeleteUserRequest):
         return self.http_client.common_fetch(DELETE_USER_ENDPOINT, params.__dict__, CommonResponse)
@@ -188,16 +188,16 @@ class UserImpl:
     def list_users(self, params: ListUsersRequest):
         return self.http_client.common_fetch(LIST_USERS_ENDPOINT, params.__dict__, ListUsersResponse)
 
-    def create_tenant(self, params:CreateTenantRequest):
+    def create_tenant(self, params: CreateTenantRequest):
         return self.http_client.common_fetch(CREATE_TENANT_ENDPOINT, params.__dict__, CommonResponse)
 
-    def update_tenant(self, params:UpdateTenantRequest):
+    def update_tenant(self, params: UpdateTenantRequest):
         return self.http_client.common_fetch(UPDATE_TENANT_ENDPOINT, params.__dict__, CommonResponse)
 
-    def delete_tenant(self, params:DeleteTenantRequest):
+    def delete_tenant(self, params: DeleteTenantRequest):
         return self.http_client.common_fetch(DELETE_TENANT_ENDPOINT, params.__dict__, CommonResponse)
 
-    def list_tenants(self, params:ListTenantsRequest):
+    def list_tenants(self, params: ListTenantsRequest):
         return self.http_client.common_fetch(LIST_TENANTS_ENDPOINT, params.__dict__, ListTenantsResponse)
 
     def create_org(self, params: CreateOrganizationRequest):

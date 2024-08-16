@@ -11,7 +11,7 @@ from .user import UserImpl
 from .user.user_static import User
 from .waii_http_client import WaiiHttpClient
 import importlib.metadata
-from pydantic import BaseModel
+from .my_pydantic import BaseModel
 
 GET_MODELS_ENDPOINT = "get-models"
 

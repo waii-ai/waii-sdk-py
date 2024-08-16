@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, List
 
-from pydantic import BaseModel
+from ..my_pydantic import BaseModel
 
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.database import TableName
