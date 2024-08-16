@@ -17,9 +17,6 @@ UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
 UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
-UPDATE_TABLE_ACCESS_RULES_ENDPOINT = "update-table-access-rules"
-REMOVE_TABLE_ACCESS_RULES_ENDPOINT = "remove-table-access-rules"
-LIST_TABLE_ACCESS_RULES_ENDPOINT = "list-table-access-rules"
 
 
 class SchemaName(BaseModel):
@@ -323,38 +320,6 @@ class UpdateConstraintResponse(BaseModel):
     updated_tables: Optional[List[TableName]]
 
 
-class TableAccessRuleType(str, Enum):
-    filter = "filter"  # protect all access with a filter
-    block = "block"  # stop all access from the identified users
-
-
-class TableAccessRule(BaseModel):
-    id: Optional[str]
-    name: str
-    table: TableName
-    org_id: str = '*'
-    tenant_id: str = '*'
-    user_id: str = '*'
-    type: TableAccessRuleType
-    expression: Optional[str]
-
-
-class UpdateTableAccessRuleRequest(CommonRequest):
-    rules: List[TableAccessRule]
-
-
-class RemoveTableAccessRuleRequest(CommonRequest):
-    rules: List[str]
-
-
-class ListTableAccessRuleRequest(CommonRequest):
-    table: TableName
-
-
-class ListTableAccessRuleResponse(CommonResponse):
-    rules: Optional[List[TableAccessRule]]
-
-
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -428,27 +393,6 @@ class DatabaseImpl:
     ) -> UpdateConstraintResponse:
         return self.http_client.common_fetch(
             UPDATE_CONSTRAINT_ENDPOINT, params.__dict__, UpdateConstraintResponse
-        )
-
-    def update_db_access_rules(
-            self, params: UpdateTableAccessRuleRequest
-    ) -> CommonResponse:
-        return self.http_client.common_fetch(
-            UPDATE_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, CommonResponse
-        )
-
-    def remove_db_access_rules(
-            self, params: RemoveTableAccessRuleRequest
-    ) -> CommonResponse:
-        return self.http_client.common_fetch(
-            REMOVE_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, CommonResponse
-        )
-
-    def list_db_access_rules(
-            self, params: LIST_TABLE_ACCESS_RULES_ENDPOINT
-    ) -> ListTableAccessRuleResponse:
-        return self.http_client.common_fetch(
-            LIST_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ListTableAccessRuleResponse
         )
 
 

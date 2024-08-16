@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+from .access_rules import AccessRuleImpl
 from .chart import ChartImpl, Chart
 from .chat import ChatImpl, Chat
 from .history import HistoryImpl, History
@@ -52,6 +53,7 @@ class Waii:
         self.chat = ChatImpl(http_client)
         self.chart = ChartImpl(http_client)
         self.user = UserImpl(http_client)
+        self.access_rule = AccessRuleImpl(http_client)
         self.impersonate_enabled = impersonate_enabled
 
         if self.initialize_legacy_fields:
