@@ -320,6 +320,10 @@ class UpdateConstraintResponse(BaseModel):
     updated_tables: Optional[List[TableName]]
 
 
+class RefreshDBConnectionRequest(BaseModel):
+    db_conn_key: str
+
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -393,6 +397,15 @@ class DatabaseImpl:
     ) -> UpdateConstraintResponse:
         return self.http_client.common_fetch(
             UPDATE_CONSTRAINT_ENDPOINT, params.__dict__, UpdateConstraintResponse
+        )
+
+    def refresh_db_connection(self):
+        return self.http_client.common_fetch(
+            "refresh-db-connection",
+            {
+                "db_conn_key": self.get_activated_connection(),
+            },
+            CommonResponse,
         )
 
 

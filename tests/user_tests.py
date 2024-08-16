@@ -7,14 +7,17 @@ from waii_sdk_py import WAII
 from waii_sdk_py.user import CreateAccessKeyRequest, DelAccessKeyRequest, DelAccessKeyResponse, GetAccessKeyRequest, \
     GetUserInfoRequest, GetUserInfoResponse, UpdateConfigRequest, CreateUserRequest, User, DeleteUserRequest, \
     CommonResponse, ListUsersRequest, UpdateUserRequest
+from waii_sdk_py.waii_sdk_py import Waii
+
 
 class TestUser(unittest.TestCase):
     def setUp(self):
         WAII.initialize(url="http://localhost:9859/api/")
+
     def test_create_access_key(self):
-        params = DelAccessKeyRequest(names = ["test1"])
+        params = DelAccessKeyRequest(names=["test1"])
         resp = WAII.User.delete_access_key(params)
-        params = CreateAccessKeyRequest(name = "test1")
+        params = CreateAccessKeyRequest(name="test1")
         resp = WAII.User.create_access_key(params)
         test1_key = [key for key in resp.access_keys if key.name == "test1"]
         assert len(test1_key) > 0
@@ -83,21 +86,23 @@ class TestUser(unittest.TestCase):
         assert resp.configs['key3'] == 'value3'
 
     def test_manage_user(self):
-        params = DeleteUserRequest(id = "user1")
+        params = DeleteUserRequest(id="user1")
         try:
             resp = WAII.User.delete_user(params)
         except:
             pass
-        params = CreateUserRequest(user=UserModel( id="user1",name="Wangda Tan",tenant_id="my_tenant_id",org_id="my_org_id"))
+        params = CreateUserRequest(
+            user=UserModel(id="user1", name="Wangda Tan", tenant_id="my_tenant_id", org_id="my_org_id"))
         resp = WAII.User.create_user(params)
         assert isinstance(resp, CommonResponse)
 
-        params = ListUsersRequest(lookup_org_id = "my_org_id")
+        params = ListUsersRequest(lookup_org_id="my_org_id")
         resp = WAII.User.list_users(params)
         user1 = [user for user in resp.users if user.id == "user1"]
         assert len(user1) > 0
 
-        params = UpdateUserRequest(user=UserModel( id="user1",name="Pravin",tenant_id="my_tenant_id",org_id="my_org_id"))
+        params = UpdateUserRequest(
+            user=UserModel(id="user1", name="Pravin", tenant_id="my_tenant_id", org_id="my_org_id"))
         resp = WAII.User.update_user(params)
         assert isinstance(resp, CommonResponse)
 
@@ -116,19 +121,19 @@ class TestUser(unittest.TestCase):
         assert len(user1) == 0
 
     def test_manage_org(self):
-        params = DeleteOrganizationRequest(id ="o1")
+        params = DeleteOrganizationRequest(id="o1")
         try:
             resp = WAII.User.delete_org(params)
         except:
             pass
-        params = CreateOrganizationRequest(organization = Organization(id="o1", name="My Org"))
+        params = CreateOrganizationRequest(organization=Organization(id="o1", name="My Org"))
         resp = WAII.User.create_org(params)
         assert isinstance(resp, CommonResponse)
         params = ListOrganizationsRequest()
         resp = WAII.User.list_orgs(params)
         org1 = [org for org in resp.organizations if org.id == "o1"]
         assert len(org1) > 0
-        params = UpdateOrganizationRequest(organization = Organization(id="o1", name="My Org2"))
+        params = UpdateOrganizationRequest(organization=Organization(id="o1", name="My Org2"))
         resp = WAII.User.update_org(params)
         assert isinstance(resp, CommonResponse)
         params = ListOrganizationsRequest()
@@ -145,7 +150,7 @@ class TestUser(unittest.TestCase):
 
     def test_manage_tenant(self):
         params = CreateOrganizationRequest(organization=Organization(id="o1", name="My Org"))
-        del_tenant = DeleteTenantRequest(id = "tenant1")
+        del_tenant = DeleteTenantRequest(id="tenant1")
         try:
             resp = WAII.User.create_org(params)
         except:
@@ -157,14 +162,14 @@ class TestUser(unittest.TestCase):
         params = CreateTenantRequest(tenant=Tenant(id="tenant1", name="Test Tenant", org_id="o1"))
         resp = WAII.User.create_tenant(params)
         assert isinstance(resp, CommonResponse)
-        params = ListTenantsRequest(lookup_org_id = "o1")
+        params = ListTenantsRequest(lookup_org_id="o1")
         resp = WAII.User.list_tenants(params)
         tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"]
         assert len(tenant1) > 0
-        params = UpdateTenantRequest(tenant = Tenant(id="tenant1", name="Test Tenant2",org_id="o1"))
+        params = UpdateTenantRequest(tenant=Tenant(id="tenant1", name="Test Tenant2", org_id="o1"))
         resp = WAII.User.update_tenant(params)
         assert isinstance(resp, CommonResponse)
-        params = ListTenantsRequest(lookup_org_id = "o1")
+        params = ListTenantsRequest(lookup_org_id="o1")
         resp = WAII.User.list_tenants(params)
         tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"][0]
         assert tenant1.name == "Test Tenant2"
@@ -175,6 +180,31 @@ class TestUser(unittest.TestCase):
         resp = WAII.User.list_tenants(params)
         tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"]
         assert len(tenant1) == 0
+
+    def impersonation_test(self):
+        client = Waii()
+        client.initialize(url="http://localhost:9859/api/")
+
+        # create an hierarchy of organizations, tenants and users
+        org = Organization(id="org1", name="My Org")
+        resp = WAII.User.create_org(CreateOrganizationRequest(organization=org))
+        assert isinstance(resp, CommonResponse)
+        tenant = Tenant(id="tenant1", name="Test Tenant", org_id="org1")
+        resp = WAII.User.create_tenant(CreateTenantRequest(tenant=tenant))
+        assert isinstance(resp, CommonResponse)
+        user = UserModel(id="user1", name="Wangda Tan", tenant_id="tenant1", org_id="org1")
+        resp = WAII.User.create_user(CreateUserRequest(user=user))
+        assert isinstance(resp, CommonResponse)
+
+        # impersonate the user
+        client.impersonate_user("user1")
+
+        # get the user info
+        resp = client.get_user_info(GetUserInfoRequest())
+        assert isinstance(resp, GetUserInfoResponse)
+        assert resp.id == "user1"
+        assert resp.name == "Wangda Tan"
+
 
 if __name__ == '__main__':
     unittest.main()

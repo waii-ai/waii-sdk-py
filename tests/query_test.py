@@ -2,6 +2,7 @@ import unittest
 from waii_sdk_py import WAII
 from waii_sdk_py.query import *
 
+
 class TestQuery(unittest.TestCase):
     def setUp(self):
         WAII.initialize(url="http://localhost:9859/api/")
@@ -10,7 +11,7 @@ class TestQuery(unittest.TestCase):
         WAII.Database.activate_connection(result.connectors[0].key)
 
     def test_generate(self):
-        params = QueryGenerationRequest(ask = "How many tables are there?")
+        params = QueryGenerationRequest(ask="How many tables are there?", use_cache=False)
         result = WAII.Query.generate(params)
         self.assertIsInstance(result, GeneratedQuery)
         assert result.uuid is not None

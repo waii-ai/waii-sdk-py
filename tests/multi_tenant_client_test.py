@@ -1,5 +1,6 @@
 import unittest
 
+from tests.common_test_utils import load_db_conn1, load_db_conn2, connect_db
 from waii_sdk_py.database import Database
 from waii_sdk_py.query import *
 from waii_sdk_py.waii_sdk_py import Waii, WAII
@@ -11,24 +12,23 @@ user name of database should be waii and password should be password
 
 create the database named called movie by taking data from here
 https://www.notion.so/waii-ai/Use-PG-WAII-eac9d02bb7894f748ed55aaaf8796e3c
-
 '''
 
 
-class WaiiSDKTests(unittest.TestCase):
+class MultiTenantClientTest(unittest.TestCase):
     def setUp(self):
+        self.movie_conn = load_db_conn1()
+        self.chinook_conn = load_db_conn2()
+
+        connect_db(self.movie_conn)
+        connect_db(self.chinook_conn)
+
         movie_waii = Waii()
         chinook_waii = Waii()
         movie_waii.initialize(url="http://localhost:9859/api/")
         chinook_waii.initialize(url="http://localhost:9859/api/")
         result = movie_waii.database.get_connections()
-        movie_conn = [conn for conn in result.connectors if conn.database == "movie" and conn.db_type == 'postgresql'][0]
-        chinook_conn = [
-            conn for conn in result.connectors if conn.database == "chinook" and conn.db_type == 'postgresql'
-        ][0]
         WAII.initialize(url="http://localhost:9859/api/")
-        self.movie_conn = movie_conn
-        self.chinook_conn = chinook_conn
         self.movie_waii = movie_waii
         self.chinook_waii = chinook_waii
 
@@ -42,7 +42,7 @@ class WaiiSDKTests(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert "cine_tele_data" in result.query.lower()
+        assert "sdk_test.public.movies" in result.query.lower()
         assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
@@ -59,7 +59,7 @@ class WaiiSDKTests(unittest.TestCase):
         result = self.movie_waii.query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert "102 Dalmatians" in str(result.rows[0])
+        assert "Incept" in str(result.rows[0])
 
     def test_chinook_generate(self):
         self.chinook_waii.database.activate_connection(self.chinook_conn.key)
@@ -84,8 +84,7 @@ class WaiiSDKTests(unittest.TestCase):
         result = self.chinook_waii.query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert "...And Justice For All" in str(result.rows[0])
-
+        assert "21" in str(result.rows[0])
 
     def test_legacy_generate(self):
         WAII.Database.activate_connection(self.movie_conn.key)
@@ -97,14 +96,12 @@ class WaiiSDKTests(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert "cine_tele_data" in result.query.lower()
+        assert "sdk_test." in result.query.lower()
         assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
         result = WAII.Query.like(params)
         self.assertIsInstance(result, LikeQueryResponse)
-
-
 
     def test_legacy_run(self):
         WAII.Database.activate_connection(self.movie_conn.key)
@@ -116,7 +113,7 @@ class WaiiSDKTests(unittest.TestCase):
         result = WAII.Query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert "102 Dalmatians" in str(result.rows[0])
+        assert "Incepti" in str(result.rows[0])
 
     def test_legacy_run_without_WAII(self):
         Database.activate_connection(self.movie_conn.key)
@@ -128,12 +125,9 @@ class WaiiSDKTests(unittest.TestCase):
         result = Query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert "102 Dalmatians" in str(result.rows[0])
+        assert "Incep" in str(result.rows[0])
 
     def test_activate_connection(self):
         Database.activate_connection(self.movie_conn.key)
         result = Database.get_activated_connection()
-        assert(self.movie_conn.key == result)
-
-
-
+        assert (self.movie_conn.key == result)
