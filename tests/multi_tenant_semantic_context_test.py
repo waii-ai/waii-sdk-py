@@ -1,6 +1,7 @@
 import unittest
 
 from tests.common_test_utils import load_db_conn1, load_db_conn2, connect_db, org_exists, tenant_exists, user_exists
+from waii_sdk_py.query import QueryGenerationRequest
 from waii_sdk_py.semantic_context import ModifySemanticContextRequest, SemanticStatement
 from waii_sdk_py.user import Organization, CreateOrganizationRequest, Tenant, CreateTenantRequest, User, \
     CreateUserRequest, WaiiRoles, ListUsersRequest, DeleteUserRequest, DeleteTenantRequest
@@ -93,7 +94,7 @@ class MultiTenantSemanticContextTest(unittest.TestCase):
         with self.waii_client.impersonate_user("multi-tenant-semantic-context-test-user1"):
             request = ModifySemanticContextRequest(updated=[SemanticStatement(
                 id="user1-semantic-statement-1",
-                statement="All the returned query must project column 'FROM_USER' for output, which return a constant value of 'USER2'",
+                statement="All the returned query must project column 'FROM_USER' for output, which return a constant value of 'USER1'",
                 user_id="multi-tenant-semantic-context-test-user1",
                 tenant_id="test-tenant",
                 org_id="multi-tenant-semantic-context-test")
@@ -131,3 +132,26 @@ class MultiTenantSemanticContextTest(unittest.TestCase):
             response = self.waii_client.semantic_context.get_semantic_context().semantic_context
             assert self._semantic_id_in_list("user2-semantic-statement", response) and not self._semantic_id_in_list(
                 "user1-semantic-statement-1", response)
+
+    def test_gen_query_uses_semantic_context(self):
+        # generate query as main user
+        response = self.waii_client.query.generate(QueryGenerationRequest(
+            ask="how many movies are there"
+        )).run()
+        assert response.rows[0]['WAII_TEST'] == 'WAII'
+
+        # generate query as user1
+        with self.waii_client.impersonate_user("multi-tenant-semantic-context-test-user1"):
+            response = self.waii_client.query.generate(QueryGenerationRequest(
+                ask="how many movies are there"
+            )).run()
+            assert response.rows[0]['FROM_USER'] == 'USER1'
+            assert response.rows[0]['WAII_TEST'] == 'WAII'
+
+        # generate query as user2
+        with self.waii_client.impersonate_user("multi-tenant-semantic-context-test-user2"):
+            response = self.waii_client.query.generate(QueryGenerationRequest(
+                ask="how many movies are there"
+            )).run()
+            assert response.rows[0]['FROM_USER'] == 'USER2'
+            assert response.rows[0]['WAII_TEST'] == 'WAII'
