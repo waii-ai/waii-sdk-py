@@ -93,6 +93,14 @@ class User(BaseModel):
     variables: Optional[Dict[str, Any]]  # variables for the user
     roles: Optional[List[str]] = []  # roles for the user
 
+# Roles of the user
+class WaiiRoles:
+    WAII_TRIAL_USER = 'waii-trial-user'
+    WAII_USER = 'waii-user'
+    WAII_API_USER = 'waii-api-user'
+    WAII_ADMIN_USER = 'waii-admin-user'
+    WAII_ORG_ADMIN_USER = 'waii-org-admin-user'
+    WAII_SUPER_ADMIN_USER = 'waii-super-admin-user'
 
 class CreateUserRequest(CommonRequest):
     user: User

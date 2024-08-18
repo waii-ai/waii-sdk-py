@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from typing import Optional, List
 
 from .access_rules import AccessRuleImpl
@@ -85,7 +86,15 @@ class Waii:
             GET_MODELS_ENDPOINT, params.__dict__, GetModelsResponse
         )
 
+    @contextmanager
     def impersonate_user(self, user_id: str):
+        try:
+            self.http_client.set_impersonate_user_id(user_id)
+            yield
+        finally:
+            self.clear_impersonation()
+
+    def set_impersonate_user(self, user_id: str):
         self.http_client.set_impersonate_user_id(user_id)
 
     def clear_impersonation(self):

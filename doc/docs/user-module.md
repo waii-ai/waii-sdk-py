@@ -154,6 +154,12 @@ response = WAII.User.create_user(params)
 Note:
 - Tenant and Org must be created before creating a user.
 
+#### User role management
+
+In order to create user with specific roles, you can fill the roles field.
+
+Documentation for roles can be found [waii-user-roles](waii-user-roles.md)
+
 ### Delete User
 ```python
 WAII.User.delete_user(params: DeleteUserRequest) -> CommonResponse
@@ -403,22 +409,29 @@ Here is an example of how you can impersonate as a user (you can only use the mu
 ```python
 client1_sdk = Waii()
 client1_sdk.initialize(url='...', api_key="<your-api-key>")
-client1_sdk.impersonate_user(user_id="user_id_1")
+with client1_sdk.impersonate_user(user_id="user_id_1"):
+    # do other operations such as run query, modify semantic context, etc.
+    client1_sdk.semantic_context.modify_semantic_context(ModifySemanticContextRequest(
+        updated=[
+            # the statement object which mentioned above
+        ]
+    ))
+    client1_sdk.query.run_query(RunQueryRequest(
+        query="...",
+        variables={...}
+    ))
+    
+    # it will automatically revert back to the original user after the block
 ```
 
 Even if you are the waii-org-admin-user, you can only impersonate as a user that belongs to the same org as you. And you cannot impersonate as a user that has more permissions than you.
 
-You can use the same client to impersonate as different users. If you want to stop impersonating, you can call the `impersonate_user` method with `None` as the user_id.
+*(Not recommended)* If you don't want to use the `with` block, you can also use the `set_impersonate_user` / `clear_impersonation` methods:
 
 ```python
+client1_sdk.set_impersonate_user(user_id="user_id_2")
+
+# do other operations such as run query, modify semantic context, etc.
+
 client1_sdk.clear_impersonation()
 ```
-
-Or update the user_id to impersonate as a different user:
-
-```python
-client1_sdk.impersonate_user(user_id="user_id_2")
-```
-
-Our best practice is don't reuse the client object for different users. Always create a new client object for each user you want to impersonate. (Client object doesn't have any state and have minimum memory footprint).
-

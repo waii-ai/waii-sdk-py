@@ -2,11 +2,17 @@ import time
 
 from waii_sdk_py import WAII
 from waii_sdk_py.database import ModifyDBConnectionRequest, DBConnection
+from waii_sdk_py.user import ListOrganizationsRequest, ListTenantsRequest, ListUsersRequest
 from waii_sdk_py.waii_sdk_py import Waii
 
 
-def connect_db(db_conn_to_add: DBConnection):
+def connect_db(db_conn_to_add: DBConnection, impersonate_user=None):
     WAII.initialize(url="http://localhost:9859/api/")
+
+    if impersonate_user:
+        WAII.set_impersonate_user(impersonate_user)
+    else:
+        WAII.clear_impersonation()
 
     # add the database connection
     try:
@@ -27,6 +33,7 @@ def connect_db(db_conn_to_add: DBConnection):
     # wait till the index is finished
     while True:
         try:
+            WAII.Database.activate_connection(db_conn_to_add.key)
             catalogs = WAII.Database.get_catalogs()
             if catalogs.catalogs and len(catalogs.catalogs) > 0:
                 break
@@ -38,6 +45,7 @@ def connect_db(db_conn_to_add: DBConnection):
         time.sleep(1)
 
     WAII.Database.activate_connection(db_conn_to_add.key)
+    WAII.clear_impersonation()
 
 
 def load_db_conn1():
@@ -99,4 +107,28 @@ def check_table_existence(waii: Waii, table_name, should_exist, max_wait_time=30
         time.sleep(check_interval)
 
     # If we've reached this point, we've timed out
+    return False
+
+
+def org_exists(waii: Waii, org_id: str) -> bool:
+    orgs = waii.user.list_orgs(ListOrganizationsRequest()).organizations
+    for org in orgs:
+        if org.id == org_id:
+            return True
+    return False
+
+
+def tenant_exists(waii: Waii, org_id: str, tenant_id: str) -> bool:
+    tenants = waii.user.list_tenants(ListTenantsRequest(lookup_org_id=org_id)).tenants
+    for tenant in tenants:
+        if tenant.id == tenant_id:
+            return True
+    return False
+
+
+def user_exists(waii: Waii, org_id: str, user_id: str) -> bool:
+    users = waii.user.list_users(ListUsersRequest(lookup_org_id=org_id)).users
+    for user in users:
+        if user.id == user_id:
+            return True
     return False

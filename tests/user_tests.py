@@ -1,5 +1,6 @@
 import unittest
 
+from tests.common_test_utils import org_exists, tenant_exists, user_exists
 from waii_sdk_py.user import User as UserModel, BaseModel, DeleteTenantRequest, DeleteOrganizationRequest, \
     CreateOrganizationRequest, Organization, ListOrganizationsRequest, UpdateOrganizationRequest, CreateTenantRequest, \
     Tenant, ListTenantsRequest, UpdateTenantRequest
@@ -181,29 +182,53 @@ class TestUser(unittest.TestCase):
         tenant1 = [tenant for tenant in resp.tenants if tenant.id == "tenant1"]
         assert len(tenant1) == 0
 
-    def impersonation_test(self):
+    def test_impersonation(self):
         client = Waii()
         client.initialize(url="http://localhost:9859/api/")
 
         # create an hierarchy of organizations, tenants and users
-        org = Organization(id="org1", name="My Org")
-        resp = WAII.User.create_org(CreateOrganizationRequest(organization=org))
-        assert isinstance(resp, CommonResponse)
-        tenant = Tenant(id="tenant1", name="Test Tenant", org_id="org1")
-        resp = WAII.User.create_tenant(CreateTenantRequest(tenant=tenant))
-        assert isinstance(resp, CommonResponse)
-        user = UserModel(id="user1", name="Wangda Tan", tenant_id="tenant1", org_id="org1")
-        resp = WAII.User.create_user(CreateUserRequest(user=user))
-        assert isinstance(resp, CommonResponse)
+        if not org_exists(client, "org1"):
+            org = Organization(id="org1", name="My Org")
+            WAII.User.create_org(CreateOrganizationRequest(organization=org))
+
+        if not tenant_exists(client, "org1", "tenant1"):
+            tenant = Tenant(id="tenant1", name="Test Tenant", org_id="org1")
+            WAII.User.create_tenant(CreateTenantRequest(tenant=tenant))
+
+        if not user_exists(client, "org1", "user1"):
+            user = User(id="user1", name="Wangda Tan", tenant_id="tenant1", org_id="org1")
+            WAII.User.create_user(CreateUserRequest(user=user))
+
+        if not user_exists(client, "org1", "user2"):
+            user = User(id="user2", name="Pravin", tenant_id="tenant1", org_id="org1")
+            WAII.User.create_user(CreateUserRequest(user=user))
 
         # impersonate the user
-        client.impersonate_user("user1")
+        client.set_impersonate_user("user1")
 
         # get the user info
-        resp = client.get_user_info(GetUserInfoRequest())
+        resp = client.user.get_user_info(GetUserInfoRequest())
         assert isinstance(resp, GetUserInfoResponse)
         assert resp.id == "user1"
         assert resp.name == "Wangda Tan"
+
+        # test impersonation, with block
+        with client.impersonate_user("user1"):
+            resp = client.user.get_user_info(GetUserInfoRequest())
+            assert isinstance(resp, GetUserInfoResponse)
+            assert resp.id == "user1"
+            assert resp.name == "Wangda Tan"
+
+        resp = client.user.get_user_info(GetUserInfoRequest())
+        assert isinstance(resp, GetUserInfoResponse)
+        assert resp.id == "my_org_id"
+        assert resp.name == "J.A.R.V.I.S."
+
+        with client.impersonate_user("user2"):
+            resp = client.user.get_user_info(GetUserInfoRequest())
+            assert isinstance(resp, GetUserInfoResponse)
+            assert resp.id == "user2"
+            assert resp.name == "Pravin"
 
 
 if __name__ == '__main__':

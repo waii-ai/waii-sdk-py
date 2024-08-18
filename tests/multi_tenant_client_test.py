@@ -4,17 +4,9 @@ from tests.common_test_utils import load_db_conn1, load_db_conn2, connect_db
 from waii_sdk_py.database import Database
 from waii_sdk_py.query import *
 from waii_sdk_py.waii_sdk_py import Waii, WAII
-
-'''
-movie and chinook are two database
-create the database named chinook from here https://github.com/morenoh149/postgresDBSamples/tree/master/chinook-1.4
-user name of database should be waii and password should be password
-
-create the database named called movie by taking data from here
-https://www.notion.so/waii-ai/Use-PG-WAII-eac9d02bb7894f748ed55aaaf8796e3c
-'''
-
-
+"""
+This class is to test https://doc.waii.ai/python/docs/multi-tenant-client-module
+"""
 class MultiTenantClientTest(unittest.TestCase):
     def setUp(self):
         self.movie_conn = load_db_conn1()

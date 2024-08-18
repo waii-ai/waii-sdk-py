@@ -108,12 +108,15 @@ Note:
 
 ```python
 client1_sdk.initialize(url='...', api_key="<your-api-key>")
-client1_sdk.impersonate_user(user_id="user_id_1")
-client1_sdk.SemanticContext.modify_semantic_context(ModifySemanticContextRequest(
-    updated=[
-        # the statement object which mentioned above
-    ]
-))
+
+# run the following code block as user_id_1
+with client1_sdk.impersonate_user(user_id="user_id_1"):
+  client1_sdk.SemanticContext.modify_semantic_context(ModifySemanticContextRequest(
+      updated=[
+          # the statement object which mentioned above
+      ]
+  ))
+  # it will automatically revert back to the original user after the block
 ```
 
 ### Get Semantic Context
