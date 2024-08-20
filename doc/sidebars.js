@@ -66,7 +66,12 @@ module.exports = {
 					type: 'doc',
 					id: 'multi-tenant-client-module',
 					label: 'Multi-tenant Waii SDK Client'
-				}
+				},
+                {
+                    type: 'doc',
+                    id: 'access-rule-module',
+                    label: 'Row-level Access Rule'
+                }
             ],
         },
     ],

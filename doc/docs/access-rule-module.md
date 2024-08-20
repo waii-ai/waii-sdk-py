@@ -1,6 +1,6 @@
 ---
 id: access-rule-module
-title: Access Rules
+title: Table Access Rules
 ---
 
 
