@@ -115,7 +115,14 @@ class DeleteUserRequest(CommonRequest):
 
 
 class ListUsersRequest(CommonRequest):
+    # lookup by org, by default it will lookup users within the same org
     lookup_org_id: Optional[str]
+
+    # lookup by tenant, by default it will lookup all users within the org (depends on lookup_org_id)
+    lookup_tenant_id: Optional[str]
+
+    # lookup by user, by default it will return all users after apply the above filters
+    lookup_user_id: Optional[str]
 
 
 class ListUsersResponse(CommonResponse):
