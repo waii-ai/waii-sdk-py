@@ -76,7 +76,7 @@ class MultiTenantClientTest(unittest.TestCase):
         result = self.chinook_waii.query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert "21" in str(result.rows[0])
+        assert "...And" in str(result.rows[0])
 
     def test_legacy_generate(self):
         WAII.Database.activate_connection(self.movie_conn.key)
