@@ -150,6 +150,19 @@ class TestUser(unittest.TestCase):
         assert len(org1) == 0
 
     def test_manage_tenant(self):
+        #delete all users with tenant id = tenant1
+        params = ListOrganizationsRequest()
+        orgs = WAII.User.list_orgs(params)
+        for org in orgs.organizations:
+            print(org)
+            params = ListUsersRequest(lookup_org_id=org.id)
+            users_resp = WAII.User.list_users(params)
+            for user in users_resp.users:
+                print(user)
+                if user.tenant_id == "tenant1":
+                    WAII.User.delete_user(DeleteUserRequest(id = user.id))
+
+
         params = CreateOrganizationRequest(organization=Organization(id="o1", name="My Org"))
         del_tenant = DeleteTenantRequest(id="tenant1")
         try:
@@ -158,7 +171,7 @@ class TestUser(unittest.TestCase):
             pass
         try:
             resp = WAII.User.delete_tenant(del_tenant)
-        except:
+        except Exception as e:
             pass
         params = CreateTenantRequest(tenant=Tenant(id="tenant1", name="Test Tenant", org_id="o1"))
         resp = WAII.User.create_tenant(params)

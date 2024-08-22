@@ -8,7 +8,13 @@ class TestQuery(unittest.TestCase):
         WAII.initialize(url="http://localhost:9859/api/")
         result = WAII.Database.get_connections()
         self.result = result
-        WAII.Database.activate_connection(result.connectors[0].key)
+        pg_connector = None
+        for connector in result.connectors:
+            if connector.db_type == "postgresql":
+                pg_connector = connector
+                break
+
+        WAII.Database.activate_connection(pg_connector.key)
 
     def test_generate(self):
         params = QueryGenerationRequest(ask="How many tables are there?", use_cache=False)
