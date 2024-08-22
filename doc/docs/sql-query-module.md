@@ -94,8 +94,6 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
 - `timestamp_ms`: total elapsed time (in milli-seconds) between RPC request/response.
 - `access_rule_protection_status`: `AccessRuleProtectionStatus` object showing  query protection status regarding access rules
 
-
-
 #### Tips to use tweak to update existing query
 
 When you tweak a query, you should provide the original query and the original ask. The system will figure out what you want to tweak based on the original query/ask and the new ask.
