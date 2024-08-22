@@ -44,6 +44,7 @@ class ListTableAccessRuleRequest(CommonRequest):
 class ListTableAccessRuleResponse(CommonResponse):
     rules: Optional[List[TableAccessRule]]
 
+
 class AccessRuleImpl:
 
     def __init__(self, http_client: WaiiHttpClient):

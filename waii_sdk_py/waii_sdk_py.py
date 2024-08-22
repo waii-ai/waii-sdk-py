@@ -41,6 +41,7 @@ class Waii:
         self.chat = None
         self.chart = None
         self.user = None
+        self.access_rules = None
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
@@ -54,7 +55,7 @@ class Waii:
         self.chat = ChatImpl(http_client)
         self.chart = ChartImpl(http_client)
         self.user = UserImpl(http_client)
-        self.access_rule = AccessRuleImpl(http_client)
+        self.access_rules = AccessRuleImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history
