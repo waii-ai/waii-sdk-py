@@ -4,7 +4,7 @@ title: Table Access Rules
 ---
 
 
-The `Access Rule` module contains methods related to creating access rules to ensure secure access to data for all users
+The `Access Rules` module contains methods related to creating access rules to ensure secure access to data for all users
 
 Currently, we support access rules scoped to Tables
 
@@ -81,7 +81,7 @@ with _access_controlled_t as (
 ### UpdateTableAccessRules
 
 ```python
-WAII.access_rule.update_table_access_rules(params: UpdateTableAccessRuleRequest)
+WAII.access_rules.update_table_access_rules(params: UpdateTableAccessRuleRequest)
 ```
 
 This method creates or updates the access rule for a table based on the parameters
@@ -99,14 +99,14 @@ Otherwise, a rule with the same id as an existing rule will be rejected
 
 ### DeleteTableAccessRules
 ```python
-WAII.access_rule.remove_table_access_rules(params: RemoveTableAccessRuleRequest)
+WAII.access_rules.remove_table_access_rules(params: RemoveTableAccessRuleRequest)
 ```
 Request fields:
 - `rules`: A list of rule ids to remove
 
 ### ListTableAccessRules
 ```python
-WAII.access_rule.list_table_access_rules(params: ListTableAccessRuleRequest) -> ListTableAccessRuleResponse
+WAII.access_rules.list_table_access_rules(params: ListTableAccessRuleRequest) -> ListTableAccessRuleResponse
 ```
 
 This method will list the active table access rules that match the fields in the request.
