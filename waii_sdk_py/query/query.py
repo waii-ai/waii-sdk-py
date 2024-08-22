@@ -126,6 +126,16 @@ class ConfidenceScore(BaseModel):
             return 0.0
 
 
+class AccessRuleProtectionState(str, Enum):
+    protected = "protected"  # Query is completely protected regarding access rules
+    unprotected = "unprotected"  # Query is not guaranteed to be protected, see error msg for details
+
+
+class AccessRuleProtectionStatus(BaseModel):
+    state: AccessRuleProtectionState
+    msg: Optional[str]
+
+
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
     liked: Optional[bool] = None
@@ -141,6 +151,7 @@ class GeneratedQuery(BaseModel):
     confidence_score: Optional[ConfidenceScore]
     debug_info: Optional[Dict[str, Any]] = {}
     http_client: Optional[Any] = Field(default=None, exclude=True)
+    access_rule_protection_status: Optional[AccessRuleProtectionStatus]  # query protection status regarding access rules
 
     def run(self):
         return QueryImpl(self.http_client).run(RunQueryRequest(query=self.query))

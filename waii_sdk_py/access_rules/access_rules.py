@@ -64,7 +64,7 @@ class AccessRuleImpl:
         )
 
     def list_table_access_rules(
-            self, params: LIST_TABLE_ACCESS_RULES_ENDPOINT
+            self, params: ListTableAccessRuleRequest
     ) -> ListTableAccessRuleResponse:
         return self.http_client.common_fetch(
             LIST_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ListTableAccessRuleResponse
