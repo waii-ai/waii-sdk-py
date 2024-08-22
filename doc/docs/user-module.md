@@ -18,17 +18,24 @@ WAII.User.create_access_key(params: CreateAccessKeyRequest) -> GetAccessKeyRespo
 ```
 This method creates a new access key for a user.
 
-`CreateAccessKeyRequest` has following properties
-    `name`:It is string type denoting the name of the access key
-Response fields:
-`GetAccessKeyResponse`
-    `access_keys`: Optional[List[AccessKey]]
+### CreateAccessKeyRequest
 
-`AccessKey` is defined as 
-    `access_key`: It is access key string
-    `user_id`: User id of user to whom access key belongs
-    `name`: Name of the access key which was given at the time of key creation
-    `created_at`: Timestamp when key was created.
+`CreateAccessKeyRequest` has the following properties:
+
+- `name`: It is a string type denoting the name of the access key.
+
+### Response Fields
+
+`GetAccessKeyResponse` has the following properties:
+
+- `access_keys`: `Optional[List[AccessKey]]`
+
+`AccessKey` is defined as:
+
+- `access_key`: It is the access key string.
+ - `user_id`: User ID of the user to whom the access key belongs.
+ - `name`: Name of the access key which was given at the time of key creation.
+ - `created_at`: Timestamp when the key was created.
     
 
     
@@ -66,8 +73,9 @@ WAII.User.delete_access_key(params: DelAccessKeyRequest) -> DelAccessKeyResponse
 ```
 This method deletes the access key of the user.
 
-`DelAccessKeyRequest` has following properties
-    `names`: It is list of string denoting the name of the access keys which user wants to delete.
+`DelAccessKeyRequest` has following properties:
+
+- `names`: It is list of string denoting the name of the access keys which user wants to delete.
 
 Response is `DelAccessKeyResponse` which is empty object
 

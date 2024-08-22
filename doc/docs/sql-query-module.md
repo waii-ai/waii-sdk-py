@@ -92,6 +92,7 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
   - `token_total`: total token usage (prompt + completed), this doesn't include cached tokens. So if you see the total_total = 0, the query is fetched from the cache.
 - `is_new`: whether the query is new or tweak
 - `timestamp_ms`: total elapsed time (in milli-seconds) between RPC request/response.
+- `access_rule_protection_status`: `AccessRuleProtectionStatus` object showing  query protection status regarding access rules
 
 #### Tips to use tweak to update existing query
 
