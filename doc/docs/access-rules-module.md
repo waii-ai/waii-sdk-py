@@ -113,7 +113,10 @@ This method will list the active table access rules that match the fields in the
 Request Fields
 - `table`: Optional argument, a fully qualified table name. All rules scoped to this table will be listed in the response
 - `ids`: Optional argument, a list of access rule ids. All rules matching these ids will be returned in the response
-If these arguments are left empty, all active access rules within the scope will be returned
+- `lookup_user`: Optional argument, a User object for which to get the applicable rules for. If provided, all rules returned will be the access rules that queries from this user will follow.
+
+If these arguments are left empty, all active access rules within the scope will be returned.
+Any combination of these arguments can be filled in, the returned rules will match all filled in arguments.
 
 Response fields
 - `rules`: The list of rules that match the argments

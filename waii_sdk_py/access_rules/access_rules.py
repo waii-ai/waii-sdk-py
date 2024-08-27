@@ -6,6 +6,7 @@ from ..my_pydantic import BaseModel
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.database import TableName
 from waii_sdk_py.waii_http_client import WaiiHttpClient
+from ..user import User
 
 UPDATE_TABLE_ACCESS_RULES_ENDPOINT = "update-table-access-rules"
 REMOVE_TABLE_ACCESS_RULES_ENDPOINT = "remove-table-access-rules"
@@ -39,6 +40,7 @@ class RemoveTableAccessRuleRequest(CommonRequest):
 class ListTableAccessRuleRequest(CommonRequest):
     table: Optional[TableName]
     ids: Optional[List[str]]
+    lookup_user: Optional[User]
 
 
 class ListTableAccessRuleResponse(CommonResponse):

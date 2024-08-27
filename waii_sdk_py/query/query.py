@@ -287,12 +287,18 @@ class CompilationErrorMsgFromDBEngine(BaseModel):
     msg: Optional[str]
 
 
+class EnforceTableAccessRulesResponse(BaseModel):
+    query: str
+    access_rule_protection_status: AccessRuleProtectionStatus
+
+
 class RunQueryCompilerResponse(BaseModel):
     query: str
     errors: str
     should_compile: bool
     tables: Optional[List[TableName]]
     explain_error_msg: CompilationErrorMsgFromDBEngine
+    enforce_table_access_rules_response: Optional[EnforceTableAccessRulesResponse]
 
 
 class SemanticContextCheckerRequest(LLMBasedRequest):
