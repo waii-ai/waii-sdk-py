@@ -60,7 +60,10 @@ Example of creating `DBContentFilter` object:
 
 1) Filter table1, table2, table3 from schema1, schema2
 ```python
-filters = [
+DBConnection(
+  # other fields
+  # ...
+  db_content_filters = [
     DBContentFilter(
         filter_scope=DBContentFilterScope.table,
         filter_type=DBContentFilterType.include,
@@ -75,13 +78,13 @@ filters = [
         pattern='(^schema1$|^schema2$)',
         ignore_case=True,
     )
-]
+])
 ```
 
 2) Exclude all columns start with `temp_` from all the tables
 
 ```python
-filters = [
+db_content_filters = [
     DBContentFilter(
         filter_scope=DBContentFilterScope.column,
         filter_type=DBContentFilterType.exclude,
