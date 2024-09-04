@@ -37,9 +37,65 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `always_include_tables`: If it is not None, then these tables will always be included, even if table selector doesn't select them
 - `embedding_model`: Embedding model used for similarity search within the knowledge graph.
 
-Examples of creating `DBConnection` Object
+#### DBContentFilter
 
-#### Snowflake
+If you need to exclude certain columns, tables from database while generating the query, you can pass the db_content_filter. It has the following fields:
+- `filter_scope`: DBContentFilterScope, it could be either `schema`, `table`, `column`
+- `filter_type`: DBContentFilterType, it could be either `include` or `exclude`
+- `filter_action_type`: DBContentFilterActionType, it could be either `visibility` or `access`
+  - `visibility`: It will hide the columns/tables from the query generation, and it won't stored in the knowledge graph.
+  - `sample_values`: It will hide the certain columns/tables from the sampling (even if the db_connection is set to sample_col_values=True).
+- `pattern`: Regex pattern to match the schema/table/column name
+  - For example, if you want to exclude all the tables which start with `temp_`, you can set the pattern to `^temp_.*`
+  - Multiple patterns can be provided by separating them with `|`. For example, `(^sf1$|^sf100$)` will match `sf1` and `sf100`
+  - You can also do exact match by setting the pattern to `^temp_table$`
+- `ignore_case`: If it is True, then the pattern will be case insensitive. Default is True.
+- `search_context`: List of `SearchContext` objects. If you want to apply the filter based on a subset of the tables/schema. By default it will apply to all the tables/schemas.
+- Multiple filters can be applied, they are connected by `AND` operator:
+  - For example, if you want to include table1, table2 from schema1, you can add two filters:
+    - Filter1: scope=table, type=include, action=visibility, pattern=(^table1$|^table2$)
+    - Filter2: scope=schema, type=include, action=visibility, pattern=schema1
+
+Example of creating `DBContentFilter` object:
+
+1) Filter table1, table2, table3 from schema1, schema2
+```python
+filters = [
+    DBContentFilter(
+        filter_scope=DBContentFilterScope.table,
+        filter_type=DBContentFilterType.include,
+        filter_action_type=DBContentFilterActionType.visibility,
+        pattern='(^table1$|^table2$|^table3$)',
+        ignore_case=True,
+    ),
+    DBContentFilter(
+        filter_scope=DBContentFilterScope.schema,
+        filter_type=DBContentFilterType.include,
+        filter_action_type=DBContentFilterActionType.visibility,
+        pattern='(^schema1$|^schema2$)',
+        ignore_case=True,
+    )
+]
+```
+
+2) Exclude all columns start with `temp_` from all the tables
+
+```python
+filters = [
+    DBContentFilter(
+        filter_scope=DBContentFilterScope.column,
+        filter_type=DBContentFilterType.exclude,
+        filter_action_type=DBContentFilterActionType.visibility,
+        pattern='^temp_.*',
+        ignore_case=True,
+    )
+]
+```
+
+
+#### Examples of creating `DBConnection` Object
+
+##### Snowflake
 ```python
 DBConnection(
     key = '',
@@ -53,11 +109,14 @@ DBConnection(
 )
 ```
 
-#### PostgreSQL
+##### PostgreSQL / MySQL / Trino / SQLServer, etc.
+
+This applies to all the databases which uses username/password/host/port to connect.
+
 ```python
 DBConnection(
     key = '',
-    db_type = 'postgresql',
+    db_type = 'postgresql' # or 'mysql', 'trino', 'sqlserver', etc.
     username = 'username',
     password = 'password',
     database = 'database',
@@ -66,7 +125,7 @@ DBConnection(
 )
 ```
 
-#### MongoDB
+##### MongoDB
 ```python
 DBConnection(
     key = '',
@@ -78,7 +137,10 @@ DBConnection(
     port = 27017 # if you are using Mongo Atlas, you shouldn't set port
 )
 ```
-Examples of creating push based `DBConnection` Object. It is same for `Snowflake` ,`postgresql` and `mongodb`
+
+##### Push-based Database
+
+Examples of creating push based `DBConnection` Object. It is same for all the databases, you just need to set db_type to the database you are using. And set push to True.
 ```python
 DBConnection(
     key = '',
