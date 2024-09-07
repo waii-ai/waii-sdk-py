@@ -10,7 +10,7 @@ T = TypeVar('T')
 class WaiiHttpClient(Generic[T]):
     instance = None
 
-    def __init__(self, url: str, apiKey: str):
+    def __init__(self, url: str, apiKey: str, verbose=False):
         WaiiHttpClient.instance = self
         self.url = url
         self.apiKey = apiKey
@@ -19,6 +19,7 @@ class WaiiHttpClient(Generic[T]):
         self.orgId = ''
         self.userId = ''
         self.impersonateUserId = ''
+        self.verbose = verbose
 
     @classmethod
     def get_instance(cls, url: str = None, apiKey: str = None):
@@ -62,6 +63,12 @@ class WaiiHttpClient(Generic[T]):
             headers['Authorization'] = f'Bearer {self.apiKey}'
         if self.impersonateUserId:
             headers['x-waii-impersonate-user'] = self.impersonateUserId
+
+        if self.verbose:
+            # print cUrl equivalent
+            print("calling endpoint: ", endpoint)
+            print(f"curl -X POST '{self.url + endpoint}' -H 'Content-Type: application/json' -H 'Authorization: Bearer {self.apiKey}' -d '{json.dumps(params, default=vars)}'")
+
         response = requests.post(self.url + endpoint, headers=headers, data=json.dumps(params, default=vars), timeout=self.timeout/1000)  # timeout is in seconds
 
         if response.status_code != 200:

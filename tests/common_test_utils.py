@@ -7,7 +7,7 @@ from waii_sdk_py.waii_sdk_py import Waii
 
 
 def connect_db(db_conn_to_add: DBConnection, impersonate_user=None):
-    WAII.initialize(url="http://localhost:9859/api/")
+    WAII.initialize(url="http://localhost:9859/api/", verbose=True)
 
     if impersonate_user:
         WAII.set_impersonate_user(impersonate_user)

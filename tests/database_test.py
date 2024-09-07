@@ -1,5 +1,7 @@
 import unittest
 
+import time
+
 from tests.common_test_utils import connect_db, load_db_conn1, check_table_existence
 from waii_sdk_py import WAII
 from waii_sdk_py.database import (
@@ -9,7 +11,8 @@ from waii_sdk_py.database import (
     TableName,
     ColumnDefinition,
     TableReference,
-    UpdateTableDefinitionRequest, )
+    UpdateTableDefinitionRequest, DBContentFilter, DBContentFilterScope, DBContentFilterType,
+    DBContentFilterActionType, SearchContext, )
 from waii_sdk_py.query import RunQueryRequest
 
 
@@ -24,12 +27,41 @@ class TestDatabase(unittest.TestCase):
         )
 
     def setUp(self):
-        WAII.initialize(url="http://localhost:9859/api/")
+        WAII.initialize(url="http://localhost:9859/api/", verbose=True)
 
         self.db_conn = load_db_conn1()
         self._load_push_based_conn()
 
         connect_db(self.db_conn)
+
+    def test_modify_db_with_search_context_db_content_filter(self):
+        db_conn = load_db_conn1()
+        db_conn.db_content_filters = [DBContentFilter(
+            filter_scope = DBContentFilterScope.table,
+            filter_type = DBContentFilterType.include,
+            filter_action_type = DBContentFilterActionType.visibility,
+            pattern='', # empty regex pattern matches all
+            search_context = [
+                SearchContext(db_name='*', schema_name='information_schema', table_name='tables'),
+                SearchContext(db_name='*', schema_name='information_schema', table_name='columns'),
+                SearchContext(db_name='*', schema_name='public', table_name='movies'),
+            ]
+        )]
+
+        # modify the connection
+        result = WAII.Database.modify_connections(
+            ModifyDBConnectionRequest(updated=[db_conn])
+        ).connectors
+
+        # check if the connection is modified
+        time.sleep(15)
+
+        # get the catalog
+        result = WAII.Database.get_catalogs()
+        tables = set([str(t.name) for c in result.catalogs for s in c.schemas for t in s.tables])
+        assert tables == {"table_name='COLUMNS' schema_name='INFORMATION_SCHEMA' database_name='WAII_SDK_TEST'",
+                         "table_name='MOVIES' schema_name='PUBLIC' database_name='WAII_SDK_TEST'",
+                         "table_name='TABLES' schema_name='INFORMATION_SCHEMA' database_name='WAII_SDK_TEST'"}
 
     def test_modify_connections(self):
         # first try to delete te connection if it exists
