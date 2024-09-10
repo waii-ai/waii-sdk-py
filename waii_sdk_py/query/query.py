@@ -166,6 +166,11 @@ class RunQueryRequest(CommonRequest):
     session_parameters: Optional[Dict[str, Any]] = None
 
 
+class RunQueryCompilerRequest(CommonRequest):
+    query: str
+    search_context: Optional[List[SearchContext]]
+
+
 class RunQueryResponse(BaseModel):
     query_id: Optional[str] = None
 
@@ -493,7 +498,7 @@ class QueryImpl:
         )
 
     def run_query_compiler(
-            self, params: RunQueryRequest
+            self, params: RunQueryCompilerRequest
     ) -> RunQueryCompilerResponse:
         return self.http_client.common_fetch(
             RUN_QUERY_COMPILER_ENDPOINT, params.__dict__, RunQueryCompilerResponse

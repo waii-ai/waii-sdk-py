@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from ..common import LLMBasedRequest
+from ..database import SearchContext
 from ..my_pydantic import BaseModel
 from ..waii_http_client import WaiiHttpClient
 
@@ -64,6 +65,8 @@ class GetSemanticContextRequest(LLMBasedRequest):
     offset = 0
     limit = 1000
     search_text: Optional[str] = None
+    search_context: Optional[List[SearchContext]] = None
+
 
 class GetSemanticContextResponse(BaseModel):
     semantic_context: Optional[List[SemanticStatement]] = None

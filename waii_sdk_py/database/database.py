@@ -182,6 +182,11 @@ class DBContentFilter(BaseModel):
     search_context: Optional[List[SearchContext]]
 
 
+class DBAccessPolicy(BaseModel):
+    read_only: Optional[bool] = False
+    allow_access_beyond_db_content_filter: Optional[bool] = True
+    allow_access_beyond_search_context: Optional[bool] = True
+
 
 class DBConnection(BaseModel):
     key: str
@@ -203,6 +208,7 @@ class DBConnection(BaseModel):
     embedding_model: Optional[str]
     always_include_tables: Optional[List[TableName]]
     alias: Optional[str]
+    db_access_policy: Optional[DBAccessPolicy] = DBAccessPolicy()
 
 class ModifyDBConnectionRequest(BaseModel):
     updated: Optional[List[DBConnection]] = None
