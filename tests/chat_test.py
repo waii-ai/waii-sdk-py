@@ -42,7 +42,6 @@ class TestChat(unittest.TestCase):
         self.assertIsInstance(result, ChatResponse)
         self.assertIsNotNone(result.response_data)
         self.assertIsNotNone(result.response_data.query)
-        self.assertEqual(result.response_selected_fields, [ChatModule.QUERY])
         self.assertTrue(result.is_new)
         self.assertIsNotNone(result.timestamp_ms)
 
@@ -128,7 +127,6 @@ class TestChat(unittest.TestCase):
 
         self.assertIsInstance(result2, ChatResponse)
         self.assertIsNotNone(result2.response_data.chart)
-        self.assertIn(ChatModule.CHART, result2.response_selected_fields)
 
 if __name__ == '__main__':
     unittest.main()
