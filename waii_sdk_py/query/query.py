@@ -67,6 +67,8 @@ class QueryGenerationRequest(LLMBasedRequest):
     dialect: Optional[str] = None
     parent_uuid: Optional[str] = None
     flags: Optional[Dict[str, Any]] = {}
+    # do we want to use example queries during query generation
+    use_example_queries: Optional[bool] = True
 
 
 class DescribeQueryRequest(CommonRequest):
