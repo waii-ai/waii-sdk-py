@@ -11,14 +11,14 @@ from waii_sdk_py.database import CatalogDefinition
 from waii_sdk_py.semantic_context import GetSemanticContextResponse
 from waii_sdk_py.chart import ChartGenerationResponse, ChartType
 
-class TestChat(unittest.TestCase):
+class TestChatV2(unittest.TestCase):
     def setUp(self):
         WAII.initialize(url="http://localhost:9859/api/")
         result = WAII.Database.get_connections()
         self.result = result
         snowflake_connector = None
         for connector in result.connectors:
-            if connector.db_type == "snowflake" and "MOVIE_DB" in connector.key:
+            if connector.db_type == "snowflake":
                 snowflake_connector = connector
                 break
 
@@ -42,16 +42,17 @@ class TestChat(unittest.TestCase):
         self.assertIsInstance(result, ChatResponse)
         self.assertIsNotNone(result.response_data)
         self.assertIsNotNone(result.response_data.query)
+        self.assertEqual(result.response_selected_fields, [ChatModule.QUERY])
         self.assertTrue(result.is_new)
         self.assertIsNotNone(result.timestamp_ms)
 
     def test_chat_message_chart(self):
         chat_request = ChatRequest(
-            ask="Show me a bar chart of movie revenue",
+            ask="Show me a bar chart of movie ratings",
             streaming=False,
             parent_uuid=None,
             chart_type=ChartType.SUPERSET,
-            modules=[ChatModule.CHART, ChatModule.QUERY, ChatModule.DATA],
+            modules=[ChatModule.CHART, ChatModule.QUERY],
             module_limit_in_response=2
         )
 
@@ -62,12 +63,14 @@ class TestChat(unittest.TestCase):
         self.assertIsNotNone(result.response_data)
         self.assertIsNotNone(result.response_data.chart)
         self.assertIsNotNone(result.response_data.query)
+        self.assertIn(ChatModule.CHART, result.response_selected_fields)
     def test_chat_message_semantic_context(self):
         chat_request = ChatRequest(
             ask="What tables are available for movie data?",
             streaming=False,
             parent_uuid=None,
             chart_type=None,
+            modules=[ChatModule.DATA],
             module_limit_in_response=1
         )
 
@@ -76,7 +79,25 @@ class TestChat(unittest.TestCase):
         self.assertIsInstance(result, ChatResponse)
         self.assertIsNotNone(result.response)
         self.assertIsNotNone(result.response_data)
-        self.assertIsNotNone(result.response_data.semantic_context)
+        self.assertIsNotNone(result.response_data.data)
+        self.assertIn(ChatModule.DATA, result.response_selected_fields)
+
+    def test_chat_message_tables(self):
+        chat_request = ChatRequest(
+            ask="Show me the schema for the movies table",
+            streaming=False,
+            parent_uuid=None,
+            chart_type=None,
+            modules=[ChatModule.TABLES],
+            module_limit_in_response=1
+        )
+
+        result = self.chat.chat_message(chat_request)
+
+        self.assertIsInstance(result, ChatResponse)
+        self.assertIsNotNone(result.response)
+        self.assertIsNotNone(result.response_data)
+        self.assertIsNotNone(result.response_data.tables)
 
     def test_chat_conversation(self):
         # Initial question
@@ -107,6 +128,7 @@ class TestChat(unittest.TestCase):
 
         self.assertIsInstance(result2, ChatResponse)
         self.assertIsNotNone(result2.response_data.chart)
+        self.assertIn(ChatModule.CHART, result2.response_selected_fields)
 
 if __name__ == '__main__':
     unittest.main()
