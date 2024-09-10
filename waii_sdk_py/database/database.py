@@ -202,6 +202,7 @@ class DBConnection(BaseModel):
     db_content_filters: Optional[List[DBContentFilter]]
     embedding_model: Optional[str]
     always_include_tables: Optional[List[TableName]]
+    alias: Optional[str]
 
 class ModifyDBConnectionRequest(BaseModel):
     updated: Optional[List[DBConnection]] = None
