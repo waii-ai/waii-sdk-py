@@ -136,6 +136,7 @@ class AccessRuleProtectionState(str, Enum):
 class AccessRuleProtectionStatus(BaseModel):
     state: AccessRuleProtectionState
     msg: Optional[str]
+    protected_query: Optional[str]
 
 
 class GeneratedQuery(BaseModel):
