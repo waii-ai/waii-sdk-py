@@ -137,7 +137,6 @@ class AccessRuleProtectionStatus(BaseModel):
     state: AccessRuleProtectionState
     msg: Optional[str]
     protected_query: Optional[str]
-    unprotected_query: Optional[str]
 
 
 class GeneratedQuery(BaseModel):
