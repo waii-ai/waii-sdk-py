@@ -39,12 +39,12 @@ Parameter fields:
 
 **Examples:**
     
-Ask a new question:
+#### Ask a new question:
 ```python
 >>> WAII.Query.generate(QueryGenerationRequest(ask = "How many tables are there?"))
 ```
 
-**Ask a complex question:**
+#### **Ask a complex question:**
 ```python
 >>> WAII.Query.generate(QueryGenerationRequest(ask = """
     Give me all stores in California that have more than 1000
@@ -52,7 +52,7 @@ Ask a new question:
     customers."""))
 ```
 
-**Generate query with search context (limited to specific tables, schemas, etc.)**
+#### **Generate query with search context (limited to specific tables, schemas, etc.)**
 
 By default, Waii search all tables in the database, if you know which tables you want to use, you can specify the search context to limit the tables used to generate query.
 
@@ -69,7 +69,7 @@ By default, Waii search all tables in the database, if you know which tables you
 
 The above query will only search tables from `schema1.table1` and `schema2.*`
 
-**Tweak the previous question:**
+#### **Tweak the previous question:**
 ```python
 >>> WAII.Query.generate(QueryGenerationRequest(
     ask = "only return 10 results", 
@@ -303,19 +303,52 @@ You can specify `detailed_steps` of generating the query in LikedQuery. This is 
 
 Examples: 
 
-Like a generated query
+#### Like a generated query
 ```python
 WAII.Query.like(LikeQueryRequest(query_uuid='01afbd1e-0001-d31e-0022-ba8700a8209e', liked=True))
 ```
 
-Like a query by specifying `ask` and `query`
+#### Like a query by specifying `ask` and `query`
 ```python
 WAII.Query.like(LikeQueryRequest(ask='How many tables are there?', 
                                  query='SELECT COUNT(DISTINCT table_name) FROM waii.information_schema.tables', liked=True))
 ```
 
-You will get an exception if the call is failed.
+#### Programmatically like a list of queries
+```python
+# programmatically like a bunch of queries
 
+queries = [
+    {
+        "uuid": "q1",
+        "query": """SELECT...""",
+        "ask": "Find all the orders"
+    },
+    {
+        # another query
+    }
+]
+
+for q in queries:
+    WAII.Query.like(
+        LikeQueryRequest(# SQL part of the query
+                         query=q['query'], 
+                         
+                         # natural language ask
+                         ask=q['ask'], 
+
+                         # uuid, if same uuid liked multiple times, older-ones will be replaced
+                         uuid=q['uuid'], 
+
+                         # do we want the system to rewrite question based on the query and ask? 
+                         # when it is set to False, it will keep the ask as-is
+                         rewrite_question=False, 
+
+                         # When set to True, like it, when set to False, remove it from the liked list
+                         liked=True))
+```
+
+You will get an exception if the call is failed.
 
 ### Describe
 
