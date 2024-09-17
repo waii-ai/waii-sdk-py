@@ -402,6 +402,42 @@ Example:
 summary='...' detailed_steps=[...] what_changed="The new query does not have any filter on 'table_name' column."
 ```
 
+### Apply Table Access Rules
+This method accepts a query and applies the necessary table access rules for the user. In addition to returning the query with all table access rules applied, a protection status is returned detailing the status of the returned query and any errors that were encounted while applying the access rules
+
+`AccessRuleProtectionState` is an string enum with the following values:
+
+- `protected`: All applicable access rules have been enforced within the query, including the case that there are no applicable access rules
+- `unprotected`: Cannot guarantee that all applicable access rules have been applied to the query, due to an error while applying access rules
+
+
+An `AccessRuleProtectionStatus` is an object with the following fields:
+
+- `state`: an `AccessRuleProtectionState` capturing the state of the returned query
+- `msg`: an error message if the `state` is unprotected explaining the cause of the error
+unprotected: Cannot guarantee that all applicable access rules have been applied to the query
+
+An `ApplyTableAccessRulesRequest` is a request with the following fields: 
+- `query`: `str`
+
+An `ApplyTableAccessRulesResponse` is returned containing the following fields
+- `query`: `str` containing the response query
+- `status`: An `AccessRuleProtectionStatus` described above containing the status for the response
+
+Example usages:
+Given a table T with table access rules for the current user, both paths will get queries with the access rule applied
+
+```python
+apply_table_access_rules_response = WAII.query.apply_table_access_rules(
+  ApplyTableAccessRulesRequest(
+    query = "select * from t"
+))
+if apply_table_access_rules_response.status.state == AccessRuleProtectionState.protected:
+  print(apply_table_access_rules_response.query)
+
+generated_query = WAII.query.generate(QueryGenerationRequest(ask = "Can you get me all the data from t?"))
+apply_table_access_rules_response = generated_query.apply_table_access_rules()
+```
 #### Auto Complete (Experimental)
 
 This method allows you to automatically complete a partial query, this can be useful when you want to build a query editor with Github co-pilot-like auto complete feature.
