@@ -36,6 +36,7 @@ Parameter fields:
   - `user_id=<user_email_login_to_waii>` is one of the default tag which is automatically added by the system (you don't need to add it)
 - `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
 - `model`: Which LLM to be used to generate queries. By default system will choose a model.
+- `use_example_queries`: Whether to use example queries (aka liked-queries) or not, default is True. If you set it to False, it will not use example queries to generate the query.
 
 **Examples:**
     
