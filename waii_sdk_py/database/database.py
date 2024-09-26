@@ -17,7 +17,7 @@ UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
 UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
-UPDATE_COLUMN_ENUM_VALUES_ENDPOINT = "update-column-enum-values"
+UPDATE_COLUMN_CATEGORICAL_VALUES_ENDPOINT = "update-column-categorical-values"
 
 
 class SchemaName(BaseModel):
@@ -337,20 +337,22 @@ class RefreshDBConnectionRequest(BaseModel):
     db_conn_key: str
 
 
-class ValueSynonyms(BaseModel):
-    values: List[str]
+class ColumnCategoricalChoice(BaseModel):
+    choice: str
+    alternatives: Optional[List[str]] # interpretations, meanings , descriptions, aka , synonyms
 
 
-class ColumnEnumValues(BaseModel):
-    values: List[ValueSynonyms]
+class ColumnCategoricalValues(BaseModel):
+    choices: Optional[List[ColumnCategoricalChoice]]
+    query: Optional[str]
     org_id: Optional[str] = '*'
     tenant_id: Optional[str] = '*'
     user_id: Optional[str] = '*'
     column: ColumnName
 
 
-class UpdateColumnEnumValuesRequest(CommonRequest):
-    values: ColumnEnumValues
+class UpdateColumnCategoricalValuesRequest(CommonRequest):
+    columns: List[ColumnCategoricalValues]
 
 
 class DatabaseImpl:
@@ -438,10 +440,10 @@ class DatabaseImpl:
         )
 
     def update_column_enum_values(
-        self, params: UpdateColumnEnumValuesRequest
+        self, params: UpdateColumnCategoricalValuesRequest
     ) -> CommonResponse:
         return self.http_client.common_fetch(
-            UPDATE_COLUMN_ENUM_VALUES_ENDPOINT, params.__dict__, CommonResponse
+            UPDATE_COLUMN_CATEGORICAL_VALUES_ENDPOINT, params.__dict__, CommonResponse
         )
 
 
