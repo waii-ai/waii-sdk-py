@@ -17,6 +17,7 @@ UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
 UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
+UPDATE_COLUMN_ENUM_VALUES_ENDPOINT = "update-column-enum-values"
 
 
 class SchemaName(BaseModel):
@@ -28,6 +29,11 @@ class TableName(BaseModel):
     table_name: str
     schema_name: Optional[str]
     database_name: Optional[str]
+
+
+class ColumnName(BaseModel):
+    table_name: TableName
+    column_name: str
 
 
 class ColumnSampleValues(BaseModel):
@@ -331,6 +337,22 @@ class RefreshDBConnectionRequest(BaseModel):
     db_conn_key: str
 
 
+class ValueSynonyms(BaseModel):
+    values: List[str]
+
+
+class ColumnEnumValues(BaseModel):
+    values: List[ValueSynonyms]
+    org_id: Optional[str] = '*'
+    tenant_id: Optional[str] = '*'
+    user_id: Optional[str] = '*'
+    column: ColumnName
+
+
+class UpdateColumnEnumValuesRequest(CommonRequest):
+    values: ColumnEnumValues
+
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -413,6 +435,13 @@ class DatabaseImpl:
                 "db_conn_key": self.get_activated_connection(),
             },
             CommonResponse,
+        )
+
+    def update_column_enum_values(
+        self, params: UpdateColumnEnumValuesRequest
+    ) -> CommonResponse:
+        return self.http_client.common_fetch(
+            UPDATE_COLUMN_ENUM_VALUES_ENDPOINT, params.__dict__, CommonResponse
         )
 
 
