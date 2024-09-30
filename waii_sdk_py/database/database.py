@@ -18,6 +18,7 @@ UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
 UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
 UPDATE_COLUMN_CATEGORICAL_VALUES_ENDPOINT = "update-column-categorical-values"
+GET_COLUMN_CATEGORICAL_VALUES_ENDPOINT = "get-column-categorical-values"
 
 
 class SchemaName(BaseModel):
@@ -355,6 +356,18 @@ class UpdateColumnCategoricalValuesRequest(CommonRequest):
     columns: List[ColumnCategoricalValues]
 
 
+class UpdateColumnCategoricalValuesResponse(CommonResponse):
+    updated_columns: Optional[List[ColumnCategoricalValues]]
+
+
+class GetColumnCategoricalValuesRequest(CommonRequest):
+    table: TableName
+
+
+class GetColumnCategoricalValuesResponse(CommonResponse):
+    column_values: Optional[List[ColumnCategoricalValues]]
+
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -439,11 +452,18 @@ class DatabaseImpl:
             CommonResponse,
         )
 
-    def update_column_enum_values(
+    def update_column_categorical_values(
         self, params: UpdateColumnCategoricalValuesRequest
-    ) -> CommonResponse:
+    ) -> UpdateColumnCategoricalValuesResponse:
         return self.http_client.common_fetch(
-            UPDATE_COLUMN_CATEGORICAL_VALUES_ENDPOINT, params.__dict__, CommonResponse
+            UPDATE_COLUMN_CATEGORICAL_VALUES_ENDPOINT, params.__dict__, UpdateColumnCategoricalValuesResponse
+        )
+
+    def get_column_categorical_values(
+            self, params: GetColumnCategoricalValuesRequest
+    ) -> GetColumnCategoricalValuesResponse:
+        return self.http_client.common_fetch(
+            GET_COLUMN_CATEGORICAL_VALUES_ENDPOINT, params.__dict__, GetColumnCategoricalValuesResponse
         )
 
 
