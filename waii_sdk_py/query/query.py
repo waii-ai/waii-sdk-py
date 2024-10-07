@@ -72,23 +72,10 @@ class QueryGenerationRequest(LLMBasedRequest):
     use_example_queries: Optional[bool] = True
 
 
-class DescribeQueryRequest(CommonRequest):
-    search_context: Optional[List[SearchContext]] = None
-    current_schema: Optional[str] = None
-    query: Optional[str] = None
-
-
 class DescribeQueryResponse(BaseModel):
     summary: Optional[str] = None
     detailed_steps: Optional[List[str]] = None
     tables: Optional[List[TableName]] = None
-
-
-class DiffQueryRequest(DescribeQueryRequest):
-    search_context: Optional[List[SearchContext]] = None
-    current_schema: Optional[str] = None
-    query: Optional[str] = None
-    previous_query: Optional[str] = None
 
 
 class DiffQueryResponse(DescribeQueryResponse):
@@ -165,6 +152,24 @@ class GeneratedQuery(BaseModel):
 
     def apply_table_access_rules(self) -> ApplyTableAccessRulesResponse:
         return QueryImpl(self.http_client).apply_table_access_rules(ApplyTableAccessRulesRequest(query=self.query))
+
+
+class TargetPersona(str, Enum):
+    sql_expert = "sql_expert"
+    domain_expert = "domain_expert"
+
+
+class DescribeQueryRequest(CommonRequest):
+    search_context: Optional[List[SearchContext]]
+    current_schema: Optional[str]
+    query: Optional[str]
+    asks: Optional[List[str]]
+    semantic_context: Optional[List[SemanticStatement]] = None
+    persona: Optional[TargetPersona] = TargetPersona.sql_expert
+
+
+class DiffQueryRequest(DescribeQueryRequest):
+    previous_query: Optional[str] = None
 
 
 class RunQueryRequest(CommonRequest):
