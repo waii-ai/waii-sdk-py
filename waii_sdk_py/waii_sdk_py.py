@@ -8,6 +8,7 @@ from .history import HistoryImpl, History
 from .query import QueryImpl, Query
 from .database import DatabaseImpl, Database
 from .semantic_context import SemanticContextImpl, SemanticContext
+from .settings import SettingsImpl
 from .user import UserImpl
 from .user.user_static import User
 from .waii_http_client import WaiiHttpClient
@@ -42,6 +43,7 @@ class Waii:
         self.chart = None
         self.user = None
         self.access_rules = None
+        self.settings = None
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
@@ -56,6 +58,7 @@ class Waii:
         self.chart = ChartImpl(http_client)
         self.user = UserImpl(http_client)
         self.access_rules = AccessRuleImpl(http_client)
+        self.settings = SettingsImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history

@@ -236,8 +236,6 @@ class ModifyDBConnectionResponse(BaseModel):
     connector_status: Optional[Dict[str, DBConnectionIndexingStatus]]
 
 
-
-
 class GetCatalogRequest(LLMBasedRequest):
     search_context: Optional[List[SearchContext]]
 
@@ -246,6 +244,7 @@ class GetCatalogRequest(LLMBasedRequest):
     ask: Optional[str]
 
     internal: bool = False
+
 
 class GetDBConnectionRequest(BaseModel):
     pass
