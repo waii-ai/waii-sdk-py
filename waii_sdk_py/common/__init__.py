@@ -1,10 +1,11 @@
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from ..my_pydantic import BaseModel
 
 
 class CommonRequest(BaseModel):
     tags: Optional[List[str]]
+    parameters: Optional[Dict[str, Any]]
 
 
 class LLMBasedRequest(CommonRequest):
