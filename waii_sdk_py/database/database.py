@@ -17,6 +17,9 @@ UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
 UPDATE_CONSTRAINT_ENDPOINT = "update-constraint"
 UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
+UPDATE_SIMILARITY_SEARCH_INDEX_ENDPOINT = "update-similarity-search-index"
+GET_SIMILARITY_SEARCH_INDEX_ENDPOINT = "get-similarity-search-index"
+DELETE_SIMILARITY_SEARCH_INDEX_ENDPOINT = "delete-similarity-search-index"
 
 
 class SchemaName(BaseModel):
@@ -28,6 +31,11 @@ class TableName(BaseModel):
     table_name: str
     schema_name: Optional[str]
     database_name: Optional[str]
+
+
+class ColumnName(BaseModel):
+    table_name: TableName
+    column_name: str
 
 
 class ColumnSampleValues(BaseModel):
@@ -330,6 +338,29 @@ class RefreshDBConnectionRequest(BaseModel):
     db_conn_key: str
 
 
+class ColumnValue(BaseModel):
+    value: str
+    additional_info: Optional[List[str]]
+
+
+class UpdateSimilaritySearchIndexRequest(CommonRequest):
+    values: Optional[List[ColumnValue]]
+    column: ColumnName
+
+
+class DeleteSimilaritySearchIndexRequest(CommonRequest):
+    column: ColumnName
+
+
+class GetSimilaritySearchIndexRequest(CommonRequest):
+    column: ColumnName
+
+
+class GetSimilaritySearchIndexResponse(CommonRequest):
+    column: ColumnName
+    values: Optional[List[ColumnValue]]
+
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -414,5 +445,25 @@ class DatabaseImpl:
             CommonResponse,
         )
 
+    def update_similarity_search_index(
+            self, params: UpdateSimilaritySearchIndexRequest
+    ) -> CommonResponse:
+        return self.http_client.common_fetch(
+            UPDATE_SIMILARITY_SEARCH_INDEX_ENDPOINT, params.__dict__, CommonResponse
+        )
+
+    def get_similarity_search_index(
+            self, params: GetSimilaritySearchIndexRequest
+    ) -> GetSimilaritySearchIndexResponse:
+        return self.http_client.common_fetch(
+            GET_SIMILARITY_SEARCH_INDEX_ENDPOINT, params.__dict__, GetSimilaritySearchIndexResponse
+        )
+
+    def delete_similarity_search_index(
+            self, params: DeleteSimilaritySearchIndexRequest
+    ) -> CommonResponse:
+        return self.http_client.common_fetch(
+            DELETE_SIMILARITY_SEARCH_INDEX_ENDPOINT, params.__dict__, CommonResponse
+        )
 
 Database = DatabaseImpl(WaiiHttpClient.get_instance())
