@@ -32,10 +32,6 @@ class UpdateParameterRequest(CommonRequest):
 class ParameterInfo(BaseModel):
     value: Optional[Any]
     possible_values: Optional[List[Any]]
-    connection_key: Optional[str]
-    org_id: Optional[str]
-    tenant_id: Optional[str]
-    user_id: Optional[str]
 
 
 class ListParametersResponse(CommonResponse):
