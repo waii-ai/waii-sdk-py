@@ -36,15 +36,16 @@ Parameter fields:
   - `user_id=<user_email_login_to_waii>` is one of the default tag which is automatically added by the system (you don't need to add it)
 - `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
 - `model`: Which LLM to be used to generate queries. By default system will choose a model.
+- `use_example_queries`: Whether to use example queries (aka liked-queries) or not, default is True. If you set it to False, it will not use example queries to generate the query.
 
 **Examples:**
     
-Ask a new question:
+#### Ask a new question:
 ```python
 >>> WAII.Query.generate(QueryGenerationRequest(ask = "How many tables are there?"))
 ```
 
-**Ask a complex question:**
+#### **Ask a complex question:**
 ```python
 >>> WAII.Query.generate(QueryGenerationRequest(ask = """
     Give me all stores in California that have more than 1000
@@ -52,7 +53,7 @@ Ask a new question:
     customers."""))
 ```
 
-**Generate query with search context (limited to specific tables, schemas, etc.)**
+#### **Generate query with search context (limited to specific tables, schemas, etc.)**
 
 By default, Waii search all tables in the database, if you know which tables you want to use, you can specify the search context to limit the tables used to generate query.
 
@@ -69,7 +70,7 @@ By default, Waii search all tables in the database, if you know which tables you
 
 The above query will only search tables from `schema1.table1` and `schema2.*`
 
-**Tweak the previous question:**
+#### **Tweak the previous question:**
 ```python
 >>> WAII.Query.generate(QueryGenerationRequest(
     ask = "only return 10 results", 
@@ -303,19 +304,52 @@ You can specify `detailed_steps` of generating the query in LikedQuery. This is 
 
 Examples: 
 
-Like a generated query
+#### Like a generated query
 ```python
 WAII.Query.like(LikeQueryRequest(query_uuid='01afbd1e-0001-d31e-0022-ba8700a8209e', liked=True))
 ```
 
-Like a query by specifying `ask` and `query`
+#### Like a query by specifying `ask` and `query`
 ```python
 WAII.Query.like(LikeQueryRequest(ask='How many tables are there?', 
                                  query='SELECT COUNT(DISTINCT table_name) FROM waii.information_schema.tables', liked=True))
 ```
 
-You will get an exception if the call is failed.
+#### Programmatically like a list of queries
+```python
+# programmatically like a bunch of queries
 
+queries = [
+    {
+        "uuid": "q1",
+        "query": """SELECT...""",
+        "ask": "Find all the orders"
+    },
+    {
+        # another query
+    }
+]
+
+for q in queries:
+    WAII.Query.like(
+        LikeQueryRequest(# SQL part of the query
+                         query=q['query'], 
+                         
+                         # natural language ask
+                         ask=q['ask'], 
+
+                         # uuid, if same uuid liked multiple times, older-ones will be replaced
+                         uuid=q['uuid'], 
+
+                         # do we want the system to rewrite question based on the query and ask? 
+                         # when it is set to False, it will keep the ask as-is
+                         rewrite_question=False, 
+
+                         # When set to True, like it, when set to False, remove it from the liked list
+                         liked=True))
+```
+
+You will get an exception if the call is failed.
 
 ### Describe
 
@@ -368,6 +402,42 @@ Example:
 summary='...' detailed_steps=[...] what_changed="The new query does not have any filter on 'table_name' column."
 ```
 
+### Apply Table Access Rules
+This method accepts a query and applies the necessary table access rules for the user. In addition to returning the query with all table access rules applied, a protection status is returned detailing the status of the returned query and any errors that were encounted while applying the access rules
+
+`AccessRuleProtectionState` is an string enum with the following values:
+
+- `protected`: All applicable access rules have been enforced within the query, including the case that there are no applicable access rules
+- `unprotected`: Cannot guarantee that all applicable access rules have been applied to the query, due to an error while applying access rules
+
+
+An `AccessRuleProtectionStatus` is an object with the following fields:
+
+- `state`: an `AccessRuleProtectionState` capturing the state of the returned query
+- `msg`: an error message if the `state` is unprotected explaining the cause of the error
+unprotected: Cannot guarantee that all applicable access rules have been applied to the query
+
+An `ApplyTableAccessRulesRequest` is a request with the following fields: 
+- `query`: `str`
+
+An `ApplyTableAccessRulesResponse` is returned containing the following fields
+- `query`: `str` containing the response query
+- `status`: An `AccessRuleProtectionStatus` described above containing the status for the response
+
+Example usages:
+Given a table T with table access rules for the current user, both paths will get queries with the access rule applied
+
+```python
+apply_table_access_rules_response = WAII.query.apply_table_access_rules(
+  ApplyTableAccessRulesRequest(
+    query = "select * from t"
+))
+if apply_table_access_rules_response.status.state == AccessRuleProtectionState.protected:
+  print(apply_table_access_rules_response.query)
+
+generated_query = WAII.query.generate(QueryGenerationRequest(ask = "Can you get me all the data from t?"))
+apply_table_access_rules_response = generated_query.apply_table_access_rules()
+```
 #### Auto Complete (Experimental)
 
 This method allows you to automatically complete a partial query, this can be useful when you want to build a query editor with Github co-pilot-like auto complete feature.

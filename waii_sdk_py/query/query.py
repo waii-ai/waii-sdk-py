@@ -29,6 +29,7 @@ GENERATE_QUESTION_ENDPOINT = "generate-questions"
 GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
 RUN_QUERY_COMPILER_ENDPOINT = "run-query-compiler"
 SEMANTIC_CONTEXT_CHECKER_ENDPOINT = "semantic-context-checker"
+APPLY_TABLE_ACCESS_RULES_ENDPOINT = "apply-table-access-rules"
 
 
 class DebugInfoType(str, Enum):
@@ -71,23 +72,10 @@ class QueryGenerationRequest(LLMBasedRequest):
     use_example_queries: Optional[bool] = True
 
 
-class DescribeQueryRequest(CommonRequest):
-    search_context: Optional[List[SearchContext]] = None
-    current_schema: Optional[str] = None
-    query: Optional[str] = None
-
-
 class DescribeQueryResponse(BaseModel):
     summary: Optional[str] = None
     detailed_steps: Optional[List[str]] = None
     tables: Optional[List[TableName]] = None
-
-
-class DiffQueryRequest(DescribeQueryRequest):
-    search_context: Optional[List[SearchContext]] = None
-    current_schema: Optional[str] = None
-    query: Optional[str] = None
-    previous_query: Optional[str] = None
 
 
 class DiffQueryResponse(DescribeQueryResponse):
@@ -138,6 +126,11 @@ class AccessRuleProtectionStatus(BaseModel):
     msg: Optional[str]
 
 
+class ApplyTableAccessRulesResponse(BaseModel):
+    query: str
+    status: AccessRuleProtectionStatus
+
+
 class GeneratedQuery(BaseModel):
     uuid: Optional[str] = None
     liked: Optional[bool] = None
@@ -153,10 +146,30 @@ class GeneratedQuery(BaseModel):
     confidence_score: Optional[ConfidenceScore]
     debug_info: Optional[Dict[str, Any]] = {}
     http_client: Optional[Any] = Field(default=None, exclude=True)
-    access_rule_protection_status: Optional[AccessRuleProtectionStatus]  # query protection status regarding access rules
 
     def run(self):
         return QueryImpl(self.http_client).run(RunQueryRequest(query=self.query))
+
+    def apply_table_access_rules(self) -> ApplyTableAccessRulesResponse:
+        return QueryImpl(self.http_client).apply_table_access_rules(ApplyTableAccessRulesRequest(query=self.query))
+
+
+class TargetPersona(str, Enum):
+    sql_expert = "sql_expert"
+    domain_expert = "domain_expert"
+
+
+class DescribeQueryRequest(CommonRequest):
+    search_context: Optional[List[SearchContext]]
+    current_schema: Optional[str]
+    query: Optional[str]
+    asks: Optional[List[str]]
+    semantic_context: Optional[List[SemanticStatement]] = None
+    persona: Optional[TargetPersona] = TargetPersona.sql_expert
+
+
+class DiffQueryRequest(DescribeQueryRequest):
+    previous_query: Optional[str] = None
 
 
 class RunQueryRequest(CommonRequest):
@@ -164,6 +177,11 @@ class RunQueryRequest(CommonRequest):
     session_id: Optional[str] = None
     current_schema: Optional[SchemaName] = None
     session_parameters: Optional[Dict[str, Any]] = None
+
+
+class RunQueryCompilerRequest(CommonRequest):
+    query: str
+    search_context: Optional[List[SearchContext]]
 
 
 class RunQueryResponse(BaseModel):
@@ -289,18 +307,13 @@ class CompilationErrorMsgFromDBEngine(BaseModel):
     msg: Optional[str]
 
 
-class EnforceTableAccessRulesResponse(BaseModel):
-    query: str
-    access_rule_protection_status: AccessRuleProtectionStatus
-
-
 class RunQueryCompilerResponse(BaseModel):
     query: str
     errors: str
     should_compile: bool
     tables: Optional[List[TableName]]
     explain_error_msg: CompilationErrorMsgFromDBEngine
-    enforce_table_access_rules_response: Optional[EnforceTableAccessRulesResponse]
+    enforce_table_access_rules_response: Optional[ApplyTableAccessRulesResponse]
 
 
 class SemanticContextCheckerRequest(LLMBasedRequest):
@@ -309,6 +322,10 @@ class SemanticContextCheckerRequest(LLMBasedRequest):
     dialect: Optional[str]
     search_context: Optional[List[SearchContext]]
     flags: Optional[Dict[str, Any]]
+
+
+class ApplyTableAccessRulesRequest(CommonRequest):
+    query: str
 
 
 def show_progress(func):
@@ -493,7 +510,7 @@ class QueryImpl:
         )
 
     def run_query_compiler(
-            self, params: RunQueryRequest
+            self, params: RunQueryCompilerRequest
     ) -> RunQueryCompilerResponse:
         return self.http_client.common_fetch(
             RUN_QUERY_COMPILER_ENDPOINT, params.__dict__, RunQueryCompilerResponse
@@ -504,6 +521,13 @@ class QueryImpl:
     ) -> GeneratedQuery:
         return self.http_client.common_fetch(
             SEMANTIC_CONTEXT_CHECKER_ENDPOINT, params.__dict__, GeneratedQuery
+        )
+
+    def apply_table_access_rules(
+            self, params: ApplyTableAccessRulesRequest
+    ) -> ApplyTableAccessRulesResponse:
+        return self.http_client.common_fetch(
+            APPLY_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ApplyTableAccessRulesResponse
         )
 
 
