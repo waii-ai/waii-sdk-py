@@ -197,7 +197,7 @@ class DBAccessPolicy(BaseModel):
 
 
 class DBConnection(BaseModel):
-    key: str
+    key: Optional[str]
     db_type: str
     description: Optional[str] = None
     account_name: Optional[str] = None
