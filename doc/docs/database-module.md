@@ -36,6 +36,7 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `db_content_filters`: If you want Waii to exclude certain columns , tables from database while generating the query, you can pass the db_content_filter. This is optional.
 - `always_include_tables`: If it is not None, then these tables will always be included, even if table selector doesn't select them
 - `embedding_model`: Embedding model used for similarity search within the knowledge graph.
+- `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
 
 #### DBContentFilter
 
@@ -58,7 +59,37 @@ If you need to exclude certain columns, tables from database while generating th
 
 Example of creating `DBContentFilter` object:
 
-1) Filter table1, table2, table3 from schema1, schema2
+1) Filter tables from different schemas via search_context of `DBContentFilter`
+
+```python
+WAII.Database.modify_connections(ModifyDBConnectionRequest(
+    updated=[
+        DBConnection(
+            db_type="...",
+            username="...",
+            password="...",
+            database="test",
+            host='1.2.3.4',
+            port=1433,
+            db_content_filters=[DBContentFilter(
+                filter_scope=DBContentFilterScope.table,
+                filter_type=DBContentFilterType.include,
+                filter_action_type=DBContentFilterActionType.visibility,
+                pattern='',  # empty regex pattern matches all
+                search_context=[
+                    SearchContext(db_name='*', schema_name='schema1', table_name='t1'),
+                    SearchContext(db_name='*', schema_name='schema2', table_name='t2'),
+                    SearchContext(db_name='*', schema_name='schema2', table_name='t3')
+                ]
+            )]
+        )
+    ]
+))
+```
+
+The above example will include tables `t1` from `schema1`, `t2` and `t3` from `schema2` and exclude all other tables.
+
+2) Filter table1, table2, table3 from schema1, schema2
 ```python
 DBConnection(
   # other fields
@@ -81,7 +112,7 @@ DBConnection(
 ])
 ```
 
-2) Exclude all columns start with `temp_` from all the tables
+3) Exclude all columns start with `temp_` from all the tables
 
 ```python
 db_content_filters = [
@@ -154,6 +185,70 @@ DBConnection(
 )
 ```
 
+##### Use alias to add multiple connections for the same database
+
+Assume you have a SQL server database `test`, which has two schemas `schema1` and `schema2`. You want to add two connections for the same database, but with different schema filters. You can use alias to achieve this.
+
+(Otherwise, Waii will generate a key based on the connection details, which is the same for both connections. So the latter connection will overwrite the former connection)
+
+```python
+response = WAII.Database.modify_connections(ModifyDBConnectionRequest(
+    updated=[
+        DBConnection(
+            db_type="sqlserver",
+            username="...",
+            password="...",
+            database="test",
+            host='...',
+            port=1433,
+            alias='team_1_connection',
+            db_content_filters=[DBContentFilter(
+                filter_scope=DBContentFilterScope.table,
+                filter_type=DBContentFilterType.include,
+                filter_action_type=DBContentFilterActionType.visibility,
+                pattern='',  # empty regex pattern matches all
+                search_context=[
+                    SearchContext(db_name='*', schema_name='common', table_name='*'),
+                    SearchContext(db_name='*', schema_name='team1', table_name='t1'),
+                    SearchContext(db_name='*', schema_name='team1', table_name='t2')
+                ]
+            )]
+        )
+    ]
+))
+print([c.key for c in Database.get_connections().connectors])
+```
+
+The above example will add a connection with alias `team_1_connection` and include tables `t1` and `t2` from `team1` schema and all tables from `common` schema.
+
+The newly added connection will have a key = `waii://waii@host/team_1_connection` (which you can find it from the above print statement)
+
+If you want to add another connection with different schema filters, you can do the following:
+
+```python
+response = WAII.Database.modify_connections(ModifyDBConnectionRequest(
+    updated=[
+        DBConnection(
+            db_type="sqlserver",
+            # .. other fields of the db connection
+            alias='team_2_connection',
+            db_content_filters=[DBContentFilter(
+                filter_scope=DBContentFilterScope.table,
+                filter_type=DBContentFilterType.include,
+                filter_action_type=DBContentFilterActionType.visibility,
+                pattern='',  # empty regex pattern matches all
+                search_context=[
+                    SearchContext(db_name='*', schema_name='common', table_name='def1'),
+                    SearchContext(db_name='*', schema_name='team2', table_name='t2'),
+                    SearchContext(db_name='*', schema_name='team2', table_name='t3')
+                ]
+            )]
+        )
+    ]
+))
+```
+
+The above example will add a connection with alias `team_2_connection` and include tables `t2` and `t3` from `team2` schema and `def1` from `common` schema.
 
 ### Get Connections
 
@@ -416,3 +511,155 @@ req = UpdateConstraintRequest(updated_constraints = [table_constraints])
 result = WAII.Database.update_constraint(req)
 
 ```
+
+### Index Column Values
+
+#### Overview
+
+This document describes how to use the methods related to similarity search indexing in the Waii SDK. These methods allow you to update, get, and delete column value indexes for similarity search.
+
+#### Method Signatures
+
+##### Update Similarity Search Index
+
+```python
+from waii_sdk.models import UpdateSimilaritySearchIndexRequest, ColumnValue, CommonResponse
+Database.update_similarity_search_index(request: UpdateSimilaritySearchIndexRequest) -> CommonResponse
+```
+
+##### Get Similarity Search Index
+
+```python
+Database.get_similarity_search_index(request: GetSimilaritySearchIndexRequest) -> GetSimilaritySearchIndexResponse
+```
+
+##### Delete Similarity Search Index
+
+```python
+Database.delete_similarity_search_index(request: DeleteSimilaritySearchIndexRequest) -> CommonResponse
+```
+
+#### Request and Response Objects
+
+##### UpdateSimilaritySearchIndexRequest
+
+- `column`: ColumnName - Specifies the column to be indexed
+- `values`: Optional[List[ColumnValue]] - Optional list of column values to be indexed
+
+##### GetSimilaritySearchIndexRequest
+
+- `column`: ColumnName - Specifies the column for which to retrieve the index
+
+##### GetSimilaritySearchIndexResponse
+
+- `column`: ColumnName - The column for which the index was retrieved
+- `values`: Optional[List[ColumnValue]] - The indexed column values
+
+##### DeleteSimilaritySearchIndexRequest
+
+- `column`: ColumnName - Specifies the column for which to delete the index
+
+##### ColumnValue Object
+
+A `ColumnValue` object has two fields:
+- `value`: The actual value of the column in the table
+- `additional_info`: Optional list of strings providing additional meanings for the value
+
+#### Methods to Provide Column Values
+
+##### 1. Manual Value Provision
+
+Manually provide a list of `ColumnValue` objects:
+
+```python
+WAII.database.update_similarity_search_index(UpdateSimilaritySearchIndexRequest(
+    column=movie_title_column,
+    values=[
+        ColumnValue(value="Avengers: Final Chapter", additional_info=["Avengers: Endgame (2019)"]),
+        ColumnValue(value="The Good, the Bad and the Ugly", additional_info=["Le Bon, la Brute et le Truand"]),
+        ColumnValue(value="Interstellar"),
+    ]
+))
+```
+
+When you use the `additional_info` field, consider the following:
+
+Use the `additional_info` field in the following scenarios:
+
+1. For code values where additional_info provides the meaning
+   - Example: `NY.GDP.MKTP.CD` is a code for GDP in the World Bank dataset, the additional info would be `GDP (current US$)`
+2. For alternative names or translations of a value
+   - Example: `The Good, the Bad and the Ugly` is also known as `Le Bon, la Brute et le Truand` (in French)
+3. Leave empty if the value is self-explanatory
+   - Example: `Interstellar`
+
+##### 2. Specify Column Only
+
+Let Waii query the database for unique values of the specified column:
+
+```python
+WAII.database.update_similarity_search_index(UpdateSimilaritySearchIndexRequest(
+    column=movie_title_column
+))
+```
+
+Internally, Waii will run a `SELECT DISTINCT <COLUMN_NAME> FROM <TABLE_NAME>` query to fetch unique values for the specified column.
+
+##### 3. Use Query Results
+
+Use a custom query to fetch values and create `ColumnValue` objects, then update the index:
+
+Since Waii has API to run queries, you can use the query results to create `ColumnValue` objects and update the index.
+
+```python
+query_results = WAII.query.run(RunQueryRequest(
+    query="select distinct asset_title, asset_local_name from movies_and_tv.movies limit 5"
+))
+
+column_values = [
+    ColumnValue(value=row['ASSET_TITLE'], additional_info=[row['ASSET_LOCAL_NAME']])
+    for row in query_results.rows
+    if row['ASSET_TITLE'] is not None
+]
+
+WAII.database.update_similarity_search_index(UpdateSimilaritySearchIndexRequest(
+    column=movie_title_column,
+    values=column_values
+))
+```
+
+The above example fetches the `ASSET_TITLE` and `ASSET_LOCAL_NAME` (more like an alternative name) columns from the `movies_and_tv.movies` table and creates `ColumnValue` objects for each row.
+
+#### Getting Similarity Search Index
+
+To retrieve the current similarity search index for a column:
+
+```python
+response = WAII.database.get_similarity_search_index(GetSimilaritySearchIndexRequest(
+    column=movie_title_column
+))
+
+# Access the indexed values
+indexed_values = response.values
+```
+
+#### Deleting Similarity Search Index
+
+To delete the similarity search index for a column:
+
+```python
+WAII.database.delete_similarity_search_index(DeleteSimilaritySearchIndexRequest(
+    column=movie_title_column
+))
+```
+
+#### Notes and Limitations
+
+- Currently only works for text columns
+- Maximum of 5000 ColumnValues per column
+- The update method is a synchronous call that computes embeddings for column values, so it may not be immediate
+
+#### Responses
+
+- `update_similarity_search_index` and `delete_similarity_search_index` return a `CommonResponse` object.
+- `get_similarity_search_index` returns a `GetSimilaritySearchIndexResponse` object containing the indexed column values.
