@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional, List, Dict, Any
 
 from ..my_pydantic import BaseModel
@@ -16,3 +17,20 @@ class LLMBasedRequest(CommonRequest):
 
 class CommonResponse(BaseModel):
     pass
+
+
+class CheckOperationStatusRequest(CommonRequest):
+    op_id: str
+
+
+class OperationStatus(str, Enum):
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+    IN_PROGRESS = "in_progress"
+    NOT_EXISTS = "not_exists"
+
+
+class CheckOperationStatusResponse(CommonResponse):
+    op_id: str
+    status: OperationStatus
+    info: Optional[str]
