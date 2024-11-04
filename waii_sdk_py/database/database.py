@@ -1,7 +1,7 @@
 import warnings
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
-from ..common import LLMBasedRequest, CommonRequest
+from ..common import LLMBasedRequest, CommonRequest, CheckOperationStatusResponse, CheckOperationStatusRequest
 from ..my_pydantic import BaseModel, PrivateAttr
 import re
 from typing import Optional, List, Dict, Any, Union
@@ -20,6 +20,8 @@ UPDATE_TABLE_DEFINITION_ENDPOINT = "update-table-definitions"
 UPDATE_SIMILARITY_SEARCH_INDEX_ENDPOINT = "update-similarity-search-index"
 GET_SIMILARITY_SEARCH_INDEX_ENDPOINT = "get-similarity-search-index"
 DELETE_SIMILARITY_SEARCH_INDEX_ENDPOINT = "delete-similarity-search-index"
+GET_SIMILARITY_SEARCH_INDEX_TABLE_ENDPOINT = "get-similarity-search-index-table"
+CHECK_SIMILARITY_SEARCH_INDEX_STATUS_ENDPOINT = "check-similarity-search-index-status"
 
 
 class SchemaName(BaseModel):
@@ -197,7 +199,7 @@ class DBAccessPolicy(BaseModel):
 
 
 class DBConnection(BaseModel):
-    key: str
+    key: Optional[str]
     db_type: str
     description: Optional[str] = None
     account_name: Optional[str] = None
@@ -346,10 +348,30 @@ class ColumnValue(BaseModel):
 class UpdateSimilaritySearchIndexRequest(CommonRequest):
     values: Optional[List[ColumnValue]]
     column: ColumnName
+    enable_llm_rerank: Optional[bool] = True
+    similarity_score_threshold: Optional[float] = None
+    max_matched_values: Optional[int] = None
+    min_matched_values: Optional[int] = None
+
+
+class UpdateSimilaritySearchIndexResponse(CommonResponse):
+    op_id: str
+
+
+class GetSimilaritySearchIndexOnTableRequest(CommonRequest):
+    table: TableName
+
+
+class GetSimilaritySearchIndexOnTableResponse(CommonResponse):
+    table: TableName
+    columns: List[ColumnName]
 
 
 class DeleteSimilaritySearchIndexRequest(CommonRequest):
     column: ColumnName
+
+class DeleteSimilaritySearchIndexResponse(CommonResponse):
+    op_id: Optional[str]
 
 
 class GetSimilaritySearchIndexRequest(CommonRequest):
@@ -449,7 +471,7 @@ class DatabaseImpl:
             self, params: UpdateSimilaritySearchIndexRequest
     ) -> CommonResponse:
         return self.http_client.common_fetch(
-            UPDATE_SIMILARITY_SEARCH_INDEX_ENDPOINT, params.__dict__, CommonResponse
+            UPDATE_SIMILARITY_SEARCH_INDEX_ENDPOINT, params.__dict__, UpdateSimilaritySearchIndexResponse
         )
 
     def get_similarity_search_index(
@@ -463,7 +485,22 @@ class DatabaseImpl:
             self, params: DeleteSimilaritySearchIndexRequest
     ) -> CommonResponse:
         return self.http_client.common_fetch(
-            DELETE_SIMILARITY_SEARCH_INDEX_ENDPOINT, params.__dict__, CommonResponse
+            DELETE_SIMILARITY_SEARCH_INDEX_ENDPOINT, params.__dict__, DeleteSimilaritySearchIndexResponse
         )
+
+    def get_similarity_search_index_on_table(
+            self, params: GetSimilaritySearchIndexOnTableRequest
+    ) -> GetSimilaritySearchIndexOnTableResponse:
+        return self.http_client.common_fetch(
+            GET_SIMILARITY_SEARCH_INDEX_TABLE_ENDPOINT, params.__dict__, GetSimilaritySearchIndexOnTableResponse
+        )
+
+    def get_similarity_search_index_status(
+            self, params: CheckOperationStatusRequest
+    ) -> CheckOperationStatusResponse:
+        return self.http_client.common_fetch(
+            CHECK_SIMILARITY_SEARCH_INDEX_STATUS_ENDPOINT, params.__dict__, CheckOperationStatusResponse
+        )
+
 
 Database = DatabaseImpl(WaiiHttpClient.get_instance())
