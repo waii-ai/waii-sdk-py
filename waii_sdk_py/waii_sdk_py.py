@@ -5,8 +5,8 @@ from .access_rules import AccessRuleImpl
 from .chart import ChartImpl, Chart
 from .chat import ChatImpl, Chat
 from .history import HistoryImpl, History
-from .query import QueryImpl, Query
-from .database import DatabaseImpl, Database
+from .query import QueryImpl, Query, AsyncQueryImpl
+from .database import DatabaseImpl, Database, AsyncDatabaseImpl
 from .semantic_context import SemanticContextImpl, SemanticContext
 from .settings import SettingsImpl
 from .user import UserImpl
@@ -37,6 +37,7 @@ class Waii:
     def __init__(self, initialize_legacy_fields: bool = False):
         self.history = None
         self.query = None
+        self.query_async = None
         self.database = None
         self.semantic_context = None
         self.chat = None
@@ -47,11 +48,13 @@ class Waii:
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
+
     def initialize(self, url: str = "https://tweakit.waii.ai/api/", api_key: str = "", verbose=False):
         http_client = WaiiHttpClient(url, api_key, verbose=verbose)
         self.http_client = http_client
         self.history = HistoryImpl(http_client)
         self.query = QueryImpl(http_client)
+        self.query_async = AsyncQueryImpl(http_client)
         self.database = DatabaseImpl(http_client)
         self.semantic_context = SemanticContextImpl(http_client)
         self.chat = ChatImpl(http_client)
@@ -105,3 +108,26 @@ class Waii:
         self.http_client.set_impersonate_user_id('')
 
 WAII = Waii(True)
+
+class AsyncWaii:
+
+    def __init__(self):
+        self.query = None
+        self.http_client = None
+        self.database = None
+
+
+    async def initialize(self, url: str = "https://tweakit.waii.ai/api/", api_key: str = "", verbose=False):
+        http_client = WaiiHttpClient(url, api_key, verbose=verbose)
+        self.http_client = http_client
+        self.query = AsyncQueryImpl(http_client)
+        self.database = AsyncDatabaseImpl(http_client)
+        result = await self.database.get_connections()
+
+        conns = result.connectors
+        if len(conns) > 0:
+            await self.database.activate_connection(conns[0].key)
+
+    @staticmethod
+    def version():
+        return importlib.metadata.version('waii-sdk-py')

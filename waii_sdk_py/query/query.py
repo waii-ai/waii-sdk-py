@@ -1,4 +1,5 @@
 import functools
+import inspect
 import math
 import threading
 import time
@@ -11,6 +12,7 @@ from ..my_pydantic import BaseModel, Field
 from ..common import CommonRequest, LLMBasedRequest
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
+from ..utils.utils import to_async
 from ..waii_http_client import WaiiHttpClient
 
 GENERATE_ENDPOINT = "generate-query"
@@ -529,6 +531,22 @@ class QueryImpl:
         return self.http_client.common_fetch(
             APPLY_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ApplyTableAccessRulesResponse
         )
+
+
+class AsyncQueryImpl:
+    """
+    Asynchronous wrapper for QueryImpl that automatically converts all public methods to async.
+    """
+
+    def __init__(self, http_client: WaiiHttpClient):
+        self._query_impl = QueryImpl(http_client)
+
+        for name, method in inspect.getmembers(QueryImpl, predicate=inspect.isfunction):
+            if not name.startswith('_'):
+                setattr(self, name, to_async(getattr(self._query_impl, name)))
+
+
+
 
 
 Query = QueryImpl(WaiiHttpClient.get_instance())
