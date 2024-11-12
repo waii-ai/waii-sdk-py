@@ -33,4 +33,4 @@ class OperationStatus(str, Enum):
 class CheckOperationStatusResponse(CommonResponse):
     op_id: str
     status: OperationStatus
-    info: Optional[str]
+    info: Optional[str] = None
