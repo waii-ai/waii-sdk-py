@@ -34,7 +34,7 @@ class MultiTenantClientTest(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert "public.movies" in result.query.lower()
+        assert "sdk_test.public.movies" in result.query.lower()
         assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
@@ -51,7 +51,7 @@ class MultiTenantClientTest(unittest.TestCase):
         result = self.movie_waii.query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert len(result.rows)  > 0
+        assert "Incept" in str(result.rows[0])
 
     def test_chinook_generate(self):
         self.chinook_waii.database.activate_connection(self.chinook_conn.key)
@@ -88,7 +88,7 @@ class MultiTenantClientTest(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert "movies" in result.query.lower()
+        assert "sdk_test." in result.query.lower()
         assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
@@ -105,7 +105,7 @@ class MultiTenantClientTest(unittest.TestCase):
         result = WAII.Query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert len(result.rows)> 0
+        assert "Incepti" in str(result.rows[0])
 
     def test_legacy_run_without_WAII(self):
         Database.activate_connection(self.movie_conn.key)
@@ -117,7 +117,7 @@ class MultiTenantClientTest(unittest.TestCase):
         result = Query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert len(result.rows) > 0
+        assert "Incep" in str(result.rows[0])
 
     def test_activate_connection(self):
         Database.activate_connection(self.movie_conn.key)
