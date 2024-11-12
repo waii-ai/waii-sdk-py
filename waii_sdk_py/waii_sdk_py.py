@@ -37,7 +37,6 @@ class Waii:
     def __init__(self, initialize_legacy_fields: bool = False):
         self.history = None
         self.query = None
-        self.query_async = None
         self.database = None
         self.semantic_context = None
         self.chat = None
@@ -54,7 +53,6 @@ class Waii:
         self.http_client = http_client
         self.history = HistoryImpl(http_client)
         self.query = QueryImpl(http_client)
-        self.query_async = AsyncQueryImpl(http_client)
         self.database = DatabaseImpl(http_client)
         self.semantic_context = SemanticContextImpl(http_client)
         self.chat = ChatImpl(http_client)
