@@ -523,7 +523,6 @@ This document describes how to use the methods related to similarity search inde
 ##### Update Similarity Search Index
 
 ```python
-from waii_sdk.models import UpdateSimilaritySearchIndexRequest, ColumnValue, CommonResponse
 Database.update_similarity_search_index(request: UpdateSimilaritySearchIndexRequest) -> CommonResponse
 ```
 
