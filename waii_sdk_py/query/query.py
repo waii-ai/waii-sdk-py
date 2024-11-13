@@ -145,6 +145,8 @@ class GeneratedQuery(BaseModel):
     llm_usage_stats: Optional[LLMUsageStatistics] = None
     confidence_score: Optional[ConfidenceScore]
     debug_info: Optional[Dict[str, Any]] = {}
+    elapsed_time_ms: Optional[int] = None  # elapsed time in milliseconds
+
     http_client: Optional[Any] = Field(default=None, exclude=True)
 
     def run(self):
