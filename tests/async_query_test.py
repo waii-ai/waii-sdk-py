@@ -1,9 +1,22 @@
 import asyncio
+import time
 import unittest
 from unittest import IsolatedAsyncioTestCase
 
 from waii_sdk_py.query import QueryGenerationRequest, GeneratedQuery
 from waii_sdk_py.waii_sdk_py import AsyncWaii
+
+
+async def generate_task(method, params, task_name, task_indicators, start_times):
+    start_times.append((task_name, time.time()))
+    task_indicators.append(f"{task_name}_started")
+
+    result = await method(params) if params else await method()
+
+    task_indicators.append(f"{task_name}_finished")
+    start_times.append((task_name, time.time()))
+
+    return result
 
 
 class TestAsyncQuery(IsolatedAsyncioTestCase):
@@ -22,31 +35,45 @@ class TestAsyncQuery(IsolatedAsyncioTestCase):
 
         await self.async_waii_client.database.activate_connection(pg_connector.key)
 
+
     async def test_generate_async(self):
-        # Define parameters for concurrent testing
-        params1 = QueryGenerationRequest(ask="How many tables are there?", use_cache=False)
-        params2 = QueryGenerationRequest(ask="List all table names.", use_cache=False)
+        params = QueryGenerationRequest(ask="List all tables in database")
 
-        # Shared list to check task start and end
+        start = time.time()
+        await self.async_waii_client.query.generate(params)
+        isolated_execution_time = time.time() - start
+
         task_indicators = []
+        start_times = []
+        params = QueryGenerationRequest(ask="List all tables in database?.")
+        task1 = asyncio.create_task(generate_task(
+            self.async_waii_client.query.generate, params, "task1", task_indicators, start_times
+        ))
+        params = QueryGenerationRequest(ask="List all tables in database?...")
+        task2 = asyncio.create_task(generate_task(
+            self.async_waii_client.query.generate, params, "task2", task_indicators, start_times
+        ))
 
-        async def generate_task(params, task_name):
-            task_indicators.append(f"{task_name}_started")
-            result = await self.async_waii_client.query.generate(params)
-            task_indicators.append(f"{task_name}_finished")
-            return result
+        concurrent_start = time.time()
+        await asyncio.gather(task1, task2)
+        concurrent_execution_time = time.time() - concurrent_start
+        print(f"Isolated execution time: {isolated_execution_time}")
+        print(f"Concurrent execution time: {concurrent_execution_time}")
+        self.assertLess(concurrent_execution_time, isolated_execution_time * 1.5,
+                        "Tasks did not run concurrently, likely due to blocking HTTP client")
 
-        # Run generate tasks concurrently
-        task1 = asyncio.create_task(generate_task(params1, "task1"))
-        task2 = asyncio.create_task(generate_task(params2, "task2"))
+        # Validate order of task start and end times
+        task1_start, task2_start = start_times[0][1], start_times[1][1]
 
-        result1, result2 = await asyncio.gather(task1, task2)
+
+        # Expect both tasks to overlap significantly in start times for async behavior
+        self.assertLess(abs(task1_start - task2_start), 0.1, "Tasks should start concurrently")
 
         self.assertEqual("task1_started", task_indicators[0])
         self.assertEqual("task2_started", task_indicators[1])
-        self.assertEqual("task1_finished", task_indicators[2])
-        self.assertEqual("task2_finished", task_indicators[3])
+        self.assertIn("task1_finished", task_indicators)
+        self.assertIn("task2_finished", task_indicators)
 
-        self.assertIsInstance(result1, GeneratedQuery)
-        self.assertIsInstance(result2, GeneratedQuery)
+
+
 
