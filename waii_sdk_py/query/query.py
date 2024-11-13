@@ -12,7 +12,7 @@ from ..my_pydantic import BaseModel, Field
 from ..common import CommonRequest, LLMBasedRequest
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
-from ..utils.utils import to_async
+from ..utils.utils import  wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 GENERATE_ENDPOINT = "generate-query"
@@ -540,10 +540,7 @@ class AsyncQueryImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
         self._query_impl = QueryImpl(http_client)
-
-        for name, method in inspect.getmembers(QueryImpl, predicate=inspect.isfunction):
-            if not name.startswith('_'):
-                setattr(self, name, to_async(getattr(self._query_impl, name)))
+        wrap_methods_with_async(self._query_impl, self)
 
 
 

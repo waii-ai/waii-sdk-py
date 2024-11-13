@@ -10,7 +10,7 @@ from urllib.parse import urlparse, parse_qs
 from enum import Enum
 
 from ..user import CommonResponse
-from ..utils.utils import to_async
+from ..utils.utils import to_async, wrap_methods_with_async
 
 MODIFY_DB_ENDPOINT = "update-db-connect-info"
 GET_CATALOG_ENDPOINT = "get-table-definitions"
@@ -508,10 +508,7 @@ class DatabaseImpl:
 class AsyncDatabaseImpl:
     def __init__(self, http_client: WaiiHttpClient):
         self._database_impl = DatabaseImpl(http_client)
-
-        for name, method in inspect.getmembers(DatabaseImpl, predicate=inspect.isfunction):
-            if not name.startswith('_'):
-                setattr(self, name, to_async(getattr(self._database_impl, name)))
+        wrap_methods_with_async(self._database_impl, self)
 
 
 
