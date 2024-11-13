@@ -7,6 +7,7 @@ from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.database import TableName
 from waii_sdk_py.waii_http_client import WaiiHttpClient
 from ..user import User
+from ..utils.utils import wrap_methods_with_async
 
 UPDATE_TABLE_ACCESS_RULES_ENDPOINT = "update-table-access-rules"
 REMOVE_TABLE_ACCESS_RULES_ENDPOINT = "remove-table-access-rules"
@@ -72,5 +73,11 @@ class AccessRuleImpl:
         return self.http_client.common_fetch(
             LIST_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ListTableAccessRuleResponse
         )
+
+
+class AsyncAccessRuleImpl:
+    def __init__(self, http_client: WaiiHttpClient):
+        self._access_rule_impl = AccessRuleImpl(http_client)
+        wrap_methods_with_async(self._access_rule_impl, self)
 
 AccessRules = AccessRuleImpl(WaiiHttpClient.get_instance())

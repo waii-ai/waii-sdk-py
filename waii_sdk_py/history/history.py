@@ -5,6 +5,7 @@ from ..chat import ChatRequest, ChatResponse
 from ..my_pydantic import BaseModel
 from ..query import GeneratedQuery, QueryGenerationRequest
 from ..chart import ChartGenerationRequest, ChartGenerationResponse
+from ..utils.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 LIST_ENDPOINT = "get-generated-query-history"
@@ -114,6 +115,12 @@ class HistoryImpl:
             GET_ENDPOINT, params.__dict__, ret_json=True
         )
         return GetHistoryResponse(objs)
+
+
+class AsyncHistoryImpl:
+    def __init__(self, http_client: WaiiHttpClient):
+        self._history_impl = HistoryImpl(http_client)
+        wrap_methods_with_async(self._history_impl, self)
 
 
 History = HistoryImpl(WaiiHttpClient.get_instance())
