@@ -71,6 +71,11 @@ module.exports = {
                     type: 'doc',
                     id: 'access-rule-module',
                     label: 'Row-level Access Rule'
+                },
+                {
+                    type: 'doc',
+                    id: 'async-client',
+                    label: 'Async client'
                 }
             ],
         },
