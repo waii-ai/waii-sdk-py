@@ -1,3 +1,4 @@
+import inspect
 import warnings
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
@@ -9,6 +10,7 @@ from urllib.parse import urlparse, parse_qs
 from enum import Enum
 
 from ..user import CommonResponse
+from ..utils.utils import to_async, wrap_methods_with_async
 
 MODIFY_DB_ENDPOINT = "update-db-connect-info"
 GET_CATALOG_ENDPOINT = "get-table-definitions"
@@ -501,6 +503,13 @@ class DatabaseImpl:
         return self.http_client.common_fetch(
             CHECK_SIMILARITY_SEARCH_INDEX_STATUS_ENDPOINT, params.__dict__, CheckOperationStatusResponse
         )
+
+
+class AsyncDatabaseImpl:
+    def __init__(self, http_client: WaiiHttpClient):
+        self._database_impl = DatabaseImpl(http_client)
+        wrap_methods_with_async(self._database_impl, self)
+
 
 
 Database = DatabaseImpl(WaiiHttpClient.get_instance())

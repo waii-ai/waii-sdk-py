@@ -3,6 +3,7 @@ from typing import List, Optional
 from ..common import LLMBasedRequest
 from ..database import SearchContext
 from ..my_pydantic import BaseModel
+from ..utils.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 MODIFY_ENDPOINT = 'update-semantic-context'
@@ -85,6 +86,12 @@ class SemanticContextImpl:
 
     def get_semantic_context(self,params: GetSemanticContextRequest = GetSemanticContextRequest()) -> GetSemanticContextResponse:
         return self.http_client.common_fetch(GET_ENDPOINT, params.__dict__, GetSemanticContextResponse)
+
+
+class AsyncSemanticContextImpl:
+    def __init__(self, http_client: WaiiHttpClient):
+        self._semantic_context_impl = SemanticContextImpl(http_client)
+        wrap_methods_with_async(self._semantic_context_impl, self)
 
 
 SemanticContext = SemanticContextImpl(WaiiHttpClient.get_instance())

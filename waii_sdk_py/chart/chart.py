@@ -5,6 +5,7 @@ from ..database import ColumnDefinition
 from ..my_pydantic import BaseModel
 
 from ..common import LLMBasedRequest
+from ..utils.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 GENERATE_CHART_ENDPOINT = "generate-chart"
@@ -97,6 +98,12 @@ class ChartImpl:
         return self.http_client.common_fetch(
             GENERATE_CHART_ENDPOINT, params_dict, ChartGenerationResponse
         )
+
+
+class AsyncChartImpl:
+    def __init__(self, http_client: WaiiHttpClient):
+        self._chart_impl = ChartImpl(http_client)
+        wrap_methods_with_async(self._chart_impl, self)
 
 
 Chart = ChartImpl(WaiiHttpClient.get_instance())

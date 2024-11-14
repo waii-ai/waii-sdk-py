@@ -3,6 +3,7 @@ from typing import Optional, List, Dict, Any
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.waii_http_client import WaiiHttpClient
 from ..my_pydantic import BaseModel
+from ..utils.utils import wrap_methods_with_async
 
 LIST_ACCESS_KEY_ENDPOINT = "list-access-keys"
 DELETE_ACCESS_KEY_ENDPOINT = "delete-access-keys"
@@ -226,3 +227,9 @@ class UserImpl:
 
     def list_orgs(self, params: ListOrganizationsRequest):
         return self.http_client.common_fetch(LIST_ORGS_ENDPOINT, params.__dict__, ListOrganizationsResponse)
+
+
+class AsyncUserImpl:
+    def __init__(self, http_client: WaiiHttpClient):
+        self._user_impl = UserImpl(http_client)
+        wrap_methods_with_async(self._user_impl, self)

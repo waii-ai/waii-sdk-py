@@ -6,6 +6,7 @@ from ..my_pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
 from ..user import CommonResponse
+from ..utils.utils import wrap_methods_with_async
 
 UPDATE_PARAMETER_ENDPOINT = "update-parameter"
 LIST_PARAMETER_ENDPOINT = "list-parameters"
@@ -68,3 +69,9 @@ class SettingsImpl:
         return self.http_client.common_fetch(
             DELETE_PARAMETER_ENDPOINT, params.__dict__, CommonResponse
         )
+
+
+class AsyncSettingsImpl:
+    def __init__(self, http_client: WaiiHttpClient):
+        self._settings_impl = SettingsImpl(http_client)
+        wrap_methods_with_async(self._settings_impl, self)
