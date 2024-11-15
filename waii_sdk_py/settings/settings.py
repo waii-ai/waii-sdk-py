@@ -6,8 +6,7 @@ from ..my_pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
 from ..user import CommonResponse
-from ..utils.utils import wrap_methods_with_async
-
+from waii_sdk_py.utils import wrap_methods_with_async
 UPDATE_PARAMETER_ENDPOINT = "update-parameter"
 LIST_PARAMETER_ENDPOINT = "list-parameters"
 DELETE_PARAMETER_ENDPOINT = "delete-parameter"

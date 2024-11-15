@@ -3,7 +3,7 @@ from typing import List, Optional
 from ..common import LLMBasedRequest
 from ..database import SearchContext
 from ..my_pydantic import BaseModel
-from ..utils.utils import wrap_methods_with_async
+from waii_sdk_py.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 MODIFY_ENDPOINT = 'update-semantic-context'

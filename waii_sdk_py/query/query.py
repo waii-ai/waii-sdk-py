@@ -12,8 +12,8 @@ from ..my_pydantic import BaseModel, Field
 from ..common import CommonRequest, LLMBasedRequest
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
-from ..utils.utils import  wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
+from waii_sdk_py.utils import wrap_methods_with_async
 
 GENERATE_ENDPOINT = "generate-query"
 RUN_ENDPOINT = "run-query"

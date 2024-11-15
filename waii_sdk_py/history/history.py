@@ -5,7 +5,7 @@ from ..chat import ChatRequest, ChatResponse
 from ..my_pydantic import BaseModel
 from ..query import GeneratedQuery, QueryGenerationRequest
 from ..chart import ChartGenerationRequest, ChartGenerationResponse
-from ..utils.utils import wrap_methods_with_async
+from waii_sdk_py.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 LIST_ENDPOINT = "get-generated-query-history"

@@ -8,7 +8,7 @@ from ..query import GetQueryResultResponse, GeneratedQuery
 from ..database import CatalogDefinition
 from ..semantic_context import GetSemanticContextResponse
 from ..chart import ChartGenerationResponse, ChartType
-from ..utils.utils import wrap_methods_with_async
+from waii_sdk_py.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 CHAT_MESSAGE_ENDPOINT = "chat-message"

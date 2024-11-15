@@ -3,7 +3,7 @@ from typing import Optional, List, Dict, Any
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.waii_http_client import WaiiHttpClient
 from ..my_pydantic import BaseModel
-from ..utils.utils import wrap_methods_with_async
+from waii_sdk_py.utils import wrap_methods_with_async
 
 LIST_ACCESS_KEY_ENDPOINT = "list-access-keys"
 DELETE_ACCESS_KEY_ENDPOINT = "delete-access-keys"
