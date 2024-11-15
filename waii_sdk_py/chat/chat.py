@@ -19,6 +19,7 @@ class ChatModule(str, Enum):
     TABLES = "tables"
     QUERY = "query"
     CHART = "chart"
+    CONTEXT = "context"
 
 
 class ChatRequest(LLMBasedRequest):
