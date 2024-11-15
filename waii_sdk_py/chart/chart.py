@@ -15,6 +15,7 @@ class ChartType(str, Enum):
     METABASE = "metabase"
     SUPERSET = "superset"
     PLOTLY = "plotly"
+    VEGALITE = "vegalite"
 
 
 class SuperSetChartSpec(BaseModel):
@@ -44,6 +45,13 @@ class MetabaseChartSpec(BaseModel):
 class PlotlyChartSpec(BaseModel):
     spec_type: Literal['plotly'] = 'plotly'
     plot: Optional[str]
+
+
+class VegaliteChartSpec(BaseModel):
+    spec_type: Literal['vegalite'] = 'vegalite'
+    vegalite_spec_json: Optional[str]
+    number_of_data_points: Optional[int] = None
+    generation_message: Optional[str] = None
 
 
 class ChartTweak(BaseModel):
