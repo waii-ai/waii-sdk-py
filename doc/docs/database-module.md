@@ -38,94 +38,183 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `embedding_model`: Embedding model used for similarity search within the knowledge graph.
 - `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
 
-#### DBContentFilter
+# Content Filters
 
-If you need to exclude certain columns, tables from database while generating the query, you can pass the db_content_filter. It has the following fields:
-- `filter_scope`: DBContentFilterScope, it could be either `schema`, `table`, `column`
-- `filter_type`: DBContentFilterType, it could be either `include` or `exclude`
-- `filter_action_type`: DBContentFilterActionType, it could be either `visibility` or `access`
-  - `visibility`: It will hide the columns/tables from the query generation, and it won't stored in the knowledge graph.
-  - `sample_values`: It will hide the certain columns/tables from the sampling (even if the db_connection is set to sample_col_values=True).
-- `pattern`: Regex pattern to match the schema/table/column name
-  - For example, if you want to exclude all the tables which start with `temp_`, you can set the pattern to `^temp_.*`
-  - Multiple patterns can be provided by separating them with `|`. For example, `(^sf1$|^sf100$)` will match `sf1` and `sf100`
-  - You can also do exact match by setting the pattern to `^temp_table$`
-- `ignore_case`: If it is True, then the pattern will be case insensitive. Default is True.
-- `search_context`: List of `SearchContext` objects. If you want to apply the filter based on a subset of the tables/schema. By default it will apply to all the tables/schemas.
-- Multiple filters can be applied, they are connected by `AND` operator:
-  - For example, if you want to include table1, table2 from schema1, you can add two filters:
-    - Filter1: scope=table, type=include, action=visibility, pattern=(^table1$|^table2$)
-    - Filter2: scope=schema, type=include, action=visibility, pattern=schema1
+The Database module supports a simplified content filtering mechanism using SearchContext objects. This allows you to filter tables and columns from your database connections.
 
-Example of creating `DBContentFilter` object:
+## SearchContext Object
 
-1) Filter tables from different schemas via search_context of `DBContentFilter`
+A `SearchContext` object contains the following fields:
+- `db_name`: Database name pattern (supports wildcards)
+- `schema_name`: Schema name pattern (supports wildcards)
+- `table_name`: Table name pattern (supports wildcards)
+- `column_name`: Column name pattern (supports wildcards)
+- `type`: Filter type, either `FilterType.INCLUSION` or `FilterType.EXCLUSION`
+- `ignore_case`: Whether to ignore case when matching patterns (default: True)
+
+## Pattern Matching
+
+- Use `*` to match any sequence of characters
+- Patterns are case-insensitive by default
+- Empty or `None` pattern matches everything
+- Multiple patterns can be combined using multiple SearchContext objects
+     
+      Final Filter = (Matches Any Inclusion AND Not Matches Any Exclusion)
+
+
+
+## Filter Types
+
+1. **Inclusion Filters** (`FilterType.INCLUSION`)
+   - Explicitly specify which tables/columns to include
+   - If no inclusion filters are provided, everything is included by default
+
+2. **Exclusion Filters** (`FilterType.EXCLUSION`)
+   - Specify which tables/columns to exclude
+   - Applied after inclusion filters
+
+## Examples
+
+### 1. Include Specific Tables
 
 ```python
 WAII.Database.modify_connections(ModifyDBConnectionRequest(
     updated=[
         DBConnection(
-            db_type="...",
-            username="...",
-            password="...",
+            db_type="postgresql",
+            username="user",
+            password="pass",
             database="test",
-            host='1.2.3.4',
-            port=1433,
-            db_content_filters=[DBContentFilter(
-                filter_scope=DBContentFilterScope.table,
-                filter_type=DBContentFilterType.include,
-                filter_action_type=DBContentFilterActionType.visibility,
-                pattern='',  # empty regex pattern matches all
-                search_context=[
-                    SearchContext(db_name='*', schema_name='schema1', table_name='t1'),
-                    SearchContext(db_name='*', schema_name='schema2', table_name='t2'),
-                    SearchContext(db_name='*', schema_name='schema2', table_name='t3')
-                ]
-            )]
+            host='localhost',
+            port=5432,
+            content_filters=[
+                SearchContext(
+                    db_name="*",
+                    schema_name="public",
+                    table_name="users",
+                    type=FilterType.INCLUSION
+                ),
+                SearchContext(
+                    db_name="*",
+                    schema_name="public",
+                    table_name="orders",
+                    type=FilterType.INCLUSION
+                )
+            ]
         )
     ]
 ))
 ```
 
-The above example will include tables `t1` from `schema1`, `t2` and `t3` from `schema2` and exclude all other tables.
+This example includes only the "users" and "orders" tables from the "public" schema.
 
-2) Filter table1, table2, table3 from schema1, schema2
+### 2. Exclude Sensitive Columns
+
 ```python
-DBConnection(
-  # other fields
-  # ...
-  db_content_filters = [
-    DBContentFilter(
-        filter_scope=DBContentFilterScope.table,
-        filter_type=DBContentFilterType.include,
-        filter_action_type=DBContentFilterActionType.visibility,
-        pattern='(^table1$|^table2$|^table3$)',
-        ignore_case=True,
+content_filters = [
+    SearchContext(
+        db_name="*",
+        schema_name="*",
+        table_name="*",
+        column_name="*password*",
+        type=FilterType.EXCLUSION,
+        ignore_case=True
     ),
-    DBContentFilter(
-        filter_scope=DBContentFilterScope.schema,
-        filter_type=DBContentFilterType.include,
-        filter_action_type=DBContentFilterActionType.visibility,
-        pattern='(^schema1$|^schema2$)',
-        ignore_case=True,
+    SearchContext(
+        db_name="*",
+        schema_name="*",
+        table_name="*",
+        column_name="*secret*",
+        type=FilterType.EXCLUSION,
+        ignore_case=True
     )
-])
+]
+
+WAII.Database.modify_connections(ModifyDBConnectionRequest(
+    updated=[
+        DBConnection(
+            # ... connection details ...
+            content_filters=content_filters
+        )
+    ]
+))
 ```
 
-3) Exclude all columns start with `temp_` from all the tables
+This example excludes any columns containing "password" or "secret" in their names.
+
+### 3. Include Specific Schema with Exclusions
 
 ```python
-db_content_filters = [
-    DBContentFilter(
-        filter_scope=DBContentFilterScope.column,
-        filter_type=DBContentFilterType.exclude,
-        filter_action_type=DBContentFilterActionType.visibility,
-        pattern='^temp_.*',
-        ignore_case=True,
+WAII.Database.modify_connections(ModifyDBConnectionRequest(
+    updated=[
+        DBConnection(
+            # ... connection details ...
+            content_filters=[
+                # Include all tables in analytics schema
+                SearchContext(
+                    schema_name="analytics",
+                    table_name="*",
+                    type=FilterType.INCLUSION
+                ),
+                # Exclude temporary tables
+                SearchContext(
+                    schema_name="analytics",
+                    table_name="tmp_*",
+                    type=FilterType.EXCLUSION
+                )
+            ]
+        )
+    ]
+))
+```
+
+This example includes all tables from the "analytics" schema except those starting with "tmp_".
+
+### 4. Column-Level Filtering
+
+```python
+content_filters = [
+    # Include specific columns from a table
+    SearchContext(
+        schema_name="public",
+        table_name="users",
+        column_name="id",
+        type=FilterType.INCLUSION
+    ),
+    SearchContext(
+        schema_name="public",
+        table_name="users",
+        column_name="email",
+        type=FilterType.INCLUSION
+    ),
+    # Exclude sensitive columns
+    SearchContext(
+        schema_name="*",
+        table_name="*",
+        column_name="*_key",
+        type=FilterType.EXCLUSION
     )
 ]
 ```
 
+This example includes only specific columns from the users table while excluding any columns ending with "_key" from all tables.
+
+## Filter Processing Rules
+
+1. If no content filters are provided, all tables and columns are included
+2. If inclusion filters are provided, only matching tables/columns are included
+3. If no inclusion filters are provided but exclusion filters exist, everything is included by default and then exclusions are applied
+4. Patterns are matched case-insensitively by default
+
+## Migration from Legacy Filters
+
+The new content filtering system replaces the previous `DBContentFilter` mechanism. Key differences:
+- Simplified pattern matching using wildcards instead of regex
+- More intuitive inclusion/exclusion model
+- Combined table and column filtering in a single object
+- Better support for case sensitivity options
+
+If you're using the legacy `db_content_filters`, consider migrating to the new `content_filters` system for better maintainability and simpler configuration.
 
 #### Examples of creating `DBConnection` Object
 
