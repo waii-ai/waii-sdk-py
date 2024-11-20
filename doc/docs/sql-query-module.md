@@ -23,7 +23,7 @@ This method generates a SQL query based on the provided parameters.
 
 Parameter fields:
 - `ask`: The question you want to ask Waii to generate, such as `How many tables are there?`
-- `dialect`: What is the dialect of the generated query, such as `snowflake`, `postgresql`, `mongodb`
+- `dialect`: (optional), by default we use the same dialect which the database you are using, so you DON'T need to specify this field if you want to generate a query in the same dialect as the database. If you want to generate a query in a different dialect, you can specify it here (such as `snowflake`, `postgresql`, `mysql`, etc.)
 - `tweak_history`: (array of `Tweak`) We can support both asking new question, or tweak the previous question. If you want to tweak the previous question, you can set this field. Each of `Tweak` object looks like:
   - `sql`: The SQL query you want to tweak
   - `ask`: The previous question you asked.
