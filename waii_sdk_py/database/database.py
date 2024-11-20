@@ -178,12 +178,19 @@ class DBContentFilterActionType(str, Enum):
     # this means we will do sample value or not
     sample_values = "sample_values"
 
+
+class FilterType(str, Enum):
+    INCLUSION = "inclusion"
+    EXCLUSION = "exclusion"
+
+
 class SearchContext(BaseModel):
-    db_name: Optional[str] = "*"
-    schema_name: Optional[str] = "*"
-    table_name: Optional[str] = "*"
-
-
+    type: Optional[FilterType] = FilterType.INCLUSION
+    db_name: Optional[str] = '*'
+    schema_name: Optional[str] = '*'
+    table_name: Optional[str] = '*'
+    column_name: Optional[str] = '*'
+    ignore_case: Optional[bool] = True
 
 class DBContentFilter(BaseModel):
     filter_scope: DBContentFilterScope
@@ -221,6 +228,11 @@ class DBConnection(BaseModel):
     always_include_tables: Optional[List[TableName]]
     alias: Optional[str]
     db_access_policy: Optional[DBAccessPolicy] = DBAccessPolicy()
+    host_alias : Optional[str] = None
+    user_alias: Optional[str] = None
+    db_alias: Optional[str] = None
+    content_filters: Optional[List[SearchContext]]
+    sample_filters: Optional[List[SearchContext]]
 
 class ModifyDBConnectionRequest(BaseModel):
     updated: Optional[List[DBConnection]] = None
