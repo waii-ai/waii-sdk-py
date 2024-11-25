@@ -36,6 +36,9 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `db_content_filters`: If you want Waii to exclude certain columns , tables from database while generating the query, you can pass the db_content_filter. This is optional.
 - `always_include_tables`: If it is not None, then these tables will always be included, even if table selector doesn't select them
 - `embedding_model`: Embedding model used for similarity search within the knowledge graph.
+- `db_alias`: alias of the database.
+- `host_alias`: alias of the host.
+- `user_alias`: alias of the user.
 - `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
 
 # Content Filters
