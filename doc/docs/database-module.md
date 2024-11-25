@@ -39,6 +39,8 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `db_alias`: alias of the database.
 - `host_alias`: alias of the host.
 - `user_alias`: alias of the user.
+
+(Deprecated field)
 - `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
 
 # Content Filters
@@ -277,7 +279,34 @@ DBConnection(
 )
 ```
 
-##### Use alias to add multiple connections for the same database
+##### Use db_alias, host_alias, user_alias to add multiple connections for the same database
+
+Assume you have a SQL server database `test`, which has two schemas `schema1` and `schema2`. You want to add two connections for the same database, but with different schema filters. You can use db_alias, host_alias, user_alias to achieve this.
+
+```python
+DBConnection(
+    key = '',
+    db_type = 'sqlserver',
+    database = 'test',
+    username = 'my_username',
+    host = 'my_host',
+    port = 1433,
+    # other fields of the db connection
+    db_alias = 'test_db',
+    host_alias = 'test_host',
+    user_alias = 'test_user'
+)
+```
+
+It will create a connection with key = `waii://test_user@test_host/test_db`
+
+You can also partially specify the alias field, for example, you can only specify `db_alias`, then the key will be `waii://my_username@my_host/test_db`
+
+When get the DBConnection object from `get_connections` method, it will include the alias fields. When the user (indicated by api_key) is the owner of the connection, it will include "real" fields (username, host, etc. but password is not included) in addition to alias fields.
+
+When the user is not the owner of the connection, it will only include alias fields. (for the example above, it will only include `db_alias`, `host_alias`, `user_alias`, `key`, `db_type`)
+
+##### Use alias to add multiple connections for the same database (Deprecated, use db_alias, host_alias, user_alias instead)
 
 Assume you have a SQL server database `test`, which has two schemas `schema1` and `schema2`. You want to add two connections for the same database, but with different schema filters. You can use alias to achieve this.
 
