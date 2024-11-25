@@ -7,7 +7,7 @@ The `Database` module contains methods for handling database-related tasks.
 
 Here are some of its methods:
 
-### Modify Connections
+## Modify Connections
 
 ```python
 Database.modify_connections(params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse
@@ -43,11 +43,11 @@ To add connection, you need to create `DBConnection` Object, which include the f
 (Deprecated field)
 - `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
 
-# Content Filters
+### Content Filters (part of modify_connections request)
 
 The Database module supports a simplified content filtering mechanism using SearchContext objects. This allows you to filter tables and columns from your database connections.
 
-## SearchContext Object
+#### SearchContext Object
 
 A `SearchContext` object contains the following fields:
 - `db_name`: Database name pattern (supports wildcards)
@@ -57,7 +57,7 @@ A `SearchContext` object contains the following fields:
 - `type`: Filter type, either `FilterType.INCLUSION` or `FilterType.EXCLUSION`
 - `ignore_case`: Whether to ignore case when matching patterns (default: True)
 
-## Pattern Matching
+#### Pattern Matching
 
 - Use `*` to match any sequence of characters
 - Patterns are case-insensitive by default
@@ -68,7 +68,7 @@ A `SearchContext` object contains the following fields:
 
 
 
-## Filter Types
+#### Filter Types
 
 1. **Inclusion Filters** (`FilterType.INCLUSION`)
    - Explicitly specify which tables/columns to include
@@ -78,9 +78,9 @@ A `SearchContext` object contains the following fields:
    - Specify which tables/columns to exclude
    - Applied after inclusion filters
 
-## Examples
+#### Examples
 
-### 1. Include Specific Tables
+##### 1. Include Specific Tables
 
 ```python
 WAII.Database.modify_connections(ModifyDBConnectionRequest(
@@ -113,7 +113,7 @@ WAII.Database.modify_connections(ModifyDBConnectionRequest(
 
 This example includes only the "users" and "orders" tables from the "public" schema.
 
-### 2. Exclude Sensitive Columns
+##### 2. Exclude Sensitive Columns
 
 ```python
 content_filters = [
@@ -147,7 +147,7 @@ WAII.Database.modify_connections(ModifyDBConnectionRequest(
 
 This example excludes any columns containing "password" or "secret" in their names.
 
-### 3. Include Specific Schema with Exclusions
+##### 3. Include Specific Schema with Exclusions
 
 ```python
 WAII.Database.modify_connections(ModifyDBConnectionRequest(
@@ -175,7 +175,7 @@ WAII.Database.modify_connections(ModifyDBConnectionRequest(
 
 This example includes all tables from the "analytics" schema except those starting with "tmp_".
 
-### 4. Column-Level Filtering
+##### 4. Column-Level Filtering
 
 ```python
 content_filters = [
@@ -204,14 +204,14 @@ content_filters = [
 
 This example includes only specific columns from the users table while excluding any columns ending with "_key" from all tables.
 
-## Filter Processing Rules
+#### Filter Processing Rules
 
 1. If no content filters are provided, all tables and columns are included
 2. If inclusion filters are provided, only matching tables/columns are included
 3. If no inclusion filters are provided but exclusion filters exist, everything is included by default and then exclusions are applied
 4. Patterns are matched case-insensitively by default
 
-## Migration from Legacy Filters
+#### Migration from Legacy Filters
 
 The new content filtering system replaces the previous `DBContentFilter` mechanism. Key differences:
 - Simplified pattern matching using wildcards instead of regex
@@ -221,9 +221,9 @@ The new content filtering system replaces the previous `DBContentFilter` mechani
 
 If you're using the legacy `db_content_filters`, consider migrating to the new `content_filters` system for better maintainability and simpler configuration.
 
-#### Examples of creating `DBConnection` Object
+### Examples of creating `DBConnection` Object
 
-##### Snowflake
+#### Snowflake
 ```python
 DBConnection(
     key = '',
@@ -237,7 +237,7 @@ DBConnection(
 )
 ```
 
-##### PostgreSQL / MySQL / Trino / SQLServer, etc.
+#### PostgreSQL / MySQL / Trino / SQLServer, etc.
 
 This applies to all the databases which uses username/password/host/port to connect.
 
@@ -266,7 +266,7 @@ DBConnection(
 )
 ```
 
-##### Push-based Database
+#### Push-based Database
 
 Examples of creating push based `DBConnection` Object. It is same for all the databases, you just need to set db_type to the database you are using. And set push to True.
 ```python
@@ -279,7 +279,7 @@ DBConnection(
 )
 ```
 
-##### Use db_alias, host_alias, user_alias to add multiple connections for the same database
+#### Use db_alias, host_alias, user_alias to add multiple connections for the same database
 
 Assume you have a SQL server database `test`, which has two schemas `schema1` and `schema2`. You want to add two connections for the same database, but with different schema filters. You can use db_alias, host_alias, user_alias to achieve this.
 
@@ -306,7 +306,9 @@ When get the DBConnection object from `get_connections` method, it will include 
 
 When the user is not the owner of the connection, it will only include alias fields. (for the example above, it will only include `db_alias`, `host_alias`, `user_alias`, `key`, `db_type`)
 
-##### Use alias to add multiple connections for the same database (Deprecated, use db_alias, host_alias, user_alias instead)
+#### Use alias to add multiple connections for the same database (Deprecated, use db_alias, host_alias, user_alias instead)
+
+(This is deprecated, use db_alias, host_alias, user_alias instead)
 
 Assume you have a SQL server database `test`, which has two schemas `schema1` and `schema2`. You want to add two connections for the same database, but with different schema filters. You can use alias to achieve this.
 
@@ -371,7 +373,7 @@ response = WAII.Database.modify_connections(ModifyDBConnectionRequest(
 
 The above example will add a connection with alias `team_2_connection` and include tables `t2` and `t3` from `team2` schema and `def1` from `common` schema.
 
-### Get Connections
+## Get Connections
 
 ```python
 Database.get_connections(params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse
@@ -383,7 +385,7 @@ Response fields:
 `connectors`: List of `DBConnection` objects (No password field)
 `connector_status`: Status of the connection, are they being indexed or not. 
 
-### Activate Connection
+## Activate Connection
 
 ```python
 Database.activate_connection(key: str)
@@ -397,7 +399,7 @@ You can run
 ```
 To get the current activated connection.
 
-### Get Catalogs
+## Get Catalogs
 
 ```python
 Database.get_catalogs(params: GetCatalogRequest = GetCatalogRequest()) -> GetCatalogResponse
@@ -456,7 +458,7 @@ Description of table looks like:
 The CUSTOMER_ADDRESS table contains information about the addresses of customers. It includes details such as address ID, city, country, ... This table can be used to retrieve customer addresses for various purposes, such as shipping, billing, or demographic analysis.
 ```
 
-### Update Table, Schema Descriptions
+## Update Table, Schema Descriptions
 
 You can use the following methods to update the descriptions of tables and schemas (if you are not satisfied with the auto generated descriptions)
 
@@ -529,7 +531,7 @@ class UpdateColumnDescriptionResponse(BaseModel):
 
 You should check the `updated_table_to_cols` to see which tables/columns are updated successfully. We will ignore the columns that are not found in the database.
 
-### Add/Update Table definitions
+## Add/Update Table definitions
 
 You can use the following method to update table definitions for push based database
 
@@ -556,7 +558,7 @@ update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definiti
 result = WAII.Database.update_table_definition(update_table_req)
 ```
 
-### Remove Tables
+## Remove Tables
 
 You can use the following method to remove tables from push based database
 
@@ -578,7 +580,7 @@ update_table_req = UpdateTableDefinitionRequest(removed_tables = [table_name]
 result = WAII.Database.update_table_definition(update_table_req)
 ```
 
-### Update Constraints
+## Update Constraints
 
 API:
 
@@ -633,61 +635,61 @@ result = WAII.Database.update_constraint(req)
 
 ```
 
-### Index Column Values
+## Index Column Values
 
-#### Overview
+### Overview
 
 This document describes how to use the methods related to similarity search indexing in the Waii SDK. These methods allow you to update, get, and delete column value indexes for similarity search.
 
-#### Method Signatures
+### Method Signatures
 
-##### Update Similarity Search Index
+#### Update Similarity Search Index
 
 ```python
 Database.update_similarity_search_index(request: UpdateSimilaritySearchIndexRequest) -> CommonResponse
 ```
 
-##### Get Similarity Search Index
+#### Get Similarity Search Index
 
 ```python
 Database.get_similarity_search_index(request: GetSimilaritySearchIndexRequest) -> GetSimilaritySearchIndexResponse
 ```
 
-##### Delete Similarity Search Index
+#### Delete Similarity Search Index
 
 ```python
 Database.delete_similarity_search_index(request: DeleteSimilaritySearchIndexRequest) -> CommonResponse
 ```
 
-#### Request and Response Objects
+### Request and Response Objects
 
-##### UpdateSimilaritySearchIndexRequest
+#### UpdateSimilaritySearchIndexRequest
 
 - `column`: ColumnName - Specifies the column to be indexed
 - `values`: Optional[List[ColumnValue]] - Optional list of column values to be indexed
 
-##### GetSimilaritySearchIndexRequest
+#### GetSimilaritySearchIndexRequest
 
 - `column`: ColumnName - Specifies the column for which to retrieve the index
 
-##### GetSimilaritySearchIndexResponse
+#### GetSimilaritySearchIndexResponse
 
 - `column`: ColumnName - The column for which the index was retrieved
 - `values`: Optional[List[ColumnValue]] - The indexed column values
 
-##### DeleteSimilaritySearchIndexRequest
+#### DeleteSimilaritySearchIndexRequest
 
 - `column`: ColumnName - Specifies the column for which to delete the index
 
-##### ColumnValue Object
+#### ColumnValue Object
 
 A `ColumnValue` object has two fields:
 - `value`: The actual value of the column in the table
 - `additional_info`: Optional list of strings providing additional meanings for the value
 
-#### Methods to Provide Column Values
+### Methods to Provide Column Values
 
-##### 1. Manual Value Provision
+#### 1. Manual Value Provision
 
 Manually provide a list of `ColumnValue` objects:
 
@@ -713,7 +715,7 @@ Use the `additional_info` field in the following scenarios:
 3. Leave empty if the value is self-explanatory
    - Example: `Interstellar`
 
-##### 2. Specify Column Only
+#### 2. Specify Column Only
 
 Let Waii query the database for unique values of the specified column:
 
@@ -725,7 +727,7 @@ WAII.database.update_similarity_search_index(UpdateSimilaritySearchIndexRequest(
 
 Internally, Waii will run a `SELECT DISTINCT <COLUMN_NAME> FROM <TABLE_NAME>` query to fetch unique values for the specified column.
 
-##### 3. Use Query Results
+#### 3. Use Query Results
 
 Use a custom query to fetch values and create `ColumnValue` objects, then update the index:
 
@@ -750,7 +752,7 @@ WAII.database.update_similarity_search_index(UpdateSimilaritySearchIndexRequest(
 
 The above example fetches the `ASSET_TITLE` and `ASSET_LOCAL_NAME` (more like an alternative name) columns from the `movies_and_tv.movies` table and creates `ColumnValue` objects for each row.
 
-#### Getting Similarity Search Index
+### Getting Similarity Search Index
 
 To retrieve the current similarity search index for a column:
 
@@ -763,7 +765,7 @@ response = WAII.database.get_similarity_search_index(GetSimilaritySearchIndexReq
 indexed_values = response.values
 ```
 
-#### Deleting Similarity Search Index
+### Deleting Similarity Search Index
 
 To delete the similarity search index for a column:
 
@@ -773,13 +775,13 @@ WAII.database.delete_similarity_search_index(DeleteSimilaritySearchIndexRequest(
 ))
 ```
 
-#### Notes and Limitations
+### Notes and Limitations
 
 - Currently only works for text columns
 - Maximum of 5000 ColumnValues per column
 - The update method is a synchronous call that computes embeddings for column values, so it may not be immediate
 
-#### Responses
+### Responses
 
 - `update_similarity_search_index` and `delete_similarity_search_index` return a `CommonResponse` object.
 - `get_similarity_search_index` returns a `GetSimilaritySearchIndexResponse` object containing the indexed column values.
