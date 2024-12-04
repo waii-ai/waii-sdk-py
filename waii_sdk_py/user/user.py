@@ -102,6 +102,7 @@ class WaiiRoles:
     WAII_ADMIN_USER = 'waii-admin-user'
     WAII_ORG_ADMIN_USER = 'waii-org-admin-user'
     WAII_SUPER_ADMIN_USER = 'waii-super-admin-user'
+    WAII_TRAIL_API_USER = 'waii-trial-api-user'
 
 class CreateUserRequest(CommonRequest):
     user: User
