@@ -281,12 +281,73 @@ Here's simple script to do that:
 
     permlink = self.client.post(f"{self.client.host}/api/v1/explore/permalink", json=permlink_payload)
 
-permlink will have the superset url which you can embed in your application. 
+permlink will have the superset url which you can embed in your application.
 
-![Complete link on how to generate superset iframe](superset-rendering.md)
+[Complete link on how to generate superset iframe](superset-rendering.md)
 
 Here's an example chart:
 
 superset chart embedded in streamlit app:
 
 ![supersetexample.png](superset_example.png)
+
+## Metabase Chart
+
+Request:
+
+```
+response = WAII.Chat.chat_message(ChatRequest(ask="Draw a bar graph showing revenue per year", chart_type = ChartType.METABASE ))
+```
+
+Response:
+
+```
+{
+"response_data": {
+        "data": {
+            "rows": [
+                {
+                    "START_YEAR": 2015,
+                    "TOTAL_REVENUE": 11987590461
+                },
+                {
+                    "START_YEAR": 2016,
+                    "TOTAL_REVENUE": 8735916896
+                }
+            ],
+            "more_rows": 0,
+            "column_definitions": [
+                {
+                    "name": "START_YEAR",
+                    "type": "FIXED",
+                },
+                {
+                    "name": "TOTAL_REVENUE",
+                    "type": "FIXED"
+                }
+            ],
+            "query_uuid": "14b6f72e-7379-4a34-8d57-661a2b6f8964"
+        },
+        "query": {
+            "query": "SELECT\n    start_year,\n    SUM(revenue) AS total_revenue\nFROM movie_db.movies_and_tv.movies\nGROUP BY\n    start_year\nORDER BY\n    start_year\n"
+        },
+        "chart": {
+            "uuid": "489ab1f2-f4e2-4bd3-9e66-b758e97451cb",
+            "chart_spec": {
+                "spec_type": "metabase",
+                "plot_type": "bar",
+                "dimension": "START_YEAR",
+                "name": "Total Revenue Per Year",
+                "color_hex": "#349301",
+                "metric": "TOTAL_REVENUE"
+            }
+        }
+    }
+}
+```
+
+Inorder to add the metabase charts to your app, you can use this script [here](metabase-rendering.md) as reference
+
+Example metabase chart:
+
+![metabase_chart.png](metabase_chart.png)
