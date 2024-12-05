@@ -283,6 +283,8 @@ Here's simple script to do that:
 
 permlink will have the superset url which you can embed in your application. 
 
+![Complete link on how to generate superset iframe](superset-rendering.md)
+
 Here's an example chart:
 
 superset chart embedded in streamlit app:
