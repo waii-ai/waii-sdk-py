@@ -49,7 +49,7 @@ class PlotlyChartSpec(BaseModel):
 
 class VegaliteChartSpec(BaseModel):
     spec_type: Literal['vegalite'] = 'vegalite'
-    vegalite_spec_json: Optional[str]
+    chart: Optional[str]
     number_of_data_points: Optional[int] = None
     generation_message: Optional[str] = None
 
@@ -75,7 +75,7 @@ class ChartGenerationRequest(LLMBasedRequest):
 class ChartGenerationResponse(BaseModel):
     uuid: str
     timestamp_ms: Optional[int]
-    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec]]
+    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec, VegaliteChartSpec]]
 
 
 class ChartImpl:
