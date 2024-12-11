@@ -121,6 +121,8 @@ class ConfidenceScore(BaseModel):
 class AccessRuleProtectionState(str, Enum):
     protected = "protected"  # Query is completely protected regarding access rules
     unprotected = "unprotected"  # Query is not guaranteed to be protected, see error msg for details
+    uncompilable = "uncompilable"
+    unexplainable = "unexplainable"
 
 
 class AccessRuleProtectionStatus(BaseModel):
