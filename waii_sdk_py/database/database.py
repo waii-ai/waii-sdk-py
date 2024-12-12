@@ -89,11 +89,22 @@ class SchemaDescription(BaseModel):
     common_tables: Optional[List[TableNameToDescription]]
 
 
+class RelationshipType(str, Enum):
+    one_to_one = "one_to_one"
+    one_to_many = "one_to_many"
+    many_to_many = "many_to_many"
+    belongs_to = "belongs_to"
+    has_one = "has_one"
+    has_many = "has_many"
+    many_to_one = "many_to_one"
+
+
 class Constraint(BaseModel):
     source: Optional[ConstraintDetectorType]
     table: Optional[TableName]
     cols: Optional[List[str]]
     constraint_type: Optional[ConstraintType]
+    relationship_type: Optional[RelationshipType]
 
     # for foreign key, it is the table and columns that the source table and cols
     src_table: Optional[TableName]  # table name
