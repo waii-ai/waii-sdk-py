@@ -34,3 +34,7 @@ class CheckOperationStatusResponse(CommonResponse):
     op_id: str
     status: OperationStatus
     info: Optional[str] = None
+
+
+class GetObjectRequest(CommonRequest):
+    uuid: str
