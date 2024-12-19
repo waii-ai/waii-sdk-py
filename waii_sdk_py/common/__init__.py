@@ -34,3 +34,11 @@ class CheckOperationStatusResponse(CommonResponse):
     op_id: str
     status: OperationStatus
     info: Optional[str] = None
+
+
+class AsyncObjectResponse(CommonRequest):
+    uuid: str
+
+
+class GetObjectRequest(CommonRequest):
+    uuid: str
