@@ -9,7 +9,7 @@ from enum import Enum, IntEnum
 
 from ..my_pydantic import BaseModel, Field
 
-from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest
+from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
 from ..waii_http_client import WaiiHttpClient
@@ -32,6 +32,7 @@ GET_SIMILAR_QUERY_ENDPOINT = "get-similar-query"
 RUN_QUERY_COMPILER_ENDPOINT = "run-query-compiler"
 SEMANTIC_CONTEXT_CHECKER_ENDPOINT = "semantic-context-checker"
 APPLY_TABLE_ACCESS_RULES_ENDPOINT = "apply-table-access-rules"
+SUBMIT_GENERATE_QUERY_ENDPOINT = "submit-generate-query"
 GET_GENERATED_QUERY_ENDPOINT = "get-generated-query"
 
 
@@ -545,6 +546,13 @@ class QueryImpl:
             APPLY_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ApplyTableAccessRulesResponse
         )
 
+    def submit_generate_query(
+            self, params: QueryGenerationRequest
+    ) -> AsyncObjectResponse:
+        return self.http_client.common_fetch(
+            SUBMIT_GENERATE_QUERY_ENDPOINT, params.__dict__, AsyncObjectResponse,
+        )
+
     def get_generated_query(
             self, params: GetObjectRequest
     ) -> GeneratedQuery:
@@ -561,9 +569,6 @@ class AsyncQueryImpl:
     def __init__(self, http_client: WaiiHttpClient):
         self._query_impl = QueryImpl(http_client)
         wrap_methods_with_async(self._query_impl, self)
-
-
-
 
 
 Query = QueryImpl(WaiiHttpClient.get_instance())

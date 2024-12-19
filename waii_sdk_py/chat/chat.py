@@ -3,7 +3,7 @@ from typing import Optional, List
 
 from ..my_pydantic import BaseModel
 
-from ..common import LLMBasedRequest, GetObjectRequest
+from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
 from ..query import GetQueryResultResponse, GeneratedQuery
 from ..database import CatalogDefinition
 from ..semantic_context import GetSemanticContextResponse
@@ -12,6 +12,7 @@ from waii_sdk_py.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
 CHAT_MESSAGE_ENDPOINT = "chat-message"
+SUBMIT_CHAT_MESSAGE_ENDPOINT = "submit-chat-message"
 GET_CHAT_RESPONSE_ENDPOINT = "get-chat-response"
 
 
@@ -51,7 +52,9 @@ class ChatResponseData(BaseModel):
 
 class ChatResponseStep(str, Enum):
     routing_request = "Routing Request"
-    running_operations = "Running Operations"
+    generating_query = "Generating Query"
+    retrieving_context = "Retrieving Context"
+    retrieving_tables = "Retrieving Tables"
     running_query = "Running Query"
     generating_chart = "Generating Chart"
     preparing_result = "Preparing Result"
@@ -76,6 +79,13 @@ class ChatImpl:
 
     def chat_message(self, params: ChatRequest) -> ChatResponse:
         return self.http_client.common_fetch(CHAT_MESSAGE_ENDPOINT, params.__dict__, ChatResponse)
+
+    def submit_chat_message(
+            self, params: ChatRequest
+    ) -> AsyncObjectResponse:
+        return self.http_client.common_fetch(
+            SUBMIT_CHAT_MESSAGE_ENDPOINT, params.__dict__, AsyncObjectResponse
+        )
 
     def get_chat_response(
             self, params: GetObjectRequest

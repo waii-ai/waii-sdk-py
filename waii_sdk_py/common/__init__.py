@@ -36,5 +36,9 @@ class CheckOperationStatusResponse(CommonResponse):
     info: Optional[str] = None
 
 
+class AsyncObjectResponse(CommonRequest):
+    uuid: str
+
+
 class GetObjectRequest(CommonRequest):
     uuid: str
