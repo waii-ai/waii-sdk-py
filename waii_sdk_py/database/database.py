@@ -251,6 +251,7 @@ class ModifyDBConnectionRequest(BaseModel):
     validate_before_save: Optional[bool] = None
     user_id: Optional[str] = None
     default_db_connection_key: Optional[str] = None
+    owner_user_id: Optional[str] = None
 
 
 class SchemaIndexingStatus(BaseModel):

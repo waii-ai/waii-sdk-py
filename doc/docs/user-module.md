@@ -153,10 +153,9 @@ Response fields:
 
 For Example:
 ```python
-
-params = CreateUserRequest(user=UserDTO( id="user1",name="John Doe",tenant_id="my_tenant_id",org_id="my_org_id"))
+CreateUserRequest(user=User(id="jack@myco.com",name="Jack",tenant_id="my_tenant_id",org_id="my_org_id", roles=[WaiiRoles.WAII_TRIAL_USER]))
 response = WAII.User.create_user(params)
->>> print(response)  # Confirmation of user creation
+print(response)  # Confirmation of user creation
 ```
 
 Note:
@@ -203,7 +202,7 @@ Response fields:
 
 For Example:
 ```python
-params = UpdateUserRequest(user=UserDTO( id="user1",name="Pravin",tenant_id="my_tenant_id",org_id="my_org_id"))
+params = UpdateUserRequest(user=User( id="user1",name="Pravin",tenant_id="my_tenant_id",org_id="my_org_id"))
 response = WAII.User.update_user(params)
 >>> print(response)  
 ```

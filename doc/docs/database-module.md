@@ -19,6 +19,7 @@ This method allows to modify the database connections.
 - `updated`: Update or add new connections
 - `removed`: Remove connections, by specifying the key of the connection
 - `default_db_connection_key`: Set the default connection (by specifying key of connection)
+- `owner_user_id`: Set the owner of the connection, by default it is the user who is making the request. If you want to set the owner to another user, you can specify the user_id here. When to use this? If you have user who has limited permission to add connections, but you want to add the db connection to the user without updated permission.
 
 
 To add connection, you need to create `DBConnection` Object, which include the following fields
