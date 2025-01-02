@@ -28,7 +28,7 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `description`: Description of the connection
 - `account_name`: Account name of the connection, apply to `Snowflake`
 - `username`: Username of the connection, can be None if no username needed (such as localhost database or push based database)
-- `password`: Password of the connection, can be None if no password. 
+- `password`: Password of the connection, can be None if no password. The password for the BigQuery connection is the content of the service account key file represented as a JSON string.
 - `database`: Database name of the connection, you must specify it. Please note that it is case sensitive for most of the databases.
 - `warehouse`: Warehouse name of the connection, apply to `Snowflake` (not needed for push based database)
 - `role`: Role name of the connection, apply to `Snowflake` ((not needed for push based database))
@@ -37,6 +37,7 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `db_content_filters`: If you want Waii to exclude certain columns , tables from database while generating the query, you can pass the db_content_filter. This is optional.
 - `always_include_tables`: If it is not None, then these tables will always be included, even if table selector doesn't select them
 - `embedding_model`: Embedding model used for similarity search within the knowledge graph.
+- `client_email`:Applicable for bigquery connection. This is present in service account key details.
 - `db_alias`: alias of the database.
 - `host_alias`: alias of the host.
 - `user_alias`: alias of the user.
@@ -266,6 +267,33 @@ DBConnection(
     port = 27017 # if you are using Mongo Atlas, you shouldn't set port
 )
 ```
+
+##### Bigquery
+```python
+service_account_json = """
+{
+  "type": "service_account",
+  "project_id": "my-sample-project",
+  "private_key_id": "abcdef1234567890abcdef1234567890abcdef12",
+  "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC...\\n-----END PRIVATE KEY-----\\n",
+  "client_email": "my-service-account@my-sample-project.iam.gserviceaccount.com",
+  "client_id": "123456789012345678901",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/my-service-account%40my-sample-project.iam.gserviceaccount.com"
+}
+"""
+DBConnection(
+    key = '',
+    db_type = 'bigquery',
+    password = service_account_json,
+    database = 'my-sample-project', #Here database name should be same as project id
+    client_email = "my-service-account@my-sample-project.iam.gserviceaccount.com"
+)
+```
+
+
 
 #### Push-based Database
 

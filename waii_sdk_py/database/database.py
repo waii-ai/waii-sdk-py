@@ -242,6 +242,7 @@ class DBConnection(BaseModel):
     host_alias : Optional[str] = None
     user_alias: Optional[str] = None
     db_alias: Optional[str] = None
+    client_email: Optional[str] = None
     content_filters: Optional[List[SearchContext]]
     sample_filters: Optional[List[SearchContext]]
 
