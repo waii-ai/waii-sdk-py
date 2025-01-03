@@ -1,4 +1,5 @@
 import inspect
+import json
 import warnings
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
@@ -418,9 +419,21 @@ class DatabaseImpl:
     def modify_connections(
         self, params: ModifyDBConnectionRequest
     ) -> ModifyDBConnectionResponse:
+        self._modify_connection_request(params.updated)
         return self.http_client.common_fetch(
             MODIFY_DB_ENDPOINT, params.__dict__, ModifyDBConnectionResponse
         )
+
+
+    def _modify_connection_request(self, conns:List[DBConnection]):
+        for conn in conns:
+            if conn.db_type == "bigquery" and conn.password:
+                password_dict = json.loads(conn.password)
+                conn.database = password_dict['project_id']
+                conn.client_email = password_dict['client_email']
+
+
+
 
     def get_connections(
         self, params: GetDBConnectionRequest = GetDBConnectionRequest()
