@@ -281,8 +281,6 @@ DBConnection(
     key = '',
     db_type = 'bigquery',
     password = service_account_json,
-    database = 'my-sample-project', #Here database name should be same as project id
-    client_email = "my-service-account@my-sample-project.iam.gserviceaccount.com"
 )
 ```
 
