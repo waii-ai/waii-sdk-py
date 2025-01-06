@@ -37,7 +37,6 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `db_content_filters`: If you want Waii to exclude certain columns , tables from database while generating the query, you can pass the db_content_filter. This is optional.
 - `always_include_tables`: If it is not None, then these tables will always be included, even if table selector doesn't select them
 - `embedding_model`: Embedding model used for similarity search within the knowledge graph.
-- `client_email`:Applicable for bigquery connection. This is present in service account key details.
 - `db_alias`: alias of the database.
 - `host_alias`: alias of the host.
 - `user_alias`: alias of the user.
@@ -269,20 +268,34 @@ DBConnection(
 ```
 
 ##### Bigquery
+Here’s an example of how to create a `DBConnection` object for BigQuery using the service account JSON:
+First create the service account key (JSON). To do the same follow the instructions in the [Google Cloud Documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating).
+This JSON file will contain all the required credentials for connecting to BigQuery.
+Now use the content of the downloaded JSON file as json string for password field and create `DBConnection` Object
+
 ```python
 service_account_json = """
 {
   "type": "service_account",
-  "project_id": "my-sample-project"
-  ...
+  "project_id": "my-sample-project",
+  "private_key_id": "abcdef1234567890abcdef1234567890abcdef12",
+  "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC...\\n-----END PRIVATE KEY-----\\n",
+  "client_email": "my-service-account@my-sample-project.iam.gserviceaccount.com",
+  "client_id": "123456789012345678901",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/my-service-account%40my-sample-project.iam.gserviceaccount.com"
 }
 """
-DBConnection(
-    key = '',
-    db_type = 'bigquery',
-    password = service_account_json,
+
+db_connection = DBConnection(
+    key='',
+    db_type='bigquery',
+    password=service_account_json,
 )
 ```
+The database name will automatically be set to the project id
 
 
 
