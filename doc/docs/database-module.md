@@ -267,15 +267,15 @@ DBConnection(
 )
 ```
 
-##### BigQuery
+#### BigQuery
 
 Here’s an example of how to create a `DBConnection` object for BigQuery using the service account JSON:
 
-### Step 1: Create the Service Account Key (JSON)
+##### Step 1: Create the Service Account Key (JSON)
 To create the service account key (JSON), follow the instructions in the [Google Cloud Documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating).  
 This JSON file will contain all the required credentials for connecting to BigQuery.
 
-### Step 2: Use the JSON File to Create a `DBConnection` Object
+##### Step 2: Use the JSON File to Create a `DBConnection` Object
 Use the content of the downloaded JSON file as a JSON string for the `password` field when creating the `DBConnection` object.
 
 ```python
@@ -299,6 +299,9 @@ db_connection = DBConnection(
     db_type='bigquery',
     password=service_account_json,
 )
+```
+
+The database name will be automatically set to project id
 
 
 #### Push-based Database
