@@ -176,6 +176,47 @@ In order to specify which model to use, you can set `model` field in the request
         model="GPT-4o"))
 ```
 
+### Async Query Generation
+
+The `generate()` endpoint carries out the query generation synchronously. This will block until Waii generates a valid query.
+
+To generate a query asynchronously use the pair of methods
+```python
+WAII.query.submit_generate_query(params: QueryGenerationRequest) -> AsyncObjectResponse
+WAII.query.get_generated_query(params: GetObjectRequest) -> GeneratedQuery
+```
+
+The `AsyncObjectResponse` and `GetObjectRequest` both contain a single field:
+- `uuid`: a unique identifier for the query generation request
+
+Both `submit_generate_query` and `get_generated_query` are non-blocking calls. `submit_generate_query` will immediately return with the uuid, and `get_generated_query` will return the intermediate generated query.
+
+The `QueryGenerationRequest` and `GeneratedQuery` follow the same semantics above. 
+`GeneratedQuery` additionally contains a `current_step` field of type `QueryGenerationStep`, which is relevant during async query generation. This is updated as the query is generated, along with other fields of the generated query as they are determined. None of these fields are considered finalized until the `current_step` becomes `Completed`
+
+`QueryGenerationStep` values:
+- Selecting Tables and Rules
+- Generating Query
+- Validating Query
+- Completed
+
+```python
+request = QueryGenerationRequest(
+    ask="How many tables are in the database"
+)
+response = WAII.query.submit_generate_query(request)
+get_generated_query_request = GetObjectRequest(
+    uuid=response.uuid
+)
+generated_query = None
+while True:
+    time.sleep(1)
+    generated_query = WAII.query.get_generated_query(get_generated_query_request)
+    if generated_query.current_step == QueryGenerationStep.completed:
+        return
+    # Analyze intermediate query here
+# Analyze completed query here
+```
 ### Generate Question
 
 You can also generate questions based on your database schema, which can be useful when you want to show to your user what kind of questions can be asked to the database.

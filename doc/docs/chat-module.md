@@ -63,6 +63,47 @@ Template names will be enclosed in {}, such as {tables}
 - `graph` A graphical representation of the data from the database
    
 
+### Async Chat Message Generation
+
+The `generate_chat()` endpoint carries out the chat message generation synchronously. This will block until Waii generates a valid chat response. To generate a chat message asynchronously, use the following pair of methods:
+
+```python
+WAII.chat.submit_chat_message(params: ChatRequest) -> AsyncObjectResponse
+WAII.chat.get_chat_response(params: GetObjectRequest) -> ChatResponse
+```
+
+The `AsyncObjectResponse` and `GetObjectRequest` both contain a single field:
+
+- `uuid`: A unique identifier for the chat message generation request.
+
+Both `submit_chat_message` and `get_chat_response` are non-blocking calls. `submit_chat_message` will immediately return with the `uuid`, and `get_chat_response` will return the intermediate generated chat response. The `ChatRequest` and `ChatResponse` follow the same semantics as above.
+
+`ChatResponse` includes an additional field called `current_step` of type `ChatResponseStep`, which is relevant during async chat message generation. This is updated as the message is generated, along with other fields of the chat response as they are determined. None of these fields are considered finalized until the `current_step` becomes `Completed`.
+
+`ChatResponseStep` values:
+- Routing Request
+- Generating Query
+- Retrieving Context
+- Retrieving Tables
+- Running Query
+- Generating Chart
+- Preparing Result
+- Completed
+
+```python
+request = ChatRequest(ask="How many tables are there?")
+response = WAII.chat.submit_chat_message(request)
+get_chat_response_request = GetObjectRequest(uuid=response.uuid)
+generated_chat_response = None
+while True:
+    time.sleep(1)
+    generated_chat_response = WAII.chat.get_chat_response(get_chat_response_request)
+    if generated_chat_response.current_step == ChatResponseStep.completed:
+        break
+    # analyze intermediate chat response here
+# analyze the completed chat response here
+```
+
 ## Supported Chart Types:
 
 Currently waii supports vegalite, superset and metabase
