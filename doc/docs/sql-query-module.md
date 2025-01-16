@@ -290,6 +290,10 @@ Query.like(params: LikeQueryRequest) -> LikeQueryResponse
     rewrite_question: Optional[bool] = True
     detailed_steps: Optional[List[str]] = []
     
+    # by default, like query request applies to the current user only, there's an option to apply to other users
+    target_user_id: Optional[str] = None
+    target_tenant_id: Optional[str] = None
+    target_org_id: Optional[str] = None
 ```
 
 You can specify a query is liked or unliked by set `liked` to True/False
@@ -351,6 +355,20 @@ for q in queries:
 ```
 
 You will get an exception if the call is failed.
+
+#### Like a query on behalf of another user
+
+```python
+WAII.Query.like(LikeQueryRequest(ask='How many tables are there?', 
+                                 query='SELECT ...', liked=True,
+                                 target_user_id='user@example.com'))
+```
+
+This will 'like' the query on behalf of the user `user@example.com`.
+
+Admin can also specify the `target_user_id`, `target_tenant_id` to '*' to like the query on behalf of all users or all tenants.
+
+e.g. `... target_user_id='*', target_tenant_id='my-company.com'` will like the query on behalf of all users in `my-company.com` tenant.
 
 ### Describe
 
