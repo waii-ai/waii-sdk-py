@@ -9,8 +9,6 @@ try:
 
     class StrictBaseModel(BaseModel, extra='forbid'):
         pass
-    # class WaiiBaseModel(BaseModel):
-    #     pass
 except ImportError:
     try:
         from pydantic import (
@@ -23,8 +21,6 @@ except ImportError:
 
         class StrictBaseModel(BaseModel, extra='forbid'):
             pass
-        # class WaiiBaseModel(BaseModel):
-        #     pass
     except ImportError:
         raise ImportError("Cannot find pydantic module. Please install pydantic. You can use >= 1.10.x or >= 2.7.x")
 

@@ -58,9 +58,6 @@ class WaiiHttpClient(Generic[T]):
         params['org_id'] = self.orgId
         params['user_id'] = self.userId
 
-        if 'extra' in params.values():
-            print('--------------------------------here-------------------------------')
-
         headers = {'Content-Type': 'application/json'}
         if self.apiKey:
             headers['Authorization'] = f'Bearer {self.apiKey}'
