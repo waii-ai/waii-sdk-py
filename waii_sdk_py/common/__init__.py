@@ -1,15 +1,16 @@
 from enum import Enum
 from typing import Optional, List, Dict, Any
 
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel, BaseModel
 
-
-class CommonRequest(BaseModel):
+class CommonRequest(StrictBaseModel):
     tags: Optional[List[str]]
     parameters: Optional[Dict[str, Any]]
 
 
-class LLMBasedRequest(CommonRequest):
+class LLMBasedRequest(BaseModel):
+    tags: Optional[List[str]]
+    parameters: Optional[Dict[str, Any]]
     model: Optional[str]
     # should we use cache?
     use_cache: Optional[bool] = True
@@ -36,7 +37,7 @@ class CheckOperationStatusResponse(CommonResponse):
     info: Optional[str] = None
 
 
-class AsyncObjectResponse(CommonRequest):
+class AsyncObjectResponse(CommonResponse):
     uuid: str
 
 

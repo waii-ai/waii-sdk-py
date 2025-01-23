@@ -7,7 +7,7 @@ import traceback
 from typing import Optional, List, Dict, Any, Union, Literal
 from enum import Enum, IntEnum
 
-from ..my_pydantic import BaseModel, Field
+from ..my_pydantic import StrictBaseModel, Field, BaseModel
 
 from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
@@ -51,7 +51,7 @@ class DebugInfoType(str, Enum):
     after_iterative_table_selection = "after_iterative_table_selection"
 
 
-class Tweak(BaseModel):
+class Tweak(StrictBaseModel):
     sql: Optional[str] = None
     ask: Optional[str] = None
 
@@ -99,7 +99,7 @@ class LLMUsageStatistics(BaseModel):
     token_total: Optional[int]
 
 
-class Query(BaseModel):
+class Query(StrictBaseModel):
     uuid: str
     ask: str
     query: str
@@ -296,7 +296,7 @@ class GenerateQuestionRequest(CommonRequest):
     complexity: Optional[GeneratedQuestionComplexity] = GeneratedQuestionComplexity.hard
 
 
-class GeneratedQuestion(BaseModel):
+class GeneratedQuestion(StrictBaseModel):
     question: str
     complexity: GeneratedQuestionComplexity
     tables: Optional[List[TableName]]  # tables used in the question
@@ -318,7 +318,7 @@ class CompilationStateFromDBEngine(IntEnum):
     UNCOMPILABLE = 2
 
 
-class CompilationErrorMsgFromDBEngine(BaseModel):
+class CompilationErrorMsgFromDBEngine(StrictBaseModel):
     state: CompilationStateFromDBEngine
     msg: Optional[str]
 

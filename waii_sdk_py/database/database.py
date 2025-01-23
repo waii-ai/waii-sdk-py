@@ -4,7 +4,7 @@ import warnings
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
 from ..common import LLMBasedRequest, CommonRequest, CheckOperationStatusResponse, CheckOperationStatusRequest
-from ..my_pydantic import BaseModel, PrivateAttr
+from ..my_pydantic import StrictBaseModel, PrivateAttr, BaseModel
 import re
 from typing import Optional, List, Dict, Any, Union
 from urllib.parse import urlparse, parse_qs
@@ -38,7 +38,7 @@ class TableName(BaseModel):
     database_name: Optional[str]
 
 
-class ColumnName(BaseModel):
+class ColumnName(StrictBaseModel):
     table_name: TableName
     column_name: str
 
@@ -71,7 +71,7 @@ class ConstraintDetectorType(str, Enum):
     manual = "manual"
 
 
-class TableReference(BaseModel):
+class TableReference(StrictBaseModel):
     src_table: Optional[TableName]  # table name
     src_cols: Optional[List[str]]  # source table columns
     ref_table: Optional[TableName]  # ref table name
@@ -79,12 +79,12 @@ class TableReference(BaseModel):
     source: Optional[ConstraintDetectorType]
 
 
-class TableNameToDescription(BaseModel):
+class TableNameToDescription(StrictBaseModel):
     name: str
     description: str
 
 
-class SchemaDescription(BaseModel):
+class SchemaDescription(StrictBaseModel):
     summary: Optional[str]
     common_questions: Optional[List[str]]
     common_tables: Optional[List[TableNameToDescription]]
@@ -100,7 +100,7 @@ class RelationshipType(str, Enum):
     many_to_one = "many_to_one"
 
 
-class Constraint(BaseModel):
+class Constraint(StrictBaseModel):
     source: Optional[ConstraintDetectorType]
     table: Optional[TableName]
     cols: Optional[List[str]]
@@ -204,7 +204,7 @@ class SearchContext(BaseModel):
     column_name: Optional[str] = '*'
     ignore_case: Optional[bool] = True
 
-class DBContentFilter(BaseModel):
+class DBContentFilter(StrictBaseModel):
     filter_scope: DBContentFilterScope
     filter_type: DBContentFilterType = DBContentFilterType.include
     filter_action_type: DBContentFilterActionType = DBContentFilterActionType.visibility
@@ -213,11 +213,10 @@ class DBContentFilter(BaseModel):
     search_context: Optional[List[SearchContext]]
 
 
-class DBAccessPolicy(BaseModel):
+class DBAccessPolicy(StrictBaseModel):
     read_only: Optional[bool] = False
     allow_access_beyond_db_content_filter: Optional[bool] = True
     allow_access_beyond_search_context: Optional[bool] = True
-
 
 class DBConnection(BaseModel):
     key: Optional[str]
@@ -247,7 +246,7 @@ class DBConnection(BaseModel):
     content_filters: Optional[List[SearchContext]]
     sample_filters: Optional[List[SearchContext]]
 
-class ModifyDBConnectionRequest(BaseModel):
+class ModifyDBConnectionRequest(StrictBaseModel):
     updated: Optional[List[DBConnection]] = None
     removed: Optional[List[str]] = None
     validate_before_save: Optional[bool] = None
@@ -256,7 +255,7 @@ class ModifyDBConnectionRequest(BaseModel):
     owner_user_id: Optional[str] = None
 
 
-class SchemaIndexingStatus(BaseModel):
+class SchemaIndexingStatus(StrictBaseModel):
     n_pending_indexing_tables: int
     n_total_tables: int
     status: str
@@ -267,7 +266,7 @@ class DBConnectionIndexingStatus(BaseModel):
     schema_status: Optional[Dict[str, SchemaIndexingStatus]]
 
 
-class ModifyDBConnectionResponse(BaseModel):
+class ModifyDBConnectionResponse(CommonResponse):
     connectors: Optional[List[DBConnection]]
     diagnostics: Optional[str]
     default_db_connection_key: Optional[str]
@@ -284,91 +283,91 @@ class GetCatalogRequest(LLMBasedRequest):
     internal: bool = False
 
 
-class GetDBConnectionRequest(BaseModel):
+class GetDBConnectionRequest(CommonRequest):
     pass
 
 
-class GetDBConnectionResponse(BaseModel):
+class GetDBConnectionResponse(CommonResponse):
     connectors: Optional[List[DBConnection]]
     diagnostics: Optional[str]
     default_db_connection_key: Optional[str]
     connector_status: Optional[Dict[str, DBConnectionIndexingStatus]]
 
 
-class GetCatalogResponse(BaseModel):
+class GetCatalogResponse(CommonResponse):
     catalogs: Optional[List[CatalogDefinition]] = None
     debug_info: Optional[Dict[str, Any]]
 
 
-class UpdateTableDescriptionRequest(BaseModel):
+class UpdateTableDescriptionRequest(StrictBaseModel):
     table_name: TableName
     description: str
 
 
-class UpdateTableDefinitionRequest(BaseModel):
+class UpdateTableDefinitionRequest(StrictBaseModel):
     updated_tables: Optional[List[TableDefinition]]
     removed_tables: Optional[List[TableName]]
 
 
-class ColumnDescription(BaseModel):
+class ColumnDescription(StrictBaseModel):
     column_name: str
     description: Optional[str]
 
 
-class TableToColumnDescription(BaseModel):
+class TableToColumnDescription(StrictBaseModel):
     table_name: TableName
     column_descriptions: Optional[List[ColumnDescription]]
 
 
-class UpdateColumnDescriptionRequest(BaseModel):
+class UpdateColumnDescriptionRequest(StrictBaseModel):
     col_descriptions: Optional[List[TableToColumnDescription]]
 
 
-class UpdatedTableToCol(BaseModel):
+class UpdatedTableToCol(StrictBaseModel):
     table_name: TableName
     column_names: Optional[List[str]]
 
 
-class UpdateColumnDescriptionResponse(BaseModel):
+class UpdateColumnDescriptionResponse(CommonResponse):
     updated_table_to_cols: Optional[List[UpdatedTableToCol]]
 
-class UpdateTableDefinitionResponse(BaseModel):
+class UpdateTableDefinitionResponse(CommonResponse):
     updated_tables: Optional[List[TableName]]
 
 
-class UpdateSchemaDescriptionRequest(BaseModel):
+class UpdateSchemaDescriptionRequest(StrictBaseModel):
     schema_name: SchemaName
     description: str
 
 
-class UpdateTableDescriptionResponse(BaseModel):
+class UpdateTableDescriptionResponse(CommonResponse):
     pass
 
 
-class UpdateSchemaDescriptionResponse(BaseModel):
+class UpdateSchemaDescriptionResponse(CommonResponse):
     pass
 
 
-class TableConstraints(BaseModel):
+class TableConstraints(StrictBaseModel):
     table_name: TableName
     constraints: Optional[List[Constraint]]
     constraint_type: ConstraintType
 
 
-class UpdateConstraintRequest(BaseModel):
+class UpdateConstraintRequest(StrictBaseModel):
     # updated constraints, it will replace the existing constraints
     updated_constraints: Optional[List[TableConstraints]]
 
 
-class UpdateConstraintResponse(BaseModel):
+class UpdateConstraintResponse(CommonResponse):
     updated_tables: Optional[List[TableName]]
 
 
-class RefreshDBConnectionRequest(BaseModel):
+class RefreshDBConnectionRequest(StrictBaseModel):
     db_conn_key: str
 
 
-class ColumnValue(BaseModel):
+class ColumnValue(StrictBaseModel):
     value: str
     additional_info: Optional[List[str]]
 

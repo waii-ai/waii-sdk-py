@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional, Literal, List, Union, Dict, Any
 
 from ..database import ColumnDefinition
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel, BaseModel
 
 from ..common import LLMBasedRequest
 from waii_sdk_py.utils import wrap_methods_with_async
@@ -54,7 +54,7 @@ class VegaliteChartSpec(BaseModel):
     generation_message: Optional[str] = None
 
 
-class ChartTweak(BaseModel):
+class ChartTweak(StrictBaseModel):
     ask: Optional[str]
     chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec]]
 

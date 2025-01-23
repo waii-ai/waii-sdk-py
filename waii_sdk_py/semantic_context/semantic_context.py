@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from ..common import LLMBasedRequest
 from ..database import SearchContext
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel, BaseModel
 from waii_sdk_py.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
@@ -42,7 +42,7 @@ class ModifySemanticContextRequest(LLMBasedRequest):
     deleted: Optional[List[str]] = None
 
 
-class GetSemanticContextRequestFilter(BaseModel):
+class GetSemanticContextRequestFilter(StrictBaseModel):
     # do we want to filter "always_include" rules or not?
     # - None: both
     # - True: only return rules with always_include=True

@@ -2,7 +2,7 @@ from enum import Enum
 
 from waii_sdk_py.waii_http_client import WaiiHttpClient
 from ..common import CommonRequest
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel
 from typing import Optional, List, Dict, Any
 
 from ..user import CommonResponse
@@ -29,7 +29,7 @@ class UpdateParameterRequest(CommonRequest):
     target_connection_key: Optional[str] = None
 
 
-class ParameterInfo(BaseModel):
+class ParameterInfo(StrictBaseModel):
     value: Optional[Any]
     possible_values: Optional[List[Any]]
 

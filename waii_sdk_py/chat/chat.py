@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, List
 
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel, BaseModel
 
 from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
 from ..query import GetQueryResultResponse, GeneratedQuery

@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Optional
 
 from ..chat import ChatRequest, ChatResponse
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel, BaseModel
 from ..query import GeneratedQuery, QueryGenerationRequest
 from ..chart import ChartGenerationRequest, ChartGenerationResponse
 from waii_sdk_py.utils import wrap_methods_with_async
@@ -39,8 +39,9 @@ class GeneratedQueryHistoryEntry(GeneratedHistoryEntryBase):
     request: Optional[QueryGenerationRequest] = None
 
 
-class GetGeneratedQueryHistoryRequest(BaseModel):
-    pass
+class GetGeneratedQueryHistoryRequest(StrictBaseModel):
+    limit: Optional[int]
+    offset: Optional[int]
 
 
 class GetGeneratedQueryHistoryResponse(BaseModel):
@@ -72,7 +73,7 @@ class GetHistoryResponse:
             elif history_type == GeneratedHistoryEntryType.chat:
                 self.history.append(GeneratedChatHistoryEntry(**h))
 
-class GetHistoryRequest(BaseModel):
+class GetHistoryRequest(StrictBaseModel):
     # by default include query for backward compatibility
     included_types: Optional[List[GeneratedHistoryEntryType]] = [GeneratedHistoryEntryType.query,
                                                                  GeneratedHistoryEntryType.chart,

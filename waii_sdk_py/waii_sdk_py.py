@@ -13,22 +13,22 @@ from .user import UserImpl, AsyncUserImpl
 from .user.user_static import User
 from .waii_http_client import WaiiHttpClient
 import importlib.metadata
-from .my_pydantic import BaseModel
+from .my_pydantic import StrictBaseModel
 
 GET_MODELS_ENDPOINT = "get-models"
 
 
-class GetModelsRequest(BaseModel):
+class GetModelsRequest(StrictBaseModel):
     pass
 
 
-class ModelType(BaseModel):
+class ModelType(StrictBaseModel):
     name: str
     description: Optional[str]
     vendor: Optional[str]
 
 
-class GetModelsResponse(BaseModel):
+class GetModelsResponse(StrictBaseModel):
     models: Optional[List[ModelType]]
 
 

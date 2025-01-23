@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, List
 
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel
 
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.database import TableName
@@ -18,7 +18,7 @@ class TableAccessRuleType(str, Enum):
     block = "block"  # stop all access from the identified users
 
 
-class TableAccessRule(BaseModel):
+class TableAccessRule(StrictBaseModel):
     id: Optional[str]
     name: str
     table: TableName

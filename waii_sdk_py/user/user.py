@@ -2,7 +2,7 @@ from typing import Optional, List, Dict, Any
 
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.waii_http_client import WaiiHttpClient
-from ..my_pydantic import BaseModel
+from ..my_pydantic import StrictBaseModel
 from waii_sdk_py.utils import wrap_methods_with_async
 
 LIST_ACCESS_KEY_ENDPOINT = "list-access-keys"
@@ -24,11 +24,11 @@ DELETE_ORG_ENDPOINT = "delete-org"
 LIST_ORGS_ENDPOINT = "list-orgs"
 
 
-class CreateAccessKeyRequest(BaseModel):
+class CreateAccessKeyRequest(StrictBaseModel):
     name: str
 
 
-class AccessKey(BaseModel):
+class AccessKey(StrictBaseModel):
     access_key: str
     user_id: str
     description: Optional[str]
@@ -36,19 +36,19 @@ class AccessKey(BaseModel):
     created_at: Optional[int]
 
 
-class GetAccessKeyResponse(BaseModel):
+class GetAccessKeyResponse(StrictBaseModel):
     access_keys: Optional[List[AccessKey]]
 
 
-class GetAccessKeyRequest(BaseModel):
+class GetAccessKeyRequest(StrictBaseModel):
     pass
 
 
-class DelAccessKeyRequest(BaseModel):
+class DelAccessKeyRequest(StrictBaseModel):
     names: List[str]
 
 
-class DelAccessKeyResponse(BaseModel):
+class DelAccessKeyResponse(StrictBaseModel):
     pass
 
 
@@ -56,7 +56,7 @@ class GetUserInfoRequest:
     pass
 
 
-class GetUserInfoResponse(BaseModel):
+class GetUserInfoResponse(StrictBaseModel):
     id: str
     name: str
     email: str
@@ -64,29 +64,29 @@ class GetUserInfoResponse(BaseModel):
     permissions: List[str]
 
 
-class UpdateConfigRequest(BaseModel):
+class UpdateConfigRequest(StrictBaseModel):
     updated: Optional[Dict[str, Any]]
     deleted: Optional[List[str]]
 
 
-class UpdateConfigResponse(BaseModel):
+class UpdateConfigResponse(StrictBaseModel):
     configs: Dict[str, Any]
 
 
-class Organization(BaseModel):
+class Organization(StrictBaseModel):
     id: str  # unique id for the organization
     name: str  # display name for the organization
     variables: Optional[Dict[str, Any]]  # variables for the organization
 
 
-class Tenant(BaseModel):
+class Tenant(StrictBaseModel):
     id: str  # unique id for the tenant
     name: str  # display name for the tenant
     org_id: Optional[str]  # org id for the tenant
     variables: Optional[Dict[str, Any]]  # variables for the tenant
 
 
-class User(BaseModel):
+class User(StrictBaseModel):
     id: str  # unique id for the user
     name: Optional[str]  # display name for the user
     tenant_id: Optional[str]  # tenant id for the user
@@ -131,15 +131,15 @@ class ListUsersResponse(CommonResponse):
     users: List[User]
 
 
-class CreateTenantRequest(BaseModel):
+class CreateTenantRequest(StrictBaseModel):
     tenant: Tenant
 
 
-class UpdateTenantRequest(BaseModel):
+class UpdateTenantRequest(StrictBaseModel):
     tenant: Tenant
 
 
-class DeleteTenantRequest(BaseModel):
+class DeleteTenantRequest(StrictBaseModel):
     id: str
 
 
@@ -151,15 +151,15 @@ class ListTenantsResponse(CommonResponse):
     tenants: List[Tenant]
 
 
-class CreateOrganizationRequest(BaseModel):
+class CreateOrganizationRequest(StrictBaseModel):
     organization: Organization
 
 
-class UpdateOrganizationRequest(BaseModel):
+class UpdateOrganizationRequest(StrictBaseModel):
     organization: Organization
 
 
-class DeleteOrganizationRequest(BaseModel):
+class DeleteOrganizationRequest(StrictBaseModel):
     id: str
 
 
