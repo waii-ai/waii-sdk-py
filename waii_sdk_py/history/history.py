@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Optional
 
 from ..chat import ChatRequest, ChatResponse
-from ..my_pydantic import BaseModel
+from ..my_pydantic import WaiiBaseModel
 from ..query import GeneratedQuery, QueryGenerationRequest
 from ..chart import ChartGenerationRequest, ChartGenerationResponse
 from waii_sdk_py.utils import wrap_methods_with_async
@@ -12,7 +12,7 @@ LIST_ENDPOINT = "get-generated-query-history"
 GET_ENDPOINT = "get-history"
 
 
-class GeneratedHistoryEntryBase(BaseModel):
+class GeneratedHistoryEntryBase(WaiiBaseModel):
     history_type: str
     # milliseconds since epoch
     timestamp_ms: Optional[int]
@@ -39,11 +39,12 @@ class GeneratedQueryHistoryEntry(GeneratedHistoryEntryBase):
     request: Optional[QueryGenerationRequest] = None
 
 
-class GetGeneratedQueryHistoryRequest(BaseModel):
-    pass
+class GetGeneratedQueryHistoryRequest(WaiiBaseModel):
+    limit: Optional[int] = None
+    offset: Optional[int] = None
 
 
-class GetGeneratedQueryHistoryResponse(BaseModel):
+class GetGeneratedQueryHistoryResponse(WaiiBaseModel):
     history: Optional[List[GeneratedQueryHistoryEntry]] = None
 
 
@@ -72,7 +73,7 @@ class GetHistoryResponse:
             elif history_type == GeneratedHistoryEntryType.chat:
                 self.history.append(GeneratedChatHistoryEntry(**h))
 
-class GetHistoryRequest(BaseModel):
+class GetHistoryRequest(WaiiBaseModel):
     # by default include query for backward compatibility
     included_types: Optional[List[GeneratedHistoryEntryType]] = [GeneratedHistoryEntryType.query,
                                                                  GeneratedHistoryEntryType.chart,
@@ -100,19 +101,23 @@ class HistoryImpl:
     # this is deprecated, use get() instead
     def list(
             self,
-            params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest(),
+            params: GetGeneratedQueryHistoryRequest | None = None,
     ) -> GetGeneratedQueryHistoryResponse:
+        if params == None:
+            params = GetGeneratedQueryHistoryRequest()
         print("This method is deprecated, use get() instead")
         return self.http_client.common_fetch(
-            LIST_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse
+            LIST_ENDPOINT, params, GetGeneratedQueryHistoryResponse
         )
 
     def get(
             self,
-            params: GetHistoryRequest = GetHistoryRequest(),
+            params: GetHistoryRequest | None = None,
     ) -> GetHistoryResponse:
+        if params == None:
+            params = GetHistoryRequest()
         objs = self.http_client.common_fetch(
-            GET_ENDPOINT, params.__dict__, ret_json=True
+            GET_ENDPOINT, params, ret_json=True
         )
         return GetHistoryResponse(objs)
 

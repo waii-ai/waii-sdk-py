@@ -1,8 +1,8 @@
 import requests
 import json
-from typing import TypeVar, Generic, Optional, Dict
+from typing import TypeVar, Generic, Optional, Dict, Union, Any
 from collections import namedtuple
-from ..my_pydantic import BaseModel
+from ..my_pydantic import WaiiBaseModel
 
 
 T = TypeVar('T')
@@ -45,12 +45,18 @@ class WaiiHttpClient(Generic[T]):
     def common_fetch(
             self, 
             endpoint: str,
-            params: Dict,
-            cls: BaseModel = None,
+            req: Union[WaiiBaseModel | dict[str, Any]],
+            cls: WaiiBaseModel = None,
             need_scope: bool = True,
             ret_json: bool = False
         ) -> Optional[T]:
-
+        # check to ensure no additional fields are passed
+        if isinstance(req, WaiiBaseModel):
+            req.check_extra_fields()
+            params = req.__dict__
+        else:
+            params = req
+        
         if need_scope:
             if not self.scope or self.scope.strip() == '':
                 raise Exception("You need to activate connection first, use `WAII.Database.activate_connection(...)`")

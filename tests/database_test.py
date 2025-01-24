@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 import time
 
@@ -33,6 +34,36 @@ class TestDatabase(unittest.TestCase):
         self._load_push_based_conn()
 
         connect_db(self.db_conn)
+    
+    def test_unknown_db_conn_fields_error(self):
+        db_conn = DBConnection(
+            key="postgresql://waii@localhost:5432/waii_sdk_test",
+            db_type="postgresql",
+            host="localhost",
+            port=5432,
+            database="waii_sdk_test",
+            uname="waii", # uname field doesn't exist (sub for username). Should be caught in the test
+            password="password"
+        )
+
+        db_conn.db_content_filters = [DBContentFilter(
+            filter_scope = DBContentFilterScope.table,
+            filter_type = DBContentFilterType.include,
+            filter_action_type = DBContentFilterActionType.visibility,
+            pattern='', # empty regex pattern matches all
+            search_context = [
+                SearchContext(db_name='*', schema_name='information_schema', table_name='tables'),
+                SearchContext(db_name='*', schema_name='information_schema', table_name='columns'),
+                SearchContext(db_name='*', schema_name='public', table_name='movies'),
+            ]
+        )]
+
+        # modify the connection
+        with pytest.raises(ValueError) as e:
+            result = WAII.Database.modify_connections(
+                ModifyDBConnectionRequest(updated=[db_conn])
+            ).connectors
+            assert str(e) == "ValueError: Cannot set unknown fields: ['uname']"
 
     def test_modify_db_with_search_context_db_content_filter(self):
         db_conn = load_db_conn1()

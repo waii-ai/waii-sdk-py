@@ -1,5 +1,7 @@
 import unittest
+import pytest
 from waii_sdk_py import WAII
+from waii_sdk_py.semantic_context import GetSemanticContextRequest
 
 class TestSemanticContext(unittest.TestCase):
     def setUp(self):
@@ -26,6 +28,12 @@ class TestSemanticContext(unittest.TestCase):
         # Check the result
         # Note: The specifics of this assertion would depend on what the function should return
         self.assertGreater(len(result.semantic_context), 0)
+    
+    def test_unknown_fields_error(self):
+        with pytest.raises(ValueError):
+            result = WAII.SemanticContext.get_semantic_context(
+                GetSemanticContextRequest(search_txt='val') # search_txt field doesn't exist
+            )
 
 if __name__ == '__main__':
     unittest.main()
