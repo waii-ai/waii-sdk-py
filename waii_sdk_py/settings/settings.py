@@ -52,21 +52,21 @@ class SettingsImpl:
             self, params: UpdateParameterRequest
     ) -> CommonResponse:
         return self.http_client.common_fetch(
-            UPDATE_PARAMETER_ENDPOINT, params.__dict__, CommonResponse
+            UPDATE_PARAMETER_ENDPOINT, params, CommonResponse
         )
 
     def list_parameters(
             self
     ) -> ListParametersResponse:
         return self.http_client.common_fetch(
-            LIST_PARAMETER_ENDPOINT, CommonRequest().__dict__, ListParametersResponse
+            LIST_PARAMETER_ENDPOINT, CommonRequest(), ListParametersResponse
         )
 
     def delete_parameter(
             self, params: DeleteParameterRequest
     ) -> CommonResponse:
         return self.http_client.common_fetch(
-            DELETE_PARAMETER_ENDPOINT, params.__dict__, CommonResponse
+            DELETE_PARAMETER_ENDPOINT, params, CommonResponse
         )
 
 

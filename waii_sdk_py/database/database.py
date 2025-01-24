@@ -435,8 +435,10 @@ class DatabaseImpl:
 
 
     def get_connections(
-        self, params: GetDBConnectionRequest = GetDBConnectionRequest()
+        self, params: GetDBConnectionRequest | None = None
     ) -> GetDBConnectionResponse:
+        if params == None:
+            params = GetDBConnectionRequest()
         return self.http_client.common_fetch(
             MODIFY_DB_ENDPOINT,
             params,
@@ -454,8 +456,10 @@ class DatabaseImpl:
         return self.http_client.get_scope()
 
     def get_catalogs(
-        self, params: GetCatalogRequest = GetCatalogRequest()
+        self, params: GetCatalogRequest | None = None
     ) -> GetCatalogResponse:
+        if params == None:
+            params = GetCatalogRequest()
         return self.http_client.common_fetch(
             GET_CATALOG_ENDPOINT, params, GetCatalogResponse
         )

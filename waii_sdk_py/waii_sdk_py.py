@@ -88,7 +88,7 @@ class Waii:
 
     def get_models(self, params: GetModelsRequest = GetModelsRequest()) -> GetModelsResponse:
         return self.http_client.common_fetch(
-            GET_MODELS_ENDPOINT, params.__dict__, GetModelsResponse
+            GET_MODELS_ENDPOINT, params, GetModelsResponse
         )
 
     @contextmanager

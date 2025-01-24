@@ -381,7 +381,7 @@ class QueryImpl:
     @show_progress
     def generate(self, params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
         generated = self.http_client.common_fetch(
-            GENERATE_ENDPOINT, params.__dict__, GeneratedQuery
+            GENERATE_ENDPOINT, params, GeneratedQuery
         )
         generated.http_client = self.http_client
         return generated
@@ -389,54 +389,54 @@ class QueryImpl:
     @show_progress
     def run(self, params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
         return self.http_client.common_fetch(
-            RUN_ENDPOINT, params.__dict__, GetQueryResultResponse
+            RUN_ENDPOINT, params, GetQueryResultResponse
         )
 
     def like(self, params: LikeQueryRequest) -> LikeQueryResponse:
         return self.http_client.common_fetch(
-            FAVORITE_ENDPOINT, params.__dict__, LikeQueryResponse
+            FAVORITE_ENDPOINT, params, LikeQueryResponse
         )
 
     def submit(self, params: RunQueryRequest) -> RunQueryResponse:
         return self.http_client.common_fetch(
-            SUBMIT_ENDPOINT, params.__dict__, RunQueryResponse
+            SUBMIT_ENDPOINT, params, RunQueryResponse
         )
 
     def get_results(self, params: GetQueryResultRequest) -> GetQueryResultResponse:
         return self.http_client.common_fetch(
-            RESULTS_ENDPOINT, params.__dict__, GetQueryResultResponse
+            RESULTS_ENDPOINT, params, GetQueryResultResponse
         )
 
     def cancel(self, params: CancelQueryRequest) -> CancelQueryResponse:
         return self.http_client.common_fetch(
-            CANCEL_ENDPOINT, params.__dict__, CancelQueryResponse
+            CANCEL_ENDPOINT, params, CancelQueryResponse
         )
 
     def describe(self, params: DescribeQueryRequest) -> DescribeQueryResponse:
         return self.http_client.common_fetch(
-            DESCRIBE_ENDPOINT, params.__dict__, DescribeQueryResponse
+            DESCRIBE_ENDPOINT, params, DescribeQueryResponse
         )
 
     def auto_complete(self, params: AutoCompleteRequest) -> AutoCompleteResponse:
         return self.http_client.common_fetch(
-            AUTOCOMPLETE_ENDPOINT, params.__dict__, AutoCompleteResponse
+            AUTOCOMPLETE_ENDPOINT, params, AutoCompleteResponse
         )
 
     def diff(self, params: DiffQueryRequest) -> DiffQueryResponse:
         return self.http_client.common_fetch(
-            DIFF_ENDPOINT, params.__dict__, DiffQueryResponse
+            DIFF_ENDPOINT, params, DiffQueryResponse
         )
 
     def analyze_performance(
         self, params: QueryPerformanceRequest
     ) -> QueryPerformanceResponse:
         return self.http_client.common_fetch(
-            PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse
+            PERF_ENDPOINT, params, QueryPerformanceResponse
         )
 
     def transcode(self, params: TranscodeQueryRequest) -> GeneratedQuery:
         generated = self.http_client.common_fetch(
-            TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery
+            TRANSCODE_ENDPOINT, params, GeneratedQuery
         )
         generated.http_client = self.http_client
         return generated
@@ -455,7 +455,7 @@ class QueryImpl:
 
         params = PythonPlotRequest(dataframe_cols=cols, ask=ask, model=model)
         plot_response = self.http_client.common_fetch(
-            PLOT_ENDPOINT, params.__dict__, PythonPlotResponse
+            PLOT_ENDPOINT, params, PythonPlotResponse
         )
         p = plot_response.plots[0]
 
@@ -515,49 +515,49 @@ class QueryImpl:
         self, params: GenerateQuestionRequest
     ) -> GenerateQuestionResponse:
         return self.http_client.common_fetch(
-            GENERATE_QUESTION_ENDPOINT, params.__dict__, GenerateQuestionResponse
+            GENERATE_QUESTION_ENDPOINT, params, GenerateQuestionResponse
         )
 
     def get_similar_query(
         self, params: QueryGenerationRequest
     ) -> SimilarQueryResponse:
         return self.http_client.common_fetch(
-            GET_SIMILAR_QUERY_ENDPOINT, params.__dict__, SimilarQueryResponse
+            GET_SIMILAR_QUERY_ENDPOINT, params, SimilarQueryResponse
         )
 
     def run_query_compiler(
             self, params: RunQueryCompilerRequest
     ) -> RunQueryCompilerResponse:
         return self.http_client.common_fetch(
-            RUN_QUERY_COMPILER_ENDPOINT, params.__dict__, RunQueryCompilerResponse
+            RUN_QUERY_COMPILER_ENDPOINT, params, RunQueryCompilerResponse
         )
 
     def handle_semantic_context_checker(
             self, params: SemanticContextCheckerRequest
     ) -> GeneratedQuery:
         return self.http_client.common_fetch(
-            SEMANTIC_CONTEXT_CHECKER_ENDPOINT, params.__dict__, GeneratedQuery
+            SEMANTIC_CONTEXT_CHECKER_ENDPOINT, params, GeneratedQuery
         )
 
     def apply_table_access_rules(
             self, params: ApplyTableAccessRulesRequest
     ) -> ApplyTableAccessRulesResponse:
         return self.http_client.common_fetch(
-            APPLY_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ApplyTableAccessRulesResponse
+            APPLY_TABLE_ACCESS_RULES_ENDPOINT, params, ApplyTableAccessRulesResponse
         )
 
     def submit_generate_query(
             self, params: QueryGenerationRequest
     ) -> AsyncObjectResponse:
         return self.http_client.common_fetch(
-            SUBMIT_GENERATE_QUERY_ENDPOINT, params.__dict__, AsyncObjectResponse,
+            SUBMIT_GENERATE_QUERY_ENDPOINT, params, AsyncObjectResponse,
         )
 
     def get_generated_query(
             self, params: GetObjectRequest
     ) -> GeneratedQuery:
         return self.http_client.common_fetch(
-            GET_GENERATED_QUERY_ENDPOINT, params.__dict__, GeneratedQuery
+            GET_GENERATED_QUERY_ENDPOINT, params, GeneratedQuery
         )
 
 

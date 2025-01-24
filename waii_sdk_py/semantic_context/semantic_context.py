@@ -81,11 +81,13 @@ class SemanticContextImpl:
         self.http_client = http_client
 
     def modify_semantic_context(self,params: ModifySemanticContextRequest) -> ModifySemanticContextResponse:
-        return self.http_client.common_fetch(MODIFY_ENDPOINT, params.__dict__, ModifySemanticContextResponse)
+        return self.http_client.common_fetch(MODIFY_ENDPOINT, params, ModifySemanticContextResponse)
 
 
-    def get_semantic_context(self,params: GetSemanticContextRequest = GetSemanticContextRequest()) -> GetSemanticContextResponse:
-        return self.http_client.common_fetch(GET_ENDPOINT, params.__dict__, GetSemanticContextResponse)
+    def get_semantic_context(self, params: GetSemanticContextRequest | None = None) -> GetSemanticContextResponse:
+        if params == None:
+            params = GetSemanticContextRequest()
+        return self.http_client.common_fetch(GET_ENDPOINT, params, GetSemanticContextResponse)
 
 
 class AsyncSemanticContextImpl:

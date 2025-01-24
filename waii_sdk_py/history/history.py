@@ -101,19 +101,23 @@ class HistoryImpl:
     # this is deprecated, use get() instead
     def list(
             self,
-            params: GetGeneratedQueryHistoryRequest = GetGeneratedQueryHistoryRequest(),
+            params: GetGeneratedQueryHistoryRequest | None = None,
     ) -> GetGeneratedQueryHistoryResponse:
+        if params == None:
+            params = GetGeneratedQueryHistoryRequest()
         print("This method is deprecated, use get() instead")
         return self.http_client.common_fetch(
-            LIST_ENDPOINT, params.__dict__, GetGeneratedQueryHistoryResponse
+            LIST_ENDPOINT, params, GetGeneratedQueryHistoryResponse
         )
 
     def get(
             self,
-            params: GetHistoryRequest = GetHistoryRequest(),
+            params: GetHistoryRequest | None = None,
     ) -> GetHistoryResponse:
+        if params == None:
+            params = GetHistoryRequest()
         objs = self.http_client.common_fetch(
-            GET_ENDPOINT, params.__dict__, ret_json=True
+            GET_ENDPOINT, params, ret_json=True
         )
         return GetHistoryResponse(objs)
 
