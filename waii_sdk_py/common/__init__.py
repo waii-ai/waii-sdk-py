@@ -1,22 +1,22 @@
 from enum import Enum
 from typing import Optional, List, Dict, Any
 
-from ..my_pydantic import StrictBaseModel, BaseModel
+from ..my_pydantic import WaiiBaseModel
 
-class CommonRequest(StrictBaseModel):
-    tags: Optional[List[str]]
-    parameters: Optional[Dict[str, Any]]
+class CommonRequest(WaiiBaseModel):
+    tags: Optional[List[str]] = None
+    parameters: Optional[Dict[str, Any]] = None
 
 
-class LLMBasedRequest(BaseModel):
-    tags: Optional[List[str]]
-    parameters: Optional[Dict[str, Any]]
-    model: Optional[str]
+class LLMBasedRequest(WaiiBaseModel):
+    tags: Optional[List[str]] = None
+    parameters: Optional[Dict[str, Any]] = None
+    model: Optional[str] = None
     # should we use cache?
     use_cache: Optional[bool] = True
 
 
-class CommonResponse(BaseModel):
+class CommonResponse(WaiiBaseModel):
     pass
 
 

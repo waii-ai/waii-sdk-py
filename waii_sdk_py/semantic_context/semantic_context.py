@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from ..common import LLMBasedRequest
 from ..database import SearchContext
-from ..my_pydantic import StrictBaseModel, BaseModel
+from ..my_pydantic import WaiiBaseModel
 from waii_sdk_py.utils import wrap_methods_with_async
 from ..waii_http_client import WaiiHttpClient
 
@@ -10,7 +10,7 @@ MODIFY_ENDPOINT = 'update-semantic-context'
 GET_ENDPOINT = 'get-semantic-context'
 
 
-class SemanticStatement(BaseModel):
+class SemanticStatement(WaiiBaseModel):
     id: Optional[str]
     statement: str
     labels: Optional[List[str]]
@@ -42,7 +42,7 @@ class ModifySemanticContextRequest(LLMBasedRequest):
     deleted: Optional[List[str]] = None
 
 
-class GetSemanticContextRequestFilter(StrictBaseModel):
+class GetSemanticContextRequestFilter(WaiiBaseModel):
     # do we want to filter "always_include" rules or not?
     # - None: both
     # - True: only return rules with always_include=True
@@ -52,24 +52,24 @@ class GetSemanticContextRequestFilter(StrictBaseModel):
     # Filter by labels, scope, statement.
     # They are connected by "AND", and we use substring match for them
     # Match is case insensitive
-    labels: Optional[List[str]]  # labels to filter the rules
-    scope: Optional[str]  # scope to filter the rules
-    statement: Optional[str]  # statement to filter the rules
+    labels: Optional[List[str]] = None  # labels to filter the rules
+    scope: Optional[str] = None  # scope to filter the rules
+    statement: Optional[str] = None  # statement to filter the rules
 
-class ModifySemanticContextResponse(BaseModel):
+class ModifySemanticContextResponse(WaiiBaseModel):
     updated: Optional[List[SemanticStatement]] = None
     deleted: Optional[List[str]] = None
 
 
 class GetSemanticContextRequest(LLMBasedRequest):
     filter: GetSemanticContextRequestFilter = GetSemanticContextRequestFilter()
-    offset = 0
-    limit = 1000
+    offset: int = 0
+    limit: int = 1000
     search_text: Optional[str] = None
     search_context: Optional[List[SearchContext]] = None
 
 
-class GetSemanticContextResponse(BaseModel):
+class GetSemanticContextResponse(WaiiBaseModel):
     semantic_context: Optional[List[SemanticStatement]] = None
 
     available_statements: Optional[int] = 0

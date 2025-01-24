@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Optional
 
 from ..chat import ChatRequest, ChatResponse
-from ..my_pydantic import StrictBaseModel, BaseModel
+from ..my_pydantic import WaiiBaseModel
 from ..query import GeneratedQuery, QueryGenerationRequest
 from ..chart import ChartGenerationRequest, ChartGenerationResponse
 from waii_sdk_py.utils import wrap_methods_with_async
@@ -12,7 +12,7 @@ LIST_ENDPOINT = "get-generated-query-history"
 GET_ENDPOINT = "get-history"
 
 
-class GeneratedHistoryEntryBase(BaseModel):
+class GeneratedHistoryEntryBase(WaiiBaseModel):
     history_type: str
     # milliseconds since epoch
     timestamp_ms: Optional[int]
@@ -39,12 +39,12 @@ class GeneratedQueryHistoryEntry(GeneratedHistoryEntryBase):
     request: Optional[QueryGenerationRequest] = None
 
 
-class GetGeneratedQueryHistoryRequest(StrictBaseModel):
-    limit: Optional[int]
-    offset: Optional[int]
+class GetGeneratedQueryHistoryRequest(WaiiBaseModel):
+    limit: Optional[int] = None
+    offset: Optional[int] = None
 
 
-class GetGeneratedQueryHistoryResponse(BaseModel):
+class GetGeneratedQueryHistoryResponse(WaiiBaseModel):
     history: Optional[List[GeneratedQueryHistoryEntry]] = None
 
 
@@ -73,7 +73,7 @@ class GetHistoryResponse:
             elif history_type == GeneratedHistoryEntryType.chat:
                 self.history.append(GeneratedChatHistoryEntry(**h))
 
-class GetHistoryRequest(StrictBaseModel):
+class GetHistoryRequest(WaiiBaseModel):
     # by default include query for backward compatibility
     included_types: Optional[List[GeneratedHistoryEntryType]] = [GeneratedHistoryEntryType.query,
                                                                  GeneratedHistoryEntryType.chart,

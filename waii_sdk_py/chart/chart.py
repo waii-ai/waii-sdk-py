@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional, Literal, List, Union, Dict, Any
 
 from ..database import ColumnDefinition
-from ..my_pydantic import StrictBaseModel, BaseModel
+from ..my_pydantic import WaiiBaseModel
 
 from ..common import LLMBasedRequest
 from waii_sdk_py.utils import wrap_methods_with_async
@@ -18,7 +18,7 @@ class ChartType(str, Enum):
     VEGALITE = "vegalite"
 
 
-class SuperSetChartSpec(BaseModel):
+class SuperSetChartSpec(WaiiBaseModel):
     spec_type: Literal['superset']
     plot_type: Optional[str]
     metrics: Optional[List[str]]
@@ -33,7 +33,7 @@ class SuperSetChartSpec(BaseModel):
     height: Optional[int]
 
 
-class MetabaseChartSpec(BaseModel):
+class MetabaseChartSpec(WaiiBaseModel):
     spec_type: Literal['metabase']
     plot_type: Optional[str]
     metric: Optional[str]
@@ -42,19 +42,19 @@ class MetabaseChartSpec(BaseModel):
     color_hex: Optional[str]
 
 
-class PlotlyChartSpec(BaseModel):
+class PlotlyChartSpec(WaiiBaseModel):
     spec_type: Literal['plotly'] = 'plotly'
     plot: Optional[str]
 
 
-class VegaliteChartSpec(BaseModel):
+class VegaliteChartSpec(WaiiBaseModel):
     spec_type: Literal['vegalite'] = 'vegalite'
     chart: Optional[str]
     number_of_data_points: Optional[int] = None
     generation_message: Optional[str] = None
 
 
-class ChartTweak(StrictBaseModel):
+class ChartTweak(WaiiBaseModel):
     ask: Optional[str]
     chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec]]
 
@@ -72,7 +72,7 @@ class ChartGenerationRequest(LLMBasedRequest):
     tweak_history: Optional[List[ChartTweak]]
 
 
-class ChartGenerationResponse(BaseModel):
+class ChartGenerationResponse(WaiiBaseModel):
     uuid: str
     timestamp_ms: Optional[int]
     chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec, VegaliteChartSpec]]
@@ -100,7 +100,7 @@ class ChartImpl:
                                         chart_type=chart_type,
                                         parent_uuid=parent_uuid,
                                         tweak_history=tweak_history)
-
+        params.check_extra_fields()
         params_dict = {k: v.value if isinstance(v, Enum) else v for k, v in params.dict().items() if v is not None}
 
         return self.http_client.common_fetch(

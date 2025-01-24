@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, List
 
-from ..my_pydantic import StrictBaseModel
+from ..my_pydantic import WaiiBaseModel
 
 from waii_sdk_py.common import CommonRequest, CommonResponse
 from waii_sdk_py.database import TableName
@@ -18,7 +18,7 @@ class TableAccessRuleType(str, Enum):
     block = "block"  # stop all access from the identified users
 
 
-class TableAccessRule(StrictBaseModel):
+class TableAccessRule(WaiiBaseModel):
     id: Optional[str]
     name: str
     table: TableName
@@ -56,21 +56,21 @@ class AccessRuleImpl:
             self, params: UpdateTableAccessRuleRequest
     ) -> CommonResponse:
         return self.http_client.common_fetch(
-            UPDATE_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, CommonResponse
+            UPDATE_TABLE_ACCESS_RULES_ENDPOINT, params, CommonResponse
         )
 
     def remove_table_access_rules(
             self, params: RemoveTableAccessRuleRequest
     ) -> CommonResponse:
         return self.http_client.common_fetch(
-            REMOVE_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, CommonResponse
+            REMOVE_TABLE_ACCESS_RULES_ENDPOINT, params, CommonResponse
         )
 
     def list_table_access_rules(
             self, params: ListTableAccessRuleRequest
     ) -> ListTableAccessRuleResponse:
         return self.http_client.common_fetch(
-            LIST_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ListTableAccessRuleResponse
+            LIST_TABLE_ACCESS_RULES_ENDPOINT, params, ListTableAccessRuleResponse
         )
 
 
