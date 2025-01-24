@@ -7,9 +7,8 @@ class TestSemanticContext(unittest.TestCase):
     def setUp(self):
         WAII.initialize(url="http://localhost:9859/api/")
         result = WAII.Database.get_connections()
-        # print(result)
         self.result = result
-        WAII.Database.activate_connection(result.connectors[2].key)
+        WAII.Database.activate_connection(result.connectors[10].key)
 
     def test_modify_semantic_context(self):
         # Define test parameters
