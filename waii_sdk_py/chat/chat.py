@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, List
 
-from ..my_pydantic import BaseModel
+from ..my_pydantic import WaiiBaseModel
 
 from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
 from ..query import GetQueryResultResponse, GeneratedQuery
@@ -43,7 +43,7 @@ class ChatRequest(LLMBasedRequest):
     module_limit_in_response: Optional[int]
 
 
-class ChatResponseData(BaseModel):
+class ChatResponseData(WaiiBaseModel):
     data: Optional[GetQueryResultResponse]
     query: Optional[GeneratedQuery]
     chart: Optional[ChartGenerationResponse]
@@ -61,7 +61,7 @@ class ChatResponseStep(str, Enum):
     completed = "Completed"
 
 
-class ChatResponse(BaseModel):
+class ChatResponse(WaiiBaseModel):
     # template response
     response: Optional[str] = None
     current_step: Optional[ChatResponseStep] = None
@@ -78,20 +78,20 @@ class ChatImpl:
         self.http_client = http_client
 
     def chat_message(self, params: ChatRequest) -> ChatResponse:
-        return self.http_client.common_fetch(CHAT_MESSAGE_ENDPOINT, params.__dict__, ChatResponse)
+        return self.http_client.common_fetch(CHAT_MESSAGE_ENDPOINT, params, ChatResponse)
 
     def submit_chat_message(
             self, params: ChatRequest
     ) -> AsyncObjectResponse:
         return self.http_client.common_fetch(
-            SUBMIT_CHAT_MESSAGE_ENDPOINT, params.__dict__, AsyncObjectResponse
+            SUBMIT_CHAT_MESSAGE_ENDPOINT, params, AsyncObjectResponse
         )
 
     def get_chat_response(
             self, params: GetObjectRequest
     ) -> ChatResponse:
         return self.http_client.common_fetch(
-            GET_CHAT_RESPONSE_ENDPOINT, params.__dict__, ChatResponse
+            GET_CHAT_RESPONSE_ENDPOINT, params, ChatResponse
         )
 
 

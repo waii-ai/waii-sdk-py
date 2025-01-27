@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from waii_sdk_py import WAII
 from waii_sdk_py.history import *
 from waii_sdk_py.query import RunQueryRequest
@@ -64,6 +65,12 @@ class TestHistory(unittest.TestCase):
         # Test with offset
         result = WAII.History.get(GetHistoryRequest(offset=1))
         self.assertEqual(len(result.history), total_result - 1)
+
+        # Test error with unknown fields
+        with pytest.raises(ValueError):
+            result = WAII.History.get(
+                GetHistoryRequest(offset=1, lt=5, id=4) # lt and id fields don't exist
+            )
 
 
 

@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from waii_sdk_py import WAII
 from waii_sdk_py.query import *
 
@@ -81,6 +82,12 @@ class TestQuery(unittest.TestCase):
         params = QueryGenerationRequest(ask="like test ask")
         result = WAII.Query.generate(params)
         assert result.detailed_steps == ["step3", "step4"]
+
+    def test_error_with_unknown_fields(self):
+        params = QueryGenerationRequest(ask='like test ask', q_id='unknown id')
+        
+        with pytest.raises(ValueError):
+            result = WAII.Query.generate(params)
 
 
 if __name__ == '__main__':

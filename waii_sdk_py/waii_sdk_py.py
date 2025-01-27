@@ -13,22 +13,22 @@ from .user import UserImpl, AsyncUserImpl
 from .user.user_static import User
 from .waii_http_client import WaiiHttpClient
 import importlib.metadata
-from .my_pydantic import BaseModel
+from .my_pydantic import WaiiBaseModel
 
 GET_MODELS_ENDPOINT = "get-models"
 
 
-class GetModelsRequest(BaseModel):
+class GetModelsRequest(WaiiBaseModel):
     pass
 
 
-class ModelType(BaseModel):
+class ModelType(WaiiBaseModel):
     name: str
     description: Optional[str]
     vendor: Optional[str]
 
 
-class GetModelsResponse(BaseModel):
+class GetModelsResponse(WaiiBaseModel):
     models: Optional[List[ModelType]]
 
 
@@ -88,7 +88,7 @@ class Waii:
 
     def get_models(self, params: GetModelsRequest = GetModelsRequest()) -> GetModelsResponse:
         return self.http_client.common_fetch(
-            GET_MODELS_ENDPOINT, params.__dict__, GetModelsResponse
+            GET_MODELS_ENDPOINT, params, GetModelsResponse
         )
 
     @contextmanager

@@ -7,7 +7,7 @@ import traceback
 from typing import Optional, List, Dict, Any, Union, Literal
 from enum import Enum, IntEnum
 
-from ..my_pydantic import BaseModel, Field
+from ..my_pydantic import WaiiBaseModel, Field
 
 from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
@@ -51,7 +51,7 @@ class DebugInfoType(str, Enum):
     after_iterative_table_selection = "after_iterative_table_selection"
 
 
-class Tweak(BaseModel):
+class Tweak(WaiiBaseModel):
     sql: Optional[str] = None
     ask: Optional[str] = None
 
@@ -76,7 +76,7 @@ class QueryGenerationRequest(LLMBasedRequest):
     use_example_queries: Optional[bool] = True
 
 
-class DescribeQueryResponse(BaseModel):
+class DescribeQueryResponse(WaiiBaseModel):
     summary: Optional[str] = None
     detailed_steps: Optional[List[str]] = None
     tables: Optional[List[TableName]] = None
@@ -89,24 +89,24 @@ class DiffQueryResponse(DescribeQueryResponse):
     what_changed: Optional[str] = None
 
 
-class CompilationError(BaseModel):
+class CompilationError(WaiiBaseModel):
     message: str
     line: Optional[int] = None
 
 
-class LLMUsageStatistics(BaseModel):
+class LLMUsageStatistics(WaiiBaseModel):
     # total tokens consumed by the LLM model
     token_total: Optional[int]
 
 
-class Query(BaseModel):
+class Query(WaiiBaseModel):
     uuid: str
     ask: str
     query: str
     detailed_steps: Optional[List[str]]
 
 
-class ConfidenceScore(BaseModel):
+class ConfidenceScore(WaiiBaseModel):
     log_prob_sum: Optional[float]
     token_count: Optional[int]
     confidence_value: Optional[float]
@@ -127,12 +127,12 @@ class AccessRuleProtectionState(str, Enum):
     unexplainable = "unexplainable"
 
 
-class AccessRuleProtectionStatus(BaseModel):
+class AccessRuleProtectionStatus(WaiiBaseModel):
     state: AccessRuleProtectionState
     msg: Optional[str]
 
 
-class ApplyTableAccessRulesResponse(BaseModel):
+class ApplyTableAccessRulesResponse(WaiiBaseModel):
     query: str
     status: AccessRuleProtectionStatus
 
@@ -144,7 +144,7 @@ class QueryGenerationStep(str, Enum):
     completed = "Completed"
 
 
-class GeneratedQuery(BaseModel):
+class GeneratedQuery(WaiiBaseModel):
     current_step: Optional[QueryGenerationStep] = None
     uuid: Optional[str] = None
     liked: Optional[bool] = None
@@ -200,7 +200,7 @@ class RunQueryCompilerRequest(CommonRequest):
     search_context: Optional[List[SearchContext]]
 
 
-class RunQueryResponse(BaseModel):
+class RunQueryResponse(WaiiBaseModel):
     query_id: Optional[str] = None
 
 
@@ -213,11 +213,11 @@ class CancelQueryRequest(CommonRequest):
     query_id: str
 
 
-class CancelQueryResponse(BaseModel):
+class CancelQueryResponse(WaiiBaseModel):
     pass
 
 
-class GetQueryResultResponse(BaseModel):
+class GetQueryResultResponse(WaiiBaseModel):
     rows: Optional[List[object]] = None
     more_rows: Optional[int] = None
     column_definitions: Optional[List[ColumnDefinition]] = None
@@ -245,7 +245,7 @@ class LikeQueryRequest(CommonRequest):
     detailed_steps: Optional[List[str]] = []
 
 
-class LikeQueryResponse(BaseModel):
+class LikeQueryResponse(WaiiBaseModel):
     pass
 
 
@@ -257,7 +257,7 @@ class AutoCompleteRequest(CommonRequest):
     max_output_tokens: Optional[int] = None
 
 
-class AutoCompleteResponse(BaseModel):
+class AutoCompleteResponse(WaiiBaseModel):
     text: Optional[str] = None
 
 
@@ -265,7 +265,7 @@ class QueryPerformanceRequest(CommonRequest):
     query_id: str
 
 
-class QueryPerformanceResponse(BaseModel):
+class QueryPerformanceResponse(WaiiBaseModel):
     summary: List[str]
     recommendations: List[str]
     query_text: str
@@ -279,7 +279,7 @@ class PythonPlotRequest(LLMBasedRequest):
     dataframe_cols: Optional[List[ColumnDefinition]]
 
 
-class PythonPlotResponse(BaseModel):
+class PythonPlotResponse(WaiiBaseModel):
     # based on the request, return N plot script
     plots: Optional[List[str]]
 
@@ -296,17 +296,17 @@ class GenerateQuestionRequest(CommonRequest):
     complexity: Optional[GeneratedQuestionComplexity] = GeneratedQuestionComplexity.hard
 
 
-class GeneratedQuestion(BaseModel):
+class GeneratedQuestion(WaiiBaseModel):
     question: str
     complexity: GeneratedQuestionComplexity
     tables: Optional[List[TableName]]  # tables used in the question
 
 
-class GenerateQuestionResponse(BaseModel):
+class GenerateQuestionResponse(WaiiBaseModel):
     questions: Optional[List[GeneratedQuestion]]
 
 
-class SimilarQueryResponse(BaseModel):
+class SimilarQueryResponse(WaiiBaseModel):
     qid: Optional[int]
     equivalent: Optional[bool]
     query: Optional[Query]
@@ -318,12 +318,12 @@ class CompilationStateFromDBEngine(IntEnum):
     UNCOMPILABLE = 2
 
 
-class CompilationErrorMsgFromDBEngine(BaseModel):
+class CompilationErrorMsgFromDBEngine(WaiiBaseModel):
     state: CompilationStateFromDBEngine
     msg: Optional[str]
 
 
-class RunQueryCompilerResponse(BaseModel):
+class RunQueryCompilerResponse(WaiiBaseModel):
     query: str
     errors: str
     should_compile: bool
@@ -381,7 +381,7 @@ class QueryImpl:
     @show_progress
     def generate(self, params: QueryGenerationRequest, verbose=True) -> GeneratedQuery:
         generated = self.http_client.common_fetch(
-            GENERATE_ENDPOINT, params.__dict__, GeneratedQuery
+            GENERATE_ENDPOINT, params, GeneratedQuery
         )
         generated.http_client = self.http_client
         return generated
@@ -389,54 +389,54 @@ class QueryImpl:
     @show_progress
     def run(self, params: RunQueryRequest, verbose=True) -> GetQueryResultResponse:
         return self.http_client.common_fetch(
-            RUN_ENDPOINT, params.__dict__, GetQueryResultResponse
+            RUN_ENDPOINT, params, GetQueryResultResponse
         )
 
     def like(self, params: LikeQueryRequest) -> LikeQueryResponse:
         return self.http_client.common_fetch(
-            FAVORITE_ENDPOINT, params.__dict__, LikeQueryResponse
+            FAVORITE_ENDPOINT, params, LikeQueryResponse
         )
 
     def submit(self, params: RunQueryRequest) -> RunQueryResponse:
         return self.http_client.common_fetch(
-            SUBMIT_ENDPOINT, params.__dict__, RunQueryResponse
+            SUBMIT_ENDPOINT, params, RunQueryResponse
         )
 
     def get_results(self, params: GetQueryResultRequest) -> GetQueryResultResponse:
         return self.http_client.common_fetch(
-            RESULTS_ENDPOINT, params.__dict__, GetQueryResultResponse
+            RESULTS_ENDPOINT, params, GetQueryResultResponse
         )
 
     def cancel(self, params: CancelQueryRequest) -> CancelQueryResponse:
         return self.http_client.common_fetch(
-            CANCEL_ENDPOINT, params.__dict__, CancelQueryResponse
+            CANCEL_ENDPOINT, params, CancelQueryResponse
         )
 
     def describe(self, params: DescribeQueryRequest) -> DescribeQueryResponse:
         return self.http_client.common_fetch(
-            DESCRIBE_ENDPOINT, params.__dict__, DescribeQueryResponse
+            DESCRIBE_ENDPOINT, params, DescribeQueryResponse
         )
 
     def auto_complete(self, params: AutoCompleteRequest) -> AutoCompleteResponse:
         return self.http_client.common_fetch(
-            AUTOCOMPLETE_ENDPOINT, params.__dict__, AutoCompleteResponse
+            AUTOCOMPLETE_ENDPOINT, params, AutoCompleteResponse
         )
 
     def diff(self, params: DiffQueryRequest) -> DiffQueryResponse:
         return self.http_client.common_fetch(
-            DIFF_ENDPOINT, params.__dict__, DiffQueryResponse
+            DIFF_ENDPOINT, params, DiffQueryResponse
         )
 
     def analyze_performance(
         self, params: QueryPerformanceRequest
     ) -> QueryPerformanceResponse:
         return self.http_client.common_fetch(
-            PERF_ENDPOINT, params.__dict__, QueryPerformanceResponse
+            PERF_ENDPOINT, params, QueryPerformanceResponse
         )
 
     def transcode(self, params: TranscodeQueryRequest) -> GeneratedQuery:
         generated = self.http_client.common_fetch(
-            TRANSCODE_ENDPOINT, params.__dict__, GeneratedQuery
+            TRANSCODE_ENDPOINT, params, GeneratedQuery
         )
         generated.http_client = self.http_client
         return generated
@@ -455,7 +455,7 @@ class QueryImpl:
 
         params = PythonPlotRequest(dataframe_cols=cols, ask=ask, model=model)
         plot_response = self.http_client.common_fetch(
-            PLOT_ENDPOINT, params.__dict__, PythonPlotResponse
+            PLOT_ENDPOINT, params, PythonPlotResponse
         )
         p = plot_response.plots[0]
 
@@ -515,49 +515,49 @@ class QueryImpl:
         self, params: GenerateQuestionRequest
     ) -> GenerateQuestionResponse:
         return self.http_client.common_fetch(
-            GENERATE_QUESTION_ENDPOINT, params.__dict__, GenerateQuestionResponse
+            GENERATE_QUESTION_ENDPOINT, params, GenerateQuestionResponse
         )
 
     def get_similar_query(
         self, params: QueryGenerationRequest
     ) -> SimilarQueryResponse:
         return self.http_client.common_fetch(
-            GET_SIMILAR_QUERY_ENDPOINT, params.__dict__, SimilarQueryResponse
+            GET_SIMILAR_QUERY_ENDPOINT, params, SimilarQueryResponse
         )
 
     def run_query_compiler(
             self, params: RunQueryCompilerRequest
     ) -> RunQueryCompilerResponse:
         return self.http_client.common_fetch(
-            RUN_QUERY_COMPILER_ENDPOINT, params.__dict__, RunQueryCompilerResponse
+            RUN_QUERY_COMPILER_ENDPOINT, params, RunQueryCompilerResponse
         )
 
     def handle_semantic_context_checker(
             self, params: SemanticContextCheckerRequest
     ) -> GeneratedQuery:
         return self.http_client.common_fetch(
-            SEMANTIC_CONTEXT_CHECKER_ENDPOINT, params.__dict__, GeneratedQuery
+            SEMANTIC_CONTEXT_CHECKER_ENDPOINT, params, GeneratedQuery
         )
 
     def apply_table_access_rules(
             self, params: ApplyTableAccessRulesRequest
     ) -> ApplyTableAccessRulesResponse:
         return self.http_client.common_fetch(
-            APPLY_TABLE_ACCESS_RULES_ENDPOINT, params.__dict__, ApplyTableAccessRulesResponse
+            APPLY_TABLE_ACCESS_RULES_ENDPOINT, params, ApplyTableAccessRulesResponse
         )
 
     def submit_generate_query(
             self, params: QueryGenerationRequest
     ) -> AsyncObjectResponse:
         return self.http_client.common_fetch(
-            SUBMIT_GENERATE_QUERY_ENDPOINT, params.__dict__, AsyncObjectResponse,
+            SUBMIT_GENERATE_QUERY_ENDPOINT, params, AsyncObjectResponse,
         )
 
     def get_generated_query(
             self, params: GetObjectRequest
     ) -> GeneratedQuery:
         return self.http_client.common_fetch(
-            GET_GENERATED_QUERY_ENDPOINT, params.__dict__, GeneratedQuery
+            GET_GENERATED_QUERY_ENDPOINT, params, GeneratedQuery
         )
 
 
