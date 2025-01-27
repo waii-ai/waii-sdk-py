@@ -63,7 +63,57 @@ class TestDatabase(unittest.TestCase):
             result = WAII.Database.modify_connections(
                 ModifyDBConnectionRequest(updated=[db_conn])
             ).connectors
-            assert str(e) == "ValueError: Cannot set unknown fields: ['uname']"
+        assert str(e) == "<ExceptionInfo ValueError(\"Cannot set unknown fields: ['uname']\") tblen=5>"
+
+        # test wrong field name in db.conn.db_content_filters
+        db_conn = DBConnection(
+            key="postgresql://waii@localhost:5432/waii_sdk_test",
+            db_type="postgresql",
+            host="localhost",
+            port=5432,
+            database="waii_sdk_test",
+            username="waii",
+            password="password"
+        )
+
+        db_conn.db_content_filters = [DBContentFilter(
+            filter_scope = DBContentFilterScope.table,
+            filter_type = DBContentFilterType.include,
+            filter_actin_type = DBContentFilterActionType.visibility, # wrong field. Should be filter_action_type
+            pattern='', # empty regex pattern matches all
+            search_context = [
+                SearchContext(db_name='*', schema_name='information_schema', table_name='tables'),
+                SearchContext(db_name='*', schema_name='information_schema', table_name='columns'),
+                SearchContext(db_name='*', schema_name='public', table_name='movies'),
+            ]
+        )]
+
+        with pytest.raises(ValueError) as e:
+            result = WAII.Database.modify_connections(
+                ModifyDBConnectionRequest(updated=[db_conn])
+            ).connectors
+        assert str(e) == "<ExceptionInfo ValueError(\"Cannot set unknown fields: ['filter_actin_type']\") tblen=6>"
+        
+        # test wrong field name in db.conn.db_content_filters.search_context
+        db_conn.db_content_filters = [DBContentFilter(
+            filter_scope = DBContentFilterScope.table,
+            filter_type = DBContentFilterType.include,
+            filter_action_type = DBContentFilterActionType.visibility, # wrong field. Should be filter_action_type
+            pattern='', # empty regex pattern matches all
+            search_context = [
+                SearchContext(database_name='*', schema_name='information_schema', table_name='tables'), # database_name field doesn't exist
+                SearchContext(db_name='*', schema_name='information_schema', table_name='columns'),
+                SearchContext(db_name='*', schema_name='public', table_name='movies'),
+            ]
+        )]
+
+        with pytest.raises(ValueError) as e:
+            result = WAII.Database.modify_connections(
+                ModifyDBConnectionRequest(updated=[db_conn])
+            ).connectors
+        assert str(e) == "<ExceptionInfo ValueError(\"Cannot set unknown fields: ['database_name']\") tblen=7>"
+
+
 
     def test_modify_db_with_search_context_db_content_filter(self):
         db_conn = load_db_conn1()
