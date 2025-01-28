@@ -418,7 +418,8 @@ class DatabaseImpl:
     def modify_connections(
         self, params: ModifyDBConnectionRequest
     ) -> ModifyDBConnectionResponse:
-        self._modify_connection_request(params.updated)
+        if params.updated is not None:
+            self._modify_connection_request(params.updated)
         return self.http_client.common_fetch(
             MODIFY_DB_ENDPOINT, params, ModifyDBConnectionResponse
         )
