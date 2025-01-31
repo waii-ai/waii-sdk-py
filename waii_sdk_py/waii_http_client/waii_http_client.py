@@ -45,7 +45,7 @@ class WaiiHttpClient(Generic[T]):
     def common_fetch(
             self, 
             endpoint: str,
-            req: Union[WaiiBaseModel | dict[str, Any]],
+            req: Union[Union[WaiiBaseModel, dict[str, Any]]],
             cls: WaiiBaseModel = None,
             need_scope: bool = True,
             ret_json: bool = False

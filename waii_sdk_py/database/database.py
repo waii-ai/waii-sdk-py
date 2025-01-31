@@ -436,7 +436,7 @@ class DatabaseImpl:
 
 
     def get_connections(
-        self, params: GetDBConnectionRequest | None = None
+        self, params: Optional[GetDBConnectionRequest] = None
     ) -> GetDBConnectionResponse:
         if params == None:
             params = GetDBConnectionRequest()
@@ -457,7 +457,7 @@ class DatabaseImpl:
         return self.http_client.get_scope()
 
     def get_catalogs(
-        self, params: GetCatalogRequest | None = None
+        self, params: Optional[GetCatalogRequest] = None
     ) -> GetCatalogResponse:
         if params == None:
             params = GetCatalogRequest()

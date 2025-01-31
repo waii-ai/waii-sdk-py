@@ -34,7 +34,8 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `role`: Role name of the connection, apply to `Snowflake` ((not needed for push based database))
 - `host`/`port`: Host/port of the connection, apply to `postgresql` and `mongodb`. For push based database it does not have to be correct host. It just needs to be unique identifier.
 - `sample_col_values`: Do you want to let Waii to sample your string/variant columns. True if you want to sample, False if you don't want to sample. Default is False. This is optional, which can help Waii to generate better queries.
-- `db_content_filters`: If you want Waii to exclude certain columns , tables from database while generating the query, you can pass the db_content_filter. This is optional.
+- `db_content_filters`: (deprecated) Content filters to filter tables and columns from the database. Use `content_filters` instead.
+- `content_filters`: List of `SearchContext` objects to filter tables and columns from the database. (See the next section for details)
 - `always_include_tables`: If it is not None, then these tables will always be included, even if table selector doesn't select them
 - `embedding_model`: Embedding model used for similarity search within the knowledge graph.
 - `db_alias`: alias of the database.
@@ -66,8 +67,6 @@ A `SearchContext` object contains the following fields:
 - Multiple patterns can be combined using multiple SearchContext objects
      
       Final Filter = (Matches Any Inclusion AND Not Matches Any Exclusion)
-
-
 
 #### Filter Types
 
@@ -332,7 +331,20 @@ DBConnection(
     # other fields of the db connection
     db_alias = 'test_db',
     host_alias = 'test_host',
-    user_alias = 'test_user'
+    user_alias = 'test_user',
+    content_filters=[                
+        SearchContext(
+            db_name="*",
+            schema_name="public",
+            table_name="users",
+            type=FilterType.INCLUSION
+        ),
+        SearchContext(
+            db_name="*",
+            schema_name="public",
+            table_name="orders",
+            type=FilterType.INCLUSION
+        )]
 )
 ```
 
@@ -343,73 +355,6 @@ You can also partially specify the alias field, for example, you can only specif
 When get the DBConnection object from `get_connections` method, it will include the alias fields. When the user (indicated by api_key) is the owner of the connection, it will include "real" fields (username, host, etc. but password is not included) in addition to alias fields.
 
 When the user is not the owner of the connection, it will only include alias fields. (for the example above, it will only include `db_alias`, `host_alias`, `user_alias`, `key`, `db_type`)
-
-#### Use alias to add multiple connections for the same database (Deprecated, use db_alias, host_alias, user_alias instead)
-
-(This is deprecated, use db_alias, host_alias, user_alias instead)
-
-Assume you have a SQL server database `test`, which has two schemas `schema1` and `schema2`. You want to add two connections for the same database, but with different schema filters. You can use alias to achieve this.
-
-(Otherwise, Waii will generate a key based on the connection details, which is the same for both connections. So the latter connection will overwrite the former connection)
-
-```python
-response = WAII.Database.modify_connections(ModifyDBConnectionRequest(
-    updated=[
-        DBConnection(
-            db_type="sqlserver",
-            username="...",
-            password="...",
-            database="test",
-            host='...',
-            port=1433,
-            alias='team_1_connection',
-            db_content_filters=[DBContentFilter(
-                filter_scope=DBContentFilterScope.table,
-                filter_type=DBContentFilterType.include,
-                filter_action_type=DBContentFilterActionType.visibility,
-                pattern='',  # empty regex pattern matches all
-                search_context=[
-                    SearchContext(db_name='*', schema_name='common', table_name='*'),
-                    SearchContext(db_name='*', schema_name='team1', table_name='t1'),
-                    SearchContext(db_name='*', schema_name='team1', table_name='t2')
-                ]
-            )]
-        )
-    ]
-))
-print([c.key for c in Database.get_connections().connectors])
-```
-
-The above example will add a connection with alias `team_1_connection` and include tables `t1` and `t2` from `team1` schema and all tables from `common` schema.
-
-The newly added connection will have a key = `waii://waii@host/team_1_connection` (which you can find it from the above print statement)
-
-If you want to add another connection with different schema filters, you can do the following:
-
-```python
-response = WAII.Database.modify_connections(ModifyDBConnectionRequest(
-    updated=[
-        DBConnection(
-            db_type="sqlserver",
-            # .. other fields of the db connection
-            alias='team_2_connection',
-            db_content_filters=[DBContentFilter(
-                filter_scope=DBContentFilterScope.table,
-                filter_type=DBContentFilterType.include,
-                filter_action_type=DBContentFilterActionType.visibility,
-                pattern='',  # empty regex pattern matches all
-                search_context=[
-                    SearchContext(db_name='*', schema_name='common', table_name='def1'),
-                    SearchContext(db_name='*', schema_name='team2', table_name='t2'),
-                    SearchContext(db_name='*', schema_name='team2', table_name='t3')
-                ]
-            )]
-        )
-    ]
-))
-```
-
-The above example will add a connection with alias `team_2_connection` and include tables `t2` and `t3` from `team2` schema and `def1` from `common` schema.
 
 ## Get Connections
 

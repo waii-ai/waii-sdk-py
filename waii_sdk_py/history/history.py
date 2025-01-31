@@ -101,7 +101,7 @@ class HistoryImpl:
     # this is deprecated, use get() instead
     def list(
             self,
-            params: GetGeneratedQueryHistoryRequest | None = None,
+            params: Optional[GetGeneratedQueryHistoryRequest] = None,
     ) -> GetGeneratedQueryHistoryResponse:
         if params == None:
             params = GetGeneratedQueryHistoryRequest()
@@ -112,7 +112,7 @@ class HistoryImpl:
 
     def get(
             self,
-            params: GetHistoryRequest | None = None,
+            params: Optional[GetHistoryRequest] = None,
     ) -> GetHistoryResponse:
         if params == None:
             params = GetHistoryRequest()
