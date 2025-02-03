@@ -25,6 +25,7 @@ This method sends a message to the chatbot based on the provided parameters.
 - `parent_uuid`: The uuid of the previous chat message if you want to continue the conversation
 - `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
 - `model`: Which LLM to be used to generate queries. By default system will choose a model.
+- `modules`: List of components to generate (Query, Data, Chart, Tables, Context). Default: all of them.
 - `chart_type`: Currently waii supports vegalite, superset and metabase
 
 The ChatResponse contains different objects that represent the answer to the question
@@ -34,6 +35,7 @@ The ChatResponse contains different objects that represent the answer to the que
 - `timestamp`: The timestamp of the chat response
 - `response_data`: A `ChatResponseData` object containing the generated info for the question. A `ChatResponseData` object looks like
   - `semantic_context`: A `GetSemanticContextResponse` object containing the semantic context from the database related to the ask and generated query
+  - `tables`: A `CatalogDefinition` object containing the related tables to the question
   - `catalog`: A `CatalogDefinition` object containing the related tables to the question, if created
   - `sql`: A `GeneratedQuery` object containing the generated query to answer the question, if created
   - `data`: A `GetQueryResultResponse` object containing the result of the generated query if it was run
@@ -44,6 +46,12 @@ The ChatResponse contains different objects that represent the answer to the que
 Ask a new question:
 ```python
 >>> response = WAII.Chat.chat_message(ChatRequest(ask = "How many tables are there?"))
+```
+
+**Restrict response components** (only get SQL):
+```python
+>>> response = WAII.Chat.chat_message(ChatRequest(ask = "Revenue by year", 
+                                                 modules=[ChatModule.QUERY]))
 ```
 
 **Ask a follow-up question:**
@@ -80,6 +88,9 @@ Both `submit_chat_message` and `get_chat_response` are non-blocking calls. `subm
 
 `ChatResponse` includes an additional field called `current_step` of type `ChatResponseStep`, which is relevant during async chat message generation. This is updated as the message is generated, along with other fields of the chat response as they are determined. None of these fields are considered finalized until the `current_step` becomes `Completed`.
 
+**Response Selection**  
+The `response_selected_fields` property indicates which modules ultimately contributed to the final response based on the requested `modules` and `module_limit_in_response` parameters.
+
 `ChatResponseStep` values:
 - Routing Request
 - Generating Query
@@ -103,6 +114,13 @@ while True:
     # analyze intermediate chat response here
 # analyze the completed chat response here
 ```
+
+### Module Configuration Tips
+1. Use `modules` to limit response generation for faster responses
+2. Start with `[ChatModule.QUERY]` for simple SQL generation
+3. Add `ChatModule.DATA` and `ChatModule.CHART` for full analysis
+4. Use `module_limit_in_response=1` to get only the most relevant component
+5. Combine with `chart_type` for specific visualization formats
 
 ## Supported Chart Types:
 
