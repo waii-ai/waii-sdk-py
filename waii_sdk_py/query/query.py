@@ -244,6 +244,11 @@ class LikeQueryRequest(CommonRequest):
     rewrite_question: Optional[bool] = False
     detailed_steps: Optional[List[str]] = []
 
+    # by default, like query request applies to the current user only, there's an option to apply to other users
+    target_user_id: Optional[str] = None
+    target_tenant_id: Optional[str] = None
+    target_org_id: Optional[str] = None
+
 
 class LikeQueryResponse(WaiiBaseModel):
     pass
