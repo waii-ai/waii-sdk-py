@@ -26,7 +26,7 @@ Use the activate_connection method to activate a database connection asynchronou
 conn_resp = await client.database.activate_connection("<db_conn_key>")
 ```
 
-######Generating a Query
+###### Generating a Query
 
 To generate a query with the async client, pass a QueryGenerationRequest to the generate method:
 ```python
