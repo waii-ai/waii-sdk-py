@@ -56,3 +56,5 @@ VALUES
 GRANT ALL PRIVILEGES ON DATABASE waii_sdk_test2 TO waii;
 GRANT ALL PRIVILEGES ON TABLE public.albums TO waii;
 ```
+
+Also ensure you have DB connection to the example snowflake DB - MOVIE_DB. If you do not have this DB connection, consult with a Waii team member for info on this DB connection

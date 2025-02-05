@@ -48,11 +48,11 @@ class TestChatV2(unittest.TestCase):
 
     def test_chat_message_chart(self):
         chat_request = ChatRequest(
-            ask="Show me a bar chart of movie ratings",
+            ask="Show me a bar chart for top genres for movies",
             streaming=False,
             parent_uuid=None,
             chart_type=ChartType.SUPERSET,
-            modules=[ChatModule.CHART, ChatModule.QUERY],
+            modules=[ChatModule.CHART, ChatModule.QUERY, ChatModule.DATA],
             module_limit_in_response=2
         )
 
@@ -66,11 +66,11 @@ class TestChatV2(unittest.TestCase):
         self.assertIn(ChatModule.CHART, result.response_selected_fields)
     def test_chat_message_semantic_context(self):
         chat_request = ChatRequest(
-            ask="What tables are available for movie data?",
+            ask="Give top genres for movies",
             streaming=False,
             parent_uuid=None,
             chart_type=None,
-            modules=[ChatModule.DATA],
+            modules=[ChatModule.DATA, ChatModule.QUERY],
             module_limit_in_response=1
         )
 

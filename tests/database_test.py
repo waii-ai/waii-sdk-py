@@ -117,17 +117,22 @@ class TestDatabase(unittest.TestCase):
 
     def test_modify_db_with_search_context_db_content_filter(self):
         db_conn = load_db_conn1()
-        db_conn.db_content_filters = [DBContentFilter(
-            filter_scope = DBContentFilterScope.table,
-            filter_type = DBContentFilterType.include,
-            filter_action_type = DBContentFilterActionType.visibility,
-            pattern='', # empty regex pattern matches all
-            search_context = [
-                SearchContext(db_name='*', schema_name='information_schema', table_name='tables'),
-                SearchContext(db_name='*', schema_name='information_schema', table_name='columns'),
-                SearchContext(db_name='*', schema_name='public', table_name='movies'),
-            ]
-        )]
+        # db_conn.db_content_filters = [DBContentFilter(
+        #     filter_scope = DBContentFilterScope.table,
+        #     filter_type = DBContentFilterType.include,
+        #     filter_action_type = DBContentFilterActionType.visibility,
+        #     pattern='', # empty regex pattern matches all
+        #     search_context = [
+        #         SearchContext(db_name='*', schema_name='information_schema', table_name='tables'),
+        #         SearchContext(db_name='*', schema_name='information_schema', table_name='columns'),
+        #         SearchContext(db_name='*', schema_name='public', table_name='movies'),
+        #     ]
+        # )]
+        db_conn.content_filters = [
+            SearchContext(db_name='*', schema_name='information_schema', table_name='tables'),
+            SearchContext(db_name='*', schema_name='information_schema', table_name='columns'),
+            SearchContext(db_name='*', schema_name='public', table_name='movies'),
+        ]
 
         # modify the connection
         result = WAII.Database.modify_connections(
@@ -135,7 +140,7 @@ class TestDatabase(unittest.TestCase):
         ).connectors
 
         # check if the connection is modified
-        time.sleep(15)
+        time.sleep(30)
 
         # get the catalog
         result = WAII.Database.get_catalogs()
@@ -427,6 +432,12 @@ class TestDatabase(unittest.TestCase):
         WAII.Query.run(
             RunQueryRequest(
                 query="CREATE SCHEMA IF NOT EXISTS test_refresh_db_connection_schema"
+            )
+        )
+
+        WAII.Query.run(
+            RunQueryRequest(
+                query="DROP TABLE IF EXISTS test_refresh_db_connection_schema.test_refresh_db_connection"
             )
         )
 
