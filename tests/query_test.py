@@ -11,20 +11,20 @@ class TestQuery(unittest.TestCase):
         self.result = result
         pg_connector = None
         for connector in result.connectors:
-            if connector.db_type == "postgresql":
+            if connector.db_type == "postgresql" and connector.database == 'waii_sdk_test':
                 pg_connector = connector
                 break
 
         WAII.Database.activate_connection(pg_connector.key)
 
     def test_generate(self):
-        params = QueryGenerationRequest(ask="How many tables are there?", use_cache=False)
+        params = QueryGenerationRequest(ask="How many movies are there?", use_cache=False)
         result = WAII.Query.generate(params)
         self.assertIsInstance(result, GeneratedQuery)
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert 'information_schema' in result.query.lower()
+        assert 'public.movies' in result.query.lower()
         assert len(result.tables) > 0
         assert hasattr(result.confidence_score, "confidence_value")
 
@@ -68,11 +68,11 @@ class TestQuery(unittest.TestCase):
         assert len(result.summary) > 0
 
     def test_transcode(self):
-        params = TranscodeQueryRequest(source_dialect="mysql", target_dialect="postgres", source_query="SELECT 42")
+        params = TranscodeQueryRequest(source_dialect="mysql", target_dialect="postgres", source_query="SELECT * FROM movies")
         result = WAII.Query.transcode(params)
         self.assertIsInstance(result, GeneratedQuery)
         assert len(result.query) > 0
-        assert '42' in result.query.lower()
+        assert 'movies' in result.query.lower()
 
     def test_like_query(self):
         params = LikeQueryRequest(liked=True,ask="like test ask", query="SELECT S_STATE FROM STORE",

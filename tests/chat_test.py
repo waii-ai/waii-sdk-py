@@ -84,7 +84,7 @@ class TestChat(unittest.TestCase):
             ask="What's the rating of movies?",
             streaming=False,
             parent_uuid=None,
-            modules=[ChatModule.QUERY, ChatModule.DATA],
+            modules=[ChatModule.QUERY, ChatModule.CHART, ChatModule.DATA],
             module_limit_in_response=2
         )
 
@@ -99,7 +99,7 @@ class TestChat(unittest.TestCase):
             streaming=False,
             parent_uuid=result1.chat_uuid,
             chart_type=ChartType.SUPERSET,
-            modules=[ChatModule.CHART],
+            modules=[ChatModule.CHART, ChatModule.QUERY, ChatModule.DATA],
             module_limit_in_response=1
         )
 

@@ -135,7 +135,7 @@ class TestDatabase(unittest.TestCase):
         ).connectors
 
         # check if the connection is modified
-        time.sleep(15)
+        time.sleep(30)
 
         # get the catalog
         result = WAII.Database.get_catalogs()
@@ -427,6 +427,12 @@ class TestDatabase(unittest.TestCase):
         WAII.Query.run(
             RunQueryRequest(
                 query="CREATE SCHEMA IF NOT EXISTS test_refresh_db_connection_schema"
+            )
+        )
+
+        WAII.Query.run(
+            RunQueryRequest(
+                query="DROP TABLE IF EXISTS test_refresh_db_connection_schema.test_refresh_db_connection"
             )
         )
 

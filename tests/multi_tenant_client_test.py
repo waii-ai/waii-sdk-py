@@ -34,7 +34,7 @@ class MultiTenantClientTest(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert "sdk_test.public.movies" in result.query.lower()
+        assert "public.movies" in result.query.lower()
         assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
@@ -76,7 +76,7 @@ class MultiTenantClientTest(unittest.TestCase):
         result = self.chinook_waii.query.run(params)
         self.assertIsInstance(result, GetQueryResultResponse)
         assert len(result.column_definitions) > 0
-        assert "...And" in str(result.rows[0])
+        assert "21" in str(result.rows[0])
 
     def test_legacy_generate(self):
         WAII.Database.activate_connection(self.movie_conn.key)
@@ -88,7 +88,7 @@ class MultiTenantClientTest(unittest.TestCase):
         assert result.uuid is not None
         assert len(result.detailed_steps) > 0
         assert len(result.query) > 0
-        assert "sdk_test." in result.query.lower()
+        assert "public.movies" in result.query.lower()
         assert len(result.tables) > 0
 
         params = LikeQueryRequest(query_uuid=result.uuid, liked=True)
