@@ -410,3 +410,80 @@ Inorder to add the metabase charts to your app, you can use this script [here](m
 Example metabase chart:
 
 ![metabase_chart.png](metabase_chart.png)
+
+## Output Templates
+
+Response templates use placeholders to dynamically insert generated content. Available parameters:
+
+- `{tables}`: List of relevant table names (e.g.: "movies, actors, genres")
+- `{sql}`: Generated SQL query with syntax highlighting
+- `{data}`: Tabular query results
+- `{steps}`: Step-by-step explanation of query logic (this is from GeneratedQuery.detailed_steps)
+- `{graph}`: Visualization spec or embedded chart (this is chart_spec from the response)
+
+**Template Rules:**
+1. Include `{graph}` when visualization adds value
+2. Use `{data}` for tabular results (>3 rows)
+3. Show `{steps}`/`{tables}`/`{sql}` only when explaining methodology (when user explicitly asks for it)
+4. Combine parameters naturally based on question context
+
+**Examples:**
+
+*User question:* "Show me total sales last month"
+```text
+Last month's total sales were ${data[0].total_sales}
+```
+
+*User question:* "Visualize revenue trends by year"
+```text
+Here's the revenue trend by year:
+{graph}
+
+Generated with:
+{sql}
+```
+
+*User question:* "Which tables store customer information?"
+```text
+Customer data is stored in these tables:
+{tables}
+
+Sample schema from {tables[0]}:
+{context}
+```
+
+*User question:* "Why did this query return no results?"
+```text
+No records found matching your criteria:
+{sql}
+
+Potential reasons:
+1. Filters may be too restrictive
+2. Tables might need updating
+```
+
+*User question:* "Explain how you calculated average order value"
+```text
+{steps}
+
+Here's the SQL query used:
+{sql}
+
+Final calculation:
+{data}
+```
+
+*User question:* "Show top products (raw data) and create pie chart"
+```text
+Top selling products this quarter:
+{data}
+
+{graph}
+```
+
+** Other notes for response templates:**
+
+- It only use the corresponding template if the generated response contains it (e.g. if the response doesn't contain any visualization, it won't use the {graph} template)
+- By default it optimize for the best display of the data, e.g. if the data is better displayed in a table, it will use the {data} template, otherwise, it will use the {graph} template
+- If there's any error occured (e.g. user asked for query, but the query generation or run failed), it will synthesize the error message and show it to the user.
+- When there're limited data, it can synthesize the data directly to the user instead of showing the raw data (e.g. "Median age for the active users is 30.0")
