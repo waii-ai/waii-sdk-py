@@ -121,6 +121,9 @@ class Constraint(WaiiBaseModel):
             return f"FK {self.src_table} ({self.src_cols}) -> {self.table} ({self.cols}) [{self.source.name}]"
 
 
+class TableType(str, Enum):
+    table = 'table'
+    view = 'view'
 
 class TableDefinition(WaiiBaseModel):
     name: TableName
@@ -132,6 +135,9 @@ class TableDefinition(WaiiBaseModel):
     inferred_refs: Optional[List[TableReference]]
     inferred_constraints: Optional[List[Constraint]]
     description: Optional[str]
+
+    ddl: Optional[str] = None
+    table_type: Optional[TableType] = TableType.table
 
     def __init__(self, **data):
         super().__init__(**data)
