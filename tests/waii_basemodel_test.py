@@ -22,6 +22,9 @@ class DBaseModel(WaiiBaseModel):
     attr_b: List[ABaseModel]
     attr_c: Optional[CBaseModel] = None
 
+class EBaseModel(WaiiBaseModel):
+    attr_a: dict[str, ABaseModel] = {}
+
 
 class TestWaiiBaseModel(unittest.TestCase):
     def test_extra_field(self):    
@@ -77,6 +80,14 @@ class TestWaiiBaseModel(unittest.TestCase):
 
         with pytest.raises(ValueError):
             model_d.check_extra_fields()
+    
+    def test_extra_field_dict(self):
+        model_e = EBaseModel(
+            attr_a={'a': ABaseModel(attr_a=2, attr_b=2.2, attr_c='hello', attr_d=4)}
+        )
+
+        with pytest.raises(ValueError):
+            model_e.check_extra_fields()
     
     def test_extra_field_optional(self):
         model_d = DBaseModel(

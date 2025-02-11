@@ -51,7 +51,7 @@ except ImportError:
                             if isinstance(item, WaiiBaseModel):
                                 item.check_extra_fields()
                     elif isinstance(field_value, dict):
-                        for k, v in field_value:
+                        for k, v in field_value.items():
                             if isinstance(v, WaiiBaseModel):
                                 v.check_extra_fields()
                     elif isinstance(field_value, WaiiBaseModel):
