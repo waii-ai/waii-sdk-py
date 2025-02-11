@@ -3,6 +3,18 @@ id: chat-module
 title: Chat
 ---
 
+**Initialization & Imports**
+```python
+from waii_sdk_py import WAII
+from waii_sdk_py.chat import *
+from waii_sdk_py.query import *
+from waii_sdk_py.database import *
+from waii_sdk_py.semantic_context import *
+from waii_sdk_py.chart import *
+from waii_sdk_py.history import *
+
+WAII.initialize(url="https://your-waii-instance/api/", api_key="your-api-key")
+```
 
 The `Chat` module contains methods to interact with a SQL Chatbot.
 

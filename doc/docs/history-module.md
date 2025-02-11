@@ -5,6 +5,19 @@ title: History
 
 The `History` module contains methods related to history handling.
 
+**Initialization & Imports**
+```python
+from waii_sdk_py import WAII
+from waii_sdk_py.chat import *
+from waii_sdk_py.query import *
+from waii_sdk_py.database import *
+from waii_sdk_py.semantic_context import *
+from waii_sdk_py.chart import *
+from waii_sdk_py.history import *
+
+WAII.initialize(url="https://your-waii-instance/api/", api_key="your-api-key")
+```
+
 Here are some of its methods:
 
 ### Get
