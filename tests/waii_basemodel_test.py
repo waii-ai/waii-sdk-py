@@ -88,6 +88,11 @@ class TestWaiiBaseModel(unittest.TestCase):
 
         with pytest.raises(ValueError):
             model_e.check_extra_fields()
+
+        model_e = EBaseModel(
+            attr_a={'a': ABaseModel(attr_a=2, attr_b=2.2, attr_c='hello')} # no extra attribute, should not throw error
+        )
+        model_e.check_extra_fields()
     
     def test_extra_field_optional(self):
         model_d = DBaseModel(
