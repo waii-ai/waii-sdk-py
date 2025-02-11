@@ -31,10 +31,13 @@ Inside your notebook, you can install Waii with the following command:
 
 ```python
 from waii_sdk_py import WAII
+from waii_sdk_py.chat import *
 from waii_sdk_py.query import *
+from waii_sdk_py.database import *
+from waii_sdk_py.semantic_context import *
+from waii_sdk_py.chart import *
 
-# follow the README.md instructions to get your API key
-WAII.initialize(api_key='....') 
+WAII.initialize(url="https://your-waii-instance/api/", api_key="your-api-key")
 
 # show all the connections available
 print([conn.key for conn in WAII.Database.get_connections().connectors])

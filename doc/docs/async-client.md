@@ -3,6 +3,18 @@ id: async-client
 title: Async Client
 ---
 
+**Initialization & Imports**
+```python
+# in order to use this, you need to make sure waii-sdk-py is >= 1.28.2
+# otherwise, you should do 
+# from waii_sdk_py.waii_sdk_py import AsyncWaii
+from waii_sdk_py import AsyncWaii
+from waii_sdk_py.database import *
+
+client = AsyncWaii()
+await client.initialize(url='...', api_key="<your-api-key>")
+```
+
 ### Async Client
 
 This guide explains how to set up and use the `AsyncWaii` client to make asynchronous API calls.

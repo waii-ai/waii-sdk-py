@@ -4,6 +4,21 @@ title: Multi-tenant Waii SDK Client
 ---
 The Waii SDK allows you to create multiple instances of the client, enabling you to manage different configurations and databases independently.
 
+**Initialization & Imports**
+```python
+# in order to use this, you need to make sure waii-sdk-py is >= 1.28.2
+# otherwise, you should do 
+# from waii_sdk_py import Waii
+from waii_sdk_py import Waii
+from waii_sdk_py.chat import *
+from waii_sdk_py.query import *
+from waii_sdk_py.database import *
+from waii_sdk_py.semantic_context import *
+from waii_sdk_py.chart import *
+
+WAII.initialize(url="https://your-waii-instance/api/", api_key="your-api-key")
+```
+
 ### Creating Multiple Client Instances
 You can initialize multiple instances of the Waii SDK as shown below:
 
