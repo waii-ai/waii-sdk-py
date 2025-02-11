@@ -13,7 +13,7 @@ from waii_sdk_py.database import (
     ColumnDefinition,
     TableReference,
     UpdateTableDefinitionRequest, DBContentFilter, DBContentFilterScope, DBContentFilterType,
-    DBContentFilterActionType, SearchContext, )
+    DBContentFilterActionType, SearchContext, GetModelsRequest)
 from waii_sdk_py.query import RunQueryRequest
 
 
@@ -447,6 +447,13 @@ class TestDatabase(unittest.TestCase):
         )
 
         assert table_created
+
+    def test_models(self):
+        result = WAII.Database.get_models()
+        print(result)
+        result = WAII.Database.get_models(GetModelsRequest())
+        print(result)
+
 
 
 # NEED TO ADD FOR UPDATE TABLE AND UPDATE SCHEMA

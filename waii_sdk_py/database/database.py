@@ -15,6 +15,7 @@ from ..utils.utils import to_async, wrap_methods_with_async
 
 MODIFY_DB_ENDPOINT = "update-db-connect-info"
 GET_CATALOG_ENDPOINT = "get-table-definitions"
+GET_MODELS_ENDPOINT = "get-models"
 UPDATE_TABLE_DESCRIPTION_ENDPOINT = "update-table-description"
 UPDATE_SCHEMA_DESCRIPTION_ENDPOINT = "update-schema-description"
 UPDATE_COLUMN_DESCRIPTION_ENDPOINT = "update-column-description"
@@ -411,6 +412,17 @@ class GetSimilaritySearchIndexResponse(CommonRequest):
     values: Optional[List[ColumnValue]]
 
 
+class GetModelsRequest(CommonRequest):
+    pass
+
+class ExternalModel(WaiiBaseModel):
+    name: str
+    description: Optional[str] = None
+    vendor: Optional[str] = None
+
+class GetModelsResponse(CommonResponse):
+    models: Optional[List[ExternalModel]] = None
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -545,6 +557,13 @@ class DatabaseImpl:
     ) -> CheckOperationStatusResponse:
         return self.http_client.common_fetch(
             CHECK_SIMILARITY_SEARCH_INDEX_STATUS_ENDPOINT, params, CheckOperationStatusResponse
+        )
+
+    def get_models(
+            self, params: GetModelsRequest = GetModelsRequest()
+    ) -> GetModelsResponse:
+        return self.http_client.common_fetch(
+            GET_MODELS_ENDPOINT, params, GetModelsResponse
         )
 
 
