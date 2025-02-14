@@ -415,13 +415,16 @@ class GetSimilaritySearchIndexResponse(CommonRequest):
 class GetModelsRequest(CommonRequest):
     pass
 
-class ExternalModel(WaiiBaseModel):
+
+class Model(WaiiBaseModel):
     name: str
     description: Optional[str] = None
     vendor: Optional[str] = None
 
+
 class GetModelsResponse(CommonResponse):
-    models: Optional[List[ExternalModel]] = None
+    models: Optional[List[Model]] = None
+
 
 class DatabaseImpl:
 

@@ -631,6 +631,27 @@ result = WAII.Database.update_constraint(req)
 
 ```
 
+### Get Models
+
+To access the currently enabled LLM Models, use the following:
+```python
+WAII.database.get_models()
+```
+
+This returns an object of type `GetModelsResponse` which contains a list of `Model` objects
+
+`Model`:
+- `name`: str: name of the model. 
+- `description`: Optional[str]: description optionally associated with the model
+- `vendor`: Optional[str]: vendor optionally associated with the model
+
+The model name can be passed to any LLM-based request to override which model is used during the request. 
+If none is specified, Waii will choose the best model for each task
+
+`GetModelsResponse`:
+- `models`: Optional[List[Model]]
+
+
 ## Index Column Values
 
 ### Overview
