@@ -2,7 +2,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 (module.exports = {
-	title: 'Waii Pythont SDK',
+	title: 'Waii Python SDK',
 	tagline: 'World most accurate text-2-sql API',
 	url: 'https://doc.waii.ai',
 	baseUrl: '/python/',
