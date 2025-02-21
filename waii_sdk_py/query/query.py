@@ -230,8 +230,7 @@ class GetQueryResultResponse(WaiiBaseModel):
             self.rows, columns=[col.name for col in self.column_definitions]
         )
 
-
-class LikeQueryRequest(CommonRequest):
+class LikedQuery(WaiiBaseModel):
     # you need to specify either query_uuid or ask/query
     query_uuid: Optional[str]
     ask: Optional[str]
@@ -249,9 +248,12 @@ class LikeQueryRequest(CommonRequest):
     target_tenant_id: Optional[str] = None
     target_org_id: Optional[str] = None
 
+class LikeQueryRequest(CommonRequest, LikedQuery):
+    pass
+
 
 class LikeQueryResponse(WaiiBaseModel):
-    pass
+    queries: Optional[List[LikedQuery]]
 
 
 class AutoCompleteRequest(CommonRequest):

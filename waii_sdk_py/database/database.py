@@ -295,7 +295,6 @@ class GetDBConnectionResponse(CommonResponse):
     default_db_connection_key: Optional[str] = None
     connector_status: Optional[Dict[str, DBConnectionIndexingStatus]] = None
 
-
 class GetCatalogResponse(CommonResponse):
     catalogs: Optional[List[CatalogDefinition]] = None
     debug_info: Optional[Dict[str, Any]]

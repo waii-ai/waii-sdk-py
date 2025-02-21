@@ -29,11 +29,12 @@ Database.modify_connections(params: ModifyDBConnectionRequest) -> ModifyDBConnec
 This method allows to modify the database connections.
 
 `ModifyDBConnectionRequest` contains the following properties:
-- `updated`: Update or add new connections
-- `removed`: Remove connections, by specifying the key of the connection
-- `default_db_connection_key`: Set the default connection (by specifying key of connection)
-- `owner_user_id`: Set the owner of the connection, by default it is the user who is making the request. If you want to set the owner to another user, you can specify the user_id here. When to use this? If you have user who has limited permission to add connections, but you want to add the db connection to the user without updated permission.
+- `updated`: Update or add new connections (Optional)
+- `removed`: Remove connections, by specifying the key of the connection (Optional)
+- `default_db_connection_key`: Set the default connection (by specifying key of connection) (Optional)
+- `owner_user_id`: Set the owner of the connection, by default it is the user who is making the request. If you want to set the owner to another user, you can specify the user_id here. When to use this? If you have user who has limited permission to add connections, but you want to add the db connection to the user without updated permission. (Optional, default is the user who is making the request)
 
+Note: When you send an empty request, it will return all the connection status (as part of `ModifyDBConnectionResponse`)
 
 To add connection, you need to create `DBConnection` Object, which include the following fields
 - `key`: Set it to '', it will be auto generated
@@ -57,6 +58,44 @@ To add connection, you need to create `DBConnection` Object, which include the f
 
 (Deprecated field)
 - `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
+
+### Response of Modify Connections
+
+The response will be `ModifyDBConnectionResponse` object, which includes the following fields:
+
+```python
+class ModifyDBConnectionResponse(CommonResponse):
+    connectors: Optional[List[DBConnection]]
+    diagnostics: Optional[str]
+    default_db_connection_key: Optional[str]
+    connector_status: Optional[Dict[str, DBConnectionIndexingStatus]]
+```
+
+- `connectors`: List of `DBConnection` objects (No password field)
+- `diagnostics`: Diagnostics message
+- `default_db_connection_key`: Default connection key (for the user)
+- `connector_status`: Status of the connection, are they being indexed or not.
+  This is a map of database connection key to `DBConnectionIndexingStatus` object, each of which contains the indexing status for the connection.
+
+```python
+class SchemaIndexingStatus(WaiiBaseModel):
+    n_pending_indexing_tables: int
+    n_total_tables: int
+    status: str
+
+
+class DBConnectionIndexingStatus(WaiiBaseModel):
+    status: Optional[str]
+    schema_status: Optional[Dict[str, SchemaIndexingStatus]]
+```
+
+Each `DBConnectionIndexingStatus` object contains the following fields:
+- `status`: Status of the connection indexing (`not-started`, `indexing`, `completed`)
+- `schema_status`: Map of schema name to `SchemaIndexingStatus` object, each of which contains the indexing status for the schema.
+
+Each of the `SchemaIndexingStatus` object contains the following fields:
+- `n_pending_indexing_tables`: Number of tables pending indexing
+- `n_total_tables`: Total number of tables in the schema
 
 ### Content Filters (part of modify_connections request)
 
@@ -315,7 +354,6 @@ db_connection = DBConnection(
 
 The database name will be automatically set to project id
 
-
 #### Push-based Database
 
 Examples of creating push based `DBConnection` Object. It is same for all the databases, you just need to set db_type to the database you are using. And set push to True.
@@ -377,9 +415,10 @@ Database.get_connections(params: GetDBConnectionRequest = GetDBConnectionRequest
 
 This method fetches the list of available database connections.
 
-Response fields:
-`connectors`: List of `DBConnection` objects (No password field)
-`connector_status`: Status of the connection, are they being indexed or not. 
+Response fields: Same as [Modify Connections Response](#response-of-modify-connections)
+
+You can use this function to get index status for all the connections you have. (It will be cheaper than get tables from all the connections and then check index status for each table)
+
 
 ## Activate Connection
 
