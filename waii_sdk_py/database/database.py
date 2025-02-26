@@ -436,22 +436,18 @@ class DatabaseImpl:
         if params.updated is not None:
             self._modify_connection_request(params.updated)
         return self.http_client.common_fetch(
-            MODIFY_DB_ENDPOINT, params, ModifyDBConnectionResponse
+            MODIFY_DB_ENDPOINT, params, ModifyDBConnectionResponse, need_scope=False
         )
 
-
-    def _modify_connection_request(self, conns:List[DBConnection]):
+    def _modify_connection_request(self, conns: List[DBConnection]):
         for conn in conns:
             if conn.db_type == "bigquery" and conn.password:
                 password_dict = json.loads(conn.password)
                 conn.database = password_dict['project_id']
                 conn.client_email = password_dict['client_email']
 
-
-
-
     def get_connections(
-        self, params: Optional[GetDBConnectionRequest] = None
+            self, params: Optional[GetDBConnectionRequest] = None
     ) -> GetDBConnectionResponse:
         if params == None:
             params = GetDBConnectionRequest()
@@ -463,6 +459,18 @@ class DatabaseImpl:
         )
 
     def activate_connection(self, key: str):
+        # first try to get all connections and check if the key is valid
+        connections = self.get_connections()
+
+        all_connection_keys = set([conn.key for conn in connections.connectors])
+
+        if key not in all_connection_keys:
+            all_conn_keys_str = ''
+            for k in all_connection_keys:
+                all_conn_keys_str += f' - {k}\n'
+
+            raise Exception(f"Connection key {key} is not valid, all the available keys are {all_conn_keys_str}.\nYou can use `WAII.Database.get_connections()` to get all the available connections.")
+
         self.http_client.set_scope(key)
 
     def get_activated_connection(self):
@@ -523,7 +531,7 @@ class DatabaseImpl:
             {
                 "db_conn_key": self.get_activated_connection(),
             },
-            CommonResponse,
+            CommonResponse, need_scope=False
         )
 
     def update_similarity_search_index(
@@ -565,7 +573,7 @@ class DatabaseImpl:
             self, params: GetModelsRequest = GetModelsRequest()
     ) -> GetModelsResponse:
         return self.http_client.common_fetch(
-            GET_MODELS_ENDPOINT, params, GetModelsResponse
+            GET_MODELS_ENDPOINT, params, GetModelsResponse, need_scope=False
         )
 
 

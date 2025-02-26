@@ -23,6 +23,10 @@ Then, you can activate the database connection you want to use (from one of the 
 >>> WAII.Database.activate_connection("snowflake://...&warehouse=COMPUTE_WH")
 ```
 
+If you need to do some operations which don't need to connect to a specific database (e.g. list users, list databases, add new databases, etc.), you can skip the activation step.
+
+```python 
+
 Get Database name of the active connection
 
 ```python

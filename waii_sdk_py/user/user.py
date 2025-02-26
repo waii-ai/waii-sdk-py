@@ -178,56 +178,56 @@ class UserImpl:
 
     def create_access_key(self, params: CreateAccessKeyRequest):
         return self.http_client.common_fetch(
-            CREATE_KEY_ENDPOINT, params, GetAccessKeyResponse
+            CREATE_KEY_ENDPOINT, params, GetAccessKeyResponse, need_scope=False
         )
 
     def list_access_keys(self, params: GetAccessKeyRequest):
-        return self.http_client.common_fetch(LIST_ACCESS_KEY_ENDPOINT, params, GetAccessKeyResponse)
+        return self.http_client.common_fetch(LIST_ACCESS_KEY_ENDPOINT, params, GetAccessKeyResponse, need_scope=False)
 
     def delete_access_key(self, params: DelAccessKeyRequest):
-        return self.http_client.common_fetch(DELETE_ACCESS_KEY_ENDPOINT, params, DelAccessKeyResponse)
+        return self.http_client.common_fetch(DELETE_ACCESS_KEY_ENDPOINT, params, DelAccessKeyResponse, need_scope=False)
 
     def get_user_info(self, params: GetUserInfoRequest):
-        return self.http_client.common_fetch(GET_USER_INFO_ENDPOINT, params, GetUserInfoResponse)
+        return self.http_client.common_fetch(GET_USER_INFO_ENDPOINT, params, GetUserInfoResponse, need_scope=False)
 
     def update_config(self, params: UpdateConfigRequest):
-        return self.http_client.common_fetch(UPDATE_CONFIG_ENDPOINT, params, UpdateConfigResponse)
+        return self.http_client.common_fetch(UPDATE_CONFIG_ENDPOINT, params, UpdateConfigResponse, need_scope=False)
 
     def create_user(self, params: CreateUserRequest):
-        return self.http_client.common_fetch(CREATE_USER_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(CREATE_USER_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def delete_user(self, params: DeleteUserRequest):
-        return self.http_client.common_fetch(DELETE_USER_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(DELETE_USER_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def update_user(self, params: UpdateUserRequest):
-        return self.http_client.common_fetch(UPDATE_USER_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(UPDATE_USER_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def list_users(self, params: ListUsersRequest):
-        return self.http_client.common_fetch(LIST_USERS_ENDPOINT, params, ListUsersResponse)
+        return self.http_client.common_fetch(LIST_USERS_ENDPOINT, params, ListUsersResponse, need_scope=False)
 
     def create_tenant(self, params: CreateTenantRequest):
-        return self.http_client.common_fetch(CREATE_TENANT_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(CREATE_TENANT_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def update_tenant(self, params: UpdateTenantRequest):
-        return self.http_client.common_fetch(UPDATE_TENANT_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(UPDATE_TENANT_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def delete_tenant(self, params: DeleteTenantRequest):
-        return self.http_client.common_fetch(DELETE_TENANT_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(DELETE_TENANT_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def list_tenants(self, params: ListTenantsRequest):
-        return self.http_client.common_fetch(LIST_TENANTS_ENDPOINT, params, ListTenantsResponse)
+        return self.http_client.common_fetch(LIST_TENANTS_ENDPOINT, params, ListTenantsResponse, need_scope=False)
 
     def create_org(self, params: CreateOrganizationRequest):
-        return self.http_client.common_fetch(CREATE_ORG_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(CREATE_ORG_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def update_org(self, params: UpdateOrganizationRequest):
-        return self.http_client.common_fetch(UPDATE_ORG_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(UPDATE_ORG_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def delete_org(self, params: DeleteOrganizationRequest):
-        return self.http_client.common_fetch(DELETE_ORG_ENDPOINT, params, CommonResponse)
+        return self.http_client.common_fetch(DELETE_ORG_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def list_orgs(self, params: ListOrganizationsRequest):
-        return self.http_client.common_fetch(LIST_ORGS_ENDPOINT, params, ListOrganizationsResponse)
+        return self.http_client.common_fetch(LIST_ORGS_ENDPOINT, params, ListOrganizationsResponse, need_scope=False)
 
 
 class AsyncUserImpl:

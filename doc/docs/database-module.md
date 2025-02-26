@@ -26,7 +26,7 @@ Here are some of its methods:
 Database.modify_connections(params: ModifyDBConnectionRequest) -> ModifyDBConnectionResponse
 ```
 
-This method allows to modify the database connections.
+This method allows to modify the database connections.(You don't need to activate any connection to use this method, because it is not related to any specific connection)
 
 `ModifyDBConnectionRequest` contains the following properties:
 - `updated`: Update or add new connections (Optional)
@@ -413,7 +413,7 @@ When the user is not the owner of the connection, it will only include alias fie
 Database.get_connections(params: GetDBConnectionRequest = GetDBConnectionRequest()) -> GetDBConnectionResponse
 ```
 
-This method fetches the list of available database connections.
+This method fetches the list of available database connections. (You don't need to activate any connection to use this method, because it is not related to any specific connection)
 
 Response fields: Same as [Modify Connections Response](#response-of-modify-connections)
 
@@ -672,7 +672,8 @@ result = WAII.Database.update_constraint(req)
 
 ### Get Models
 
-To access the currently enabled LLM Models, use the following:
+To access the currently enabled LLM Models, use the following (You don't need to activate any connection to use this method, because it is not related to any specific connection):
+
 ```python
 WAII.database.get_models()
 ```

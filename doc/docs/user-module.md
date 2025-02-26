@@ -26,6 +26,8 @@ In the WAII system, there's a hierarchical relationship between organizations, t
 
 Users are individual accounts within the system, each belonging to a specific tenant and, by extension, to an organization. This structure allows for flexible management of access and resources across different levels of the hierarchy. For example, a user's permissions and access rights may be determined by their associated tenant and organization.
 
+Important note: You don't need to activate any connection (`WAII.Database.activate...`) to use this module, because it is not related to any specific connection.
+
 ### Create Access Key
 ```python
 WAII.User.create_access_key(params: CreateAccessKeyRequest) -> GetAccessKeyResponse
