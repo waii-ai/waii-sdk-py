@@ -55,6 +55,7 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `db_alias`: alias of the database.
 - `host_alias`: alias of the host.
 - `user_alias`: alias of the user.
+- `push`: Waii, by default, uses pull-based connections - it pulls table definitions from your database. Set this value to true if, instead, you want to manually give the table definitions using `Database.update_table_definition`
 
 (Deprecated field)
 - `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
@@ -587,6 +588,36 @@ table_definition =  TableDefinition(
                 ColumnDefinition(name="col2", type="int"),
                 ColumnDefinition(name="col3", type="int"),
                 ]
+            )
+update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition]
+                                                )
+result = WAII.Database.update_table_definition(update_table_req)
+```
+
+If you want to specify DDL command used to create the view for more context and help Waii understand it better, you can use the `ddl` field. It can be particularly useful when the DDL used to create the view has more meaningful context than the table and column names as shown:
+```python
+table_definition =  TableDefinition(
+            name=TableName(
+                database_name="db1", schema_name="schema2", table_name="table1"
+            ),
+            columns=[
+                ColumnDefinition(name="col1", type="string"),
+                ColumnDefinition(name="col2", type="string"),
+                ColumnDefinition(name="col3", type="string"),
+                ColumnDefinition(name="col4", type="string"),
+                ],
+            ddl="""
+CREATE OR REPLACE VIEW table1 AS
+SELECT
+    a.AuthorName as col1,
+    a.Country as col2,
+    b.Title as col3,
+    b.PublicationYear as col4
+FROM
+    Authors a
+JOIN
+    Books b ON a.AuthorID = b.AuthorID;
+            """
             )
 update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definition]
                                                 )
