@@ -154,6 +154,7 @@ class TestDatabase(unittest.TestCase):
                     and self.db_conn.database == conn.database
                     and self.db_conn.username == conn.username
             ):
+                assert conn.sample_col_values == True
                 result = WAII.Database.modify_connections(
                     ModifyDBConnectionRequest(removed=[conn.key])
                 ).connectors
