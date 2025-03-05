@@ -234,7 +234,7 @@ class DBConnection(WaiiBaseModel):
     host: Optional[str] = None
     port: Optional[int] = None
     parameters: Optional[Dict[str, Any]] = None
-    sample_col_values: Optional[bool] = None
+    sample_col_values: Optional[bool] = True
     push:Optional[bool] = False
     db_content_filters: Optional[List[DBContentFilter]] = None
     embedding_model: Optional[str] = None
