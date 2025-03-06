@@ -423,6 +423,38 @@ Admin can also specify the `target_user_id`, `target_tenant_id` to '*' to like t
 
 e.g. `... target_user_id='*', target_tenant_id='my-company.com'` will like the query on behalf of all users in `my-company.com` tenant.
 
+### Get Liked Queries
+
+```python
+Query.get_liked_query(params: GetLikedQueryRequest) -> GetLikedQueryResponse
+```
+
+This method retrieves previously liked queries from the system.
+
+Parameters:
+- `query_uuid`: (Optional) If specified, returns only the liked query with this UUID. If not specified, returns all liked queries the user has access to.
+
+Output:
+- `queries`: List of `LikedQuery` objects that contain information about the liked queries.
+
+Example:
+
+```python
+# Get all liked queries
+all_liked_queries = WAII.Query.get_liked_query(GetLikedQueryRequest())
+
+# Get a specific liked query by UUID
+specific_liked_query = WAII.Query.get_liked_query(GetLikedQueryRequest(query_uuid="01afbd1e-0001-d31e-0022-ba8700a8209e"))
+
+# Process the results
+for query in all_liked_queries.queries:
+    print(f"Ask: {query.ask}")
+    print(f"Query: {query.query}")
+    print(f"Liked: {query.liked}")
+```
+
+Note: You need the appropriate permissions (PUBLISH_LIKED_QUERIES) to access liked queries.
+
 ### Describe
 
 If you want to translate SQL to natural language, and explain step-by-step plans, you can use `Query.describe` method.
