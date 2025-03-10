@@ -1,3 +1,4 @@
+import base64
 import inspect
 import json
 import warnings
@@ -427,11 +428,6 @@ class GetModelsResponse(CommonResponse):
     models: Optional[List[Model]] = None
 
 
-class DocumentContentType(str, Enum):
-    text = "text"
-    html = "html"
-
-
 class IngestDocumentJobStatus(str, Enum):
     in_progress = "in_progress"
     completed = "completed"
@@ -440,8 +436,11 @@ class IngestDocumentJobStatus(str, Enum):
 
 class IngestDocumentRequest(LLMBasedRequest):
     content: Optional[str] = None
+    # is it a binary content? if yes, we will use base64 to decode it (and the content should already be encoded using base64)
+    is_binary: Optional[bool] = False
     url: Optional[str] = None
-    content_type: Optional[DocumentContentType] = None
+    content_type: Optional[str] = None
+    filename: Optional[str] = None
 
 
 class IngestDocumentResponse(CommonResponse):
