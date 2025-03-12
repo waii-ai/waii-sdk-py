@@ -286,8 +286,8 @@ class TestDatabase(unittest.TestCase):
         assert len(WAII.Database.get_activated_connection()) > 0
 
     def test_call_without_activated_connection(self):
-        WAII.Database.activate_connection("")
         with self.assertRaises(Exception):
+            WAII.Database.activate_connection("")
             result = WAII.Database.get_catalogs()
 
     def test_tabl_ref_deserialize(self):
