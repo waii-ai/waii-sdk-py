@@ -161,6 +161,7 @@ class GeneratedQuery(WaiiBaseModel):
     confidence_score: Optional[ConfidenceScore]
     debug_info: Optional[Dict[str, Any]] = {}
     elapsed_time_ms: Optional[int] = None  # elapsed time in milliseconds
+    assumptions: Optional[List[str]] = None
 
     http_client: Optional[Any] = Field(default=None, exclude=True)
 

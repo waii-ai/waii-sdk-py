@@ -49,6 +49,11 @@ Parameter fields:
 - `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
 - `model`: Which LLM to be used to generate queries. By default system will choose a model.
 - `use_example_queries`: Whether to use example queries (aka liked-queries) or not, default is True. If you set it to False, it will not use example queries to generate the query.
+- `parameters`: Dictionary of additional configuration parameters for query generation:
+  - `PUBLIC.LIKED_QUERIES.ENABLED`: Boolean (`True`/`False`) - Enable using liked queries as examples (default is True)
+  - `PUBLIC.LIKED_QUERIES.LEARNING_MODE`: String - Values: `"disabled"`, `"single"`, `"few-shot"` (default is `few-shot`)
+  - `PUBLIC.DEEP_THINKING.ENABLED`: Boolean - Enable deeper thinking for complex queries, it requires configure "reasoning" model like o3-mini, deepseek-R1, etc. (default is False)
+  - `PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL`: Boolean - Enable comprehensive query analysis, for example assumptions, clarify questions, etc. (default is False)
 
 **Examples:**
     
@@ -107,6 +112,7 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
 - `timestamp_ms`: timestamp when the query is generated
 - `elapsed_time_ms`: total elapsed time (in milli-seconds) for the query generation
 - `access_rule_protection_status`: `AccessRuleProtectionStatus` object showing  query protection status regarding access rules
+- `assumptions`: a list of assumptions the model made during the query generation. It only got added when ``PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL` is set to `true`
 
 #### Tips to use tweak to update existing query
 
@@ -187,6 +193,35 @@ In order to specify which model to use, you can set `model` field in the request
         ask = "How many tables are there?", 
         model="GPT-4o"))
 ```
+
+#### **Enable query analysis:**
+
+```python
+>>> WAII.Query.generate(QueryGenerationRequest(
+    ask = "Tell me the busiest day",
+    parameters = {"PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL": True}
+))
+```
+
+This enables comprehensive query analysis which provides deeper insights into assumptions, clarify questions, etc.
+
+It may return a query returns with `assumptions` field like `The term 'busiest day' refers to the day with the highest number of queries executed.`
+
+#### **Combine analysis with other parameters:**
+
+```python
+>>> WAII.Query.generate(QueryGenerationRequest(
+    ask = "What products have the highest profit margin by region?",
+    parameters = {
+        "PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL": True,
+        "PUBLIC.DEEP_THINKING.ENABLED": True,
+        "PUBLIC.LIKED_QUERIES.LEARNING_MODE": "few-shot"
+    },
+    use_cache = False
+))
+```
+
+This combination enables advanced query analysis along with deeper thinking and example-based learning, forcing a fresh generation without using cache.
 
 ### Async Query Generation
 
