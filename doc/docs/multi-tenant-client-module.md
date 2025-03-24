@@ -58,6 +58,8 @@ The table below summarizes how to access different modules in both the static an
 
 This setup provides flexibility by allowing different clients to interact with different databases and configurations, all within the same application.
 
+### Example of using multi-tenant module
 
+See this notebook: https://github.com/waii-ai/waii-sdk-py/blob/main/doc/docs/waii-multi-user-example.ipynb
 
 
