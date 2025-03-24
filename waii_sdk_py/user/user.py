@@ -52,7 +52,7 @@ class DelAccessKeyResponse(WaiiBaseModel):
     pass
 
 
-class GetUserInfoRequest:
+class GetUserInfoRequest(WaiiBaseModel):
     pass
 
 
