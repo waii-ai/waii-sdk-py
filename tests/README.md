@@ -27,6 +27,22 @@ VALUES
 GRANT ALL PRIVILEGES ON DATABASE waii_sdk_test TO waii;
 GRANT ALL PRIVILEGES ON TABLE public.movies TO waii;
 
+CREATE DATABASE waii_sdk_test_copy;
+\c waii_sdk_test_copy
+CREATE table public.movies (id serial primary key, title text, year integer, runtime integer, genres text[], director text, actors text[], plot text, poster text, imdb text, production text, website text, response text, created_at timestamp, updated_at timestamp);
+INSERT INTO public.movies (title, year, runtime, genres, director, actors, plot, poster, imdb, production, website, response, created_at, updated_at)
+VALUES
+    ('The Shawshank Redemption', 1994, 142, ARRAY['Drama'], 'Frank Darabont', ARRAY['Tim Robbins', 'Morgan Freeman', 'Bob Gunton'], 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.', 'http://example.com/shawshank.jpg', 'tt0111161', 'Castle Rock Entertainment', 'http://www.shawshankredemption.com', 'True', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    
+    ('Inception', 2010, 148, ARRAY['Action', 'Adventure', 'Sci-Fi'], 'Christopher Nolan', ARRAY['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Ellen Page'], 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.', 'http://example.com/inception.jpg', 'tt1375666', 'Warner Bros. Pictures', 'http://www.inception-movie.com', 'True', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    
+    ('Pulp Fiction', 1994, 154, ARRAY['Crime', 'Drama'], 'Quentin Tarantino', ARRAY['John Travolta', 'Uma Thurman', 'Samuel L. Jackson'], 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.', 'http://example.com/pulpfiction.jpg', 'tt0110912', 'Miramax', 'http://www.pulpfiction.com', 'True', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    
+    ('The Matrix', 1999, 136, ARRAY['Action', 'Sci-Fi'], 'Lana Wachowski, Lilly Wachowski', ARRAY['Keanu Reeves', 'Laurence Fishburne', 'Carrie-Anne Moss'], 'A computer programmer discovers that reality as he knows it is a simulation created by machines to subjugate humanity.', 'http://example.com/matrix.jpg', 'tt0133093', 'Warner Bros. Pictures', 'http://www.whatisthematrix.com', 'True', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    
+GRANT ALL PRIVILEGES ON DATABASE waii_sdk_test_copy TO waii;
+GRANT ALL PRIVILEGES ON TABLE public.movies TO waii;
+
 CREATE DATABASE waii_sdk_test2;
 \c waii_sdk_test2
 CREATE table public.albums (id serial primary key, title text, year integer, artist text, genre text, tracks text[], cover text, website text, created_at timestamp, updated_at timestamp);
