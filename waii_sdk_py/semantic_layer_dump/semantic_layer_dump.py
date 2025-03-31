@@ -6,44 +6,88 @@ from waii_sdk_py.query import LikedQuery
 from waii_sdk_py.semantic_context import SemanticStatement
 from waii_sdk_py.waii_http_client.waii_http_client import WaiiHttpClient
 
+from typing import Dict, Any, Union
+from enum import Enum
 
-GET_SEMANTIC_DUMP = "get-semantic-dump"
 
-class Metadata(WaiiBaseModel):
-    exported_at: str
-    source_dialect: str
-    source_database: str
+IMPORT_SEMANTIC_DUMP = "semantic-layer/import"
+EXPORT_SEMANTIC_DUMP = "semantic-layer/export"
+IMPORT_SEMANTIC_DUMP_STATUS = "semantic-layer/import/status"
+EXPORT_SEMANTIC_DUMP_STATUS = "semantic-layer/export/status"
 
-class DatabaseConfig(WaiiBaseModel):
-    content_filters: List[SearchContext]
 
-class SemanticLayerDump(WaiiBaseModel):
-    version: str
-    metadata: Optional[Metadata] = None
-    database: Optional[DatabaseConfig] = None
-    schemas: Optional[List[SchemaDefinition]] = None
-    semantic_context: Optional[List[SemanticStatement]] = None
-    liked_queries: Optional[List[LikedQuery]] = None
+class OperationStatus(str, Enum):
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+    IN_PROGRESS = "in_progress"
+    NOT_EXISTS = "not_exists"
 
-class GetSemanticLayerDumpRequest(WaiiBaseModel):
+class CheckOperationStatusRequest(WaiiBaseModel):
+    op_id: str
+
+class CheckOperationStatusResponse(WaiiBaseModel):
+    op_id: str
+    status: OperationStatus
+    info: Union[Optional[str], Any] = None
+
+class ExportSemanticLayerDumpRequest(WaiiBaseModel):
     db_conn_key: str
-    search_context: SearchContext
+    search_context: List[SearchContext] = [SearchContext()]
 
-class GetSemanticLayerDumpResponse(WaiiBaseModel):
-    dump: SemanticLayerDump
+class ExportSemanticLayerDumpResponse(WaiiBaseModel):
+    op_id: str
+
+class ImportSemanticLayerDumpRequest(WaiiBaseModel):
+    db_conn_key: str
+    configuration: Dict[str, Any]
+    schema_mapping: Dict[str, str] = {}
+    database_mapping: Dict[str, str] = {}
+    search_context: List[SearchContext] = [SearchContext()]
+
+class ImportSemanticLayerDumpResponse(WaiiBaseModel):
+    op_id: str
+
+
 
 class SemanticLayerDumpImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
         self.http_client = http_client
 
-    def get_dump(
-            self, params: GetSemanticLayerDumpRequest
-    ) -> GetSemanticLayerDumpResponse:
+    def export_dump(
+            self, params: ExportSemanticLayerDumpRequest
+    ) -> ExportSemanticLayerDumpResponse:
         return self.http_client.common_fetch(
-            GET_SEMANTIC_DUMP,
+            EXPORT_SEMANTIC_DUMP,
             params,
-            GetSemanticLayerDumpResponse
+            ExportSemanticLayerDumpResponse
         )
     
-SemanticLayerDumps = SemanticLayerDumpImpl(WaiiHttpClient.get_instance())
+    def import_dump(
+            self, params: ImportSemanticLayerDumpRequest
+    ) -> ImportSemanticLayerDumpResponse:
+        return self.http_client.common_fetch(
+            IMPORT_SEMANTIC_DUMP,
+            params,
+            ImportSemanticLayerDumpResponse
+        )
+    
+    def import_dump_status(
+            self, params: CheckOperationStatusRequest
+    ) -> CheckOperationStatusResponse:
+        return self.http_client.common_fetch(
+            IMPORT_SEMANTIC_DUMP_STATUS,
+            params,
+            CheckOperationStatusResponse
+        )
+    
+    def export_dump_status(
+            self, params: CheckOperationStatusRequest
+    ) -> CheckOperationStatusResponse:
+        return self.http_client.common_fetch(
+            EXPORT_SEMANTIC_DUMP_STATUS,
+            params,
+            CheckOperationStatusResponse
+        )
+    
+SemanticLayerDump = SemanticLayerDumpImpl(WaiiHttpClient.get_instance())
