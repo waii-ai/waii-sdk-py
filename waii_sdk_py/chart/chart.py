@@ -56,7 +56,7 @@ class VegaliteChartSpec(WaiiBaseModel):
 
 class ChartTweak(WaiiBaseModel):
     ask: Optional[str]
-    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec]]
+    chart_spec: Optional[Union[SuperSetChartSpec, MetabaseChartSpec, PlotlyChartSpec, VegaliteChartSpec]]
 
     def __str__(self):
         return f"previous ask={self.ask}, previous chart_spec={self.chart_spec})\n"

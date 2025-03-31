@@ -81,6 +81,11 @@ module.exports = {
                     type: 'doc',
                     id: 'async-client',
                     label: 'Async client'
+                },
+                {
+                    type: 'doc',
+                    id: 'waii-user-roles',
+                    label: 'Waii User Roles'
                 }
             ],
         },

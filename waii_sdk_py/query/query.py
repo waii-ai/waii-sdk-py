@@ -9,7 +9,7 @@ from enum import Enum, IntEnum
 
 from ..my_pydantic import WaiiBaseModel, Field
 
-from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
+from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest, AsyncObjectResponse, CommonResponse
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
 from ..waii_http_client import WaiiHttpClient
@@ -34,6 +34,7 @@ SEMANTIC_CONTEXT_CHECKER_ENDPOINT = "semantic-context-checker"
 APPLY_TABLE_ACCESS_RULES_ENDPOINT = "apply-table-access-rules"
 SUBMIT_GENERATE_QUERY_ENDPOINT = "submit-generate-query"
 GET_GENERATED_QUERY_ENDPOINT = "get-generated-query"
+GET_LIKED_QUERY_ENDPOINT = "get-liked-query"
 
 
 class DebugInfoType(str, Enum):
@@ -160,6 +161,7 @@ class GeneratedQuery(WaiiBaseModel):
     confidence_score: Optional[ConfidenceScore]
     debug_info: Optional[Dict[str, Any]] = {}
     elapsed_time_ms: Optional[int] = None  # elapsed time in milliseconds
+    assumptions: Optional[List[str]] = None
 
     http_client: Optional[Any] = Field(default=None, exclude=True)
 
@@ -230,6 +232,7 @@ class GetQueryResultResponse(WaiiBaseModel):
             self.rows, columns=[col.name for col in self.column_definitions]
         )
 
+
 class LikedQuery(WaiiBaseModel):
     # you need to specify either query_uuid or ask/query
     query_uuid: Optional[str]
@@ -247,6 +250,15 @@ class LikedQuery(WaiiBaseModel):
     target_user_id: Optional[str] = None
     target_tenant_id: Optional[str] = None
     target_org_id: Optional[str] = None
+
+
+class GetLikedQueryRequest(CommonRequest):
+    query_uuid: Optional[str] = None
+
+
+class GetLikedQueryResponse(CommonResponse):
+    queries: Optional[List[LikedQuery]] = None
+
 
 class LikeQueryRequest(CommonRequest, LikedQuery):
     pass
@@ -565,6 +577,11 @@ class QueryImpl:
     ) -> GeneratedQuery:
         return self.http_client.common_fetch(
             GET_GENERATED_QUERY_ENDPOINT, params, GeneratedQuery
+        )
+
+    def get_liked_query(self, params: GetLikedQueryRequest) -> GetLikedQueryResponse:
+        return self.http_client.common_fetch(
+            GET_LIKED_QUERY_ENDPOINT, params, GetLikedQueryResponse
         )
 
 

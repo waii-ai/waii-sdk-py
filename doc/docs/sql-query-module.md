@@ -49,6 +49,11 @@ Parameter fields:
 - `use_cache`: Whether to use cache or not, default is True. If you set it to False, it will always generate a new query by calling LLM.
 - `model`: Which LLM to be used to generate queries. By default system will choose a model.
 - `use_example_queries`: Whether to use example queries (aka liked-queries) or not, default is True. If you set it to False, it will not use example queries to generate the query.
+- `parameters`: Dictionary of additional configuration parameters for query generation:
+  - `PUBLIC.LIKED_QUERIES.ENABLED`: Boolean (`True`/`False`) - Enable using liked queries as examples (default is True)
+  - `PUBLIC.LIKED_QUERIES.LEARNING_MODE`: String - Values: `"disabled"`, `"single"`, `"few-shot"` (default is `few-shot`)
+  - `PUBLIC.DEEP_THINKING.ENABLED`: Boolean - Enable deeper thinking for complex queries, it requires configure "reasoning" model like o3-mini, deepseek-R1, etc. (default is False)
+  - `PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL`: Boolean - Enable comprehensive query analysis, for example assumptions, clarify questions, etc. (default is False)
 
 **Examples:**
     
@@ -107,6 +112,7 @@ The above query will only search tables from `schema1.table1` and `schema2.*`
 - `timestamp_ms`: timestamp when the query is generated
 - `elapsed_time_ms`: total elapsed time (in milli-seconds) for the query generation
 - `access_rule_protection_status`: `AccessRuleProtectionStatus` object showing  query protection status regarding access rules
+- `assumptions`: a list of assumptions the model made during the query generation. It only got added when ``PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL` is set to `true`
 
 #### Tips to use tweak to update existing query
 
@@ -187,6 +193,35 @@ In order to specify which model to use, you can set `model` field in the request
         ask = "How many tables are there?", 
         model="GPT-4o"))
 ```
+
+#### **Enable query analysis:**
+
+```python
+>>> WAII.Query.generate(QueryGenerationRequest(
+    ask = "Tell me the busiest day",
+    parameters = {"PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL": True}
+))
+```
+
+This enables comprehensive query analysis which provides deeper insights into assumptions, clarify questions, etc.
+
+It may return a query returns with `assumptions` field like `The term 'busiest day' refers to the day with the highest number of queries executed.`
+
+#### **Combine analysis with other parameters:**
+
+```python
+>>> WAII.Query.generate(QueryGenerationRequest(
+    ask = "What products have the highest profit margin by region?",
+    parameters = {
+        "PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL": True,
+        "PUBLIC.DEEP_THINKING.ENABLED": True,
+        "PUBLIC.LIKED_QUERIES.LEARNING_MODE": "few-shot"
+    },
+    use_cache = False
+))
+```
+
+This combination enables advanced query analysis along with deeper thinking and example-based learning, forcing a fresh generation without using cache.
 
 ### Async Query Generation
 
@@ -422,6 +457,38 @@ This will 'like' the query on behalf of the user `user@example.com`.
 Admin can also specify the `target_user_id`, `target_tenant_id` to '*' to like the query on behalf of all users or all tenants.
 
 e.g. `... target_user_id='*', target_tenant_id='my-company.com'` will like the query on behalf of all users in `my-company.com` tenant.
+
+### Get Liked Queries
+
+```python
+Query.get_liked_query(params: GetLikedQueryRequest) -> GetLikedQueryResponse
+```
+
+This method retrieves previously liked queries from the system.
+
+Parameters:
+- `query_uuid`: (Optional) If specified, returns only the liked query with this UUID. If not specified, returns all liked queries the user has access to.
+
+Output:
+- `queries`: List of `LikedQuery` objects that contain information about the liked queries.
+
+Example:
+
+```python
+# Get all liked queries
+all_liked_queries = WAII.Query.get_liked_query(GetLikedQueryRequest())
+
+# Get a specific liked query by UUID
+specific_liked_query = WAII.Query.get_liked_query(GetLikedQueryRequest(query_uuid="01afbd1e-0001-d31e-0022-ba8700a8209e"))
+
+# Process the results
+for query in all_liked_queries.queries:
+    print(f"Ask: {query.ask}")
+    print(f"Query: {query.query}")
+    print(f"Liked: {query.liked}")
+```
+
+Note: You need the appropriate permissions (PUBLISH_LIKED_QUERIES) to access liked queries.
 
 ### Describe
 

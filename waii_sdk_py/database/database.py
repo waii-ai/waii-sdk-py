@@ -1,3 +1,4 @@
+import base64
 import inspect
 import json
 import warnings
@@ -26,6 +27,8 @@ GET_SIMILARITY_SEARCH_INDEX_ENDPOINT = "get-similarity-search-index"
 DELETE_SIMILARITY_SEARCH_INDEX_ENDPOINT = "delete-similarity-search-index"
 GET_SIMILARITY_SEARCH_INDEX_TABLE_ENDPOINT = "get-similarity-search-index-table"
 CHECK_SIMILARITY_SEARCH_INDEX_STATUS_ENDPOINT = "check-similarity-search-index-status"
+INGEST_DOCUMENT_ENDPOINT = "ingest-document"
+GET_INGEST_DOCUMENT_JOB_STATUS_ENDPOINT = "get-ingest-document-job-status"
 
 
 class SchemaName(WaiiBaseModel):
@@ -425,6 +428,35 @@ class GetModelsResponse(CommonResponse):
     models: Optional[List[Model]] = None
 
 
+class IngestDocumentJobStatus(str, Enum):
+    in_progress = "in_progress"
+    completed = "completed"
+    failed = "failed"
+
+
+class IngestDocumentRequest(LLMBasedRequest):
+    content: Optional[str] = None
+    # is it a binary content? if yes, we will use base64 to decode it (and the content should already be encoded using base64)
+    is_binary: Optional[bool] = False
+    url: Optional[str] = None
+    content_type: Optional[str] = None
+    filename: Optional[str] = None
+
+
+class IngestDocumentResponse(CommonResponse):
+    ingest_document_job_id: str
+
+
+class GetIngestDocumentJobStatusRequest(CommonRequest):
+    ingest_document_job_id: str
+
+
+class GetIngestDocumentJobStatusResponse(CommonResponse):
+    status: IngestDocumentJobStatus
+    message: Optional[str] = None
+    progress: Optional[float] = None  # 0-100%
+
+
 class DatabaseImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -574,6 +606,20 @@ class DatabaseImpl:
     ) -> GetModelsResponse:
         return self.http_client.common_fetch(
             GET_MODELS_ENDPOINT, params, GetModelsResponse, need_scope=False
+        )
+
+    def ingest_document(
+            self, params: IngestDocumentRequest
+    ) -> IngestDocumentResponse:
+        return self.http_client.common_fetch(
+            INGEST_DOCUMENT_ENDPOINT, params, IngestDocumentResponse
+        )
+
+    def get_ingest_document_job_status(
+            self, params: GetIngestDocumentJobStatusRequest
+    ) -> GetIngestDocumentJobStatusResponse:
+        return self.http_client.common_fetch(
+            GET_INGEST_DOCUMENT_JOB_STATUS_ENDPOINT, params, GetIngestDocumentJobStatusResponse
         )
 
 

@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from ..common import LLMBasedRequest
+from ..common import LLMBasedRequest, CommonRequest, CommonResponse
 from ..database import SearchContext
 from ..my_pydantic import WaiiBaseModel
 from waii_sdk_py.utils import wrap_methods_with_async
@@ -8,6 +8,12 @@ from ..waii_http_client import WaiiHttpClient
 
 MODIFY_ENDPOINT = 'update-semantic-context'
 GET_ENDPOINT = 'get-semantic-context'
+ENABLE_ENDPOINT = 'enable-semantic-context'
+DISABLE_ENDPOINT = 'disable-semantic-context'
+
+
+class SemanticStatementWarning(WaiiBaseModel):
+    message: str
 
 
 class SemanticStatement(WaiiBaseModel):
@@ -30,6 +36,12 @@ class SemanticStatement(WaiiBaseModel):
 
     # extract prompt from the statement, if not specified, then use statement as extract prompt
     summarization_prompt: Optional[str] = None
+
+    # Whether this semantic statement is enabled
+    enabled: Optional[bool] = True
+
+    # Warnings associated with this semantic statement
+    warnings: Optional[List[SemanticStatementWarning]] = None
 
     # filters for user, tenant and org
     user_id: Optional[str] = '*'
@@ -71,8 +83,23 @@ class GetSemanticContextRequest(LLMBasedRequest):
 
 class GetSemanticContextResponse(WaiiBaseModel):
     semantic_context: Optional[List[SemanticStatement]] = None
-
     available_statements: Optional[int] = 0
+
+
+class EnableSemanticContextRequest(CommonRequest):
+    statement_ids: List[str]
+
+
+class EnableSemanticContextResponse(CommonResponse):
+    statement_ids: List[str]  # successfully enabled statement ids
+
+
+class DisableSemanticContextRequest(CommonRequest):
+    statement_ids: List[str]
+
+
+class DisableSemanticContextResponse(CommonResponse):
+    statement_ids: List[str]  # successfully disabled statement ids
 
 
 class SemanticContextImpl:
@@ -80,14 +107,19 @@ class SemanticContextImpl:
     def __init__(self, http_client: WaiiHttpClient):
         self.http_client = http_client
 
-    def modify_semantic_context(self,params: ModifySemanticContextRequest) -> ModifySemanticContextResponse:
+    def modify_semantic_context(self, params: ModifySemanticContextRequest) -> ModifySemanticContextResponse:
         return self.http_client.common_fetch(MODIFY_ENDPOINT, params, ModifySemanticContextResponse)
-
 
     def get_semantic_context(self, params: Optional[GetSemanticContextRequest] = None) -> GetSemanticContextResponse:
         if params == None:
             params = GetSemanticContextRequest()
         return self.http_client.common_fetch(GET_ENDPOINT, params, GetSemanticContextResponse)
+
+    def enable_semantic_context(self, params: EnableSemanticContextRequest) -> EnableSemanticContextResponse:
+        return self.http_client.common_fetch(ENABLE_ENDPOINT, params, EnableSemanticContextResponse)
+
+    def disable_semantic_context(self, params: DisableSemanticContextRequest) -> DisableSemanticContextResponse:
+        return self.http_client.common_fetch(DISABLE_ENDPOINT, params, DisableSemanticContextResponse)
 
 
 class AsyncSemanticContextImpl:
