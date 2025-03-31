@@ -1,6 +1,7 @@
 import unittest
 import pytest
 from waii_sdk_py import WAII
+from waii_sdk_py.common import OperationStatus
 from waii_sdk_py.database import *
 from waii_sdk_py.query import *
 from waii_sdk_py.semantic_layer_dump import *

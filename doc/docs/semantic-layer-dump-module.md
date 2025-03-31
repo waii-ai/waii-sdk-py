@@ -58,8 +58,6 @@ Imports a semantic layer configuration into a specified database connection.
 Parameters of `ImportSemanticLayerDumpRequest`:
 - `db_conn_key`: (str) **Required**. The database connection key to import into.
 - `configuration`: (Dict[str, Any]) **Required**. The semantic layer configuration to import.
-- `schema_mapping`: (Dict[str, str]) Optional. Mapping of source schemas to target schemas. Default is empty dictionary.
-- `database_mapping`: (Dict[str, str]) Optional. Mapping of source databases to target databases. Default is empty dictionary.
 - `search_context`: (List[SearchContext]) Optional. List of search contexts. Default is a single empty SearchContext.
 
 Example:
@@ -183,6 +181,9 @@ elif status.status == OperationStatus.IN_PROGRESS:
 Polling example for long running operation:
 
 ```python
+from waii_sdk_py.common import OperationStatus
+from waii_sdk_py.semantic_layer_dump import *
+
 import time
 import yaml
 

@@ -1,4 +1,5 @@
 
+from waii_sdk_py.common import CheckOperationStatusRequest, CheckOperationStatusResponse
 from waii_sdk_py.my_pydantic import WaiiBaseModel
 from typing import List, Optional
 from waii_sdk_py.database import SearchContext, SchemaDefinition
@@ -14,21 +15,6 @@ IMPORT_SEMANTIC_DUMP = "semantic-layer/import"
 EXPORT_SEMANTIC_DUMP = "semantic-layer/export"
 IMPORT_SEMANTIC_DUMP_STATUS = "semantic-layer/import/status"
 EXPORT_SEMANTIC_DUMP_STATUS = "semantic-layer/export/status"
-
-
-class OperationStatus(str, Enum):
-    SUCCEEDED = "succeeded"
-    FAILED = "failed"
-    IN_PROGRESS = "in_progress"
-    NOT_EXISTS = "not_exists"
-
-class CheckOperationStatusRequest(WaiiBaseModel):
-    op_id: str
-
-class CheckOperationStatusResponse(WaiiBaseModel):
-    op_id: str
-    status: OperationStatus
-    info: Union[Optional[str], Any] = None
 
 class ExportSemanticLayerDumpRequest(WaiiBaseModel):
     db_conn_key: str
