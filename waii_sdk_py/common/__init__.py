@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 from ..my_pydantic import WaiiBaseModel
 
@@ -34,7 +34,7 @@ class OperationStatus(str, Enum):
 class CheckOperationStatusResponse(CommonResponse):
     op_id: str
     status: OperationStatus
-    info: Optional[str] = None
+    info: Union[Optional[str], Any] = None
 
 
 class AsyncObjectResponse(CommonResponse):
