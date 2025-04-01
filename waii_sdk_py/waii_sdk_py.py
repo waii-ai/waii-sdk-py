@@ -14,6 +14,7 @@ from .user.user_static import User
 from .waii_http_client import WaiiHttpClient
 import importlib.metadata
 from .my_pydantic import WaiiBaseModel
+from .semantic_layer_dump import SemanticLayerDumpImpl, SemanticLayerDump
 
 GET_MODELS_ENDPOINT = "get-models"
 
@@ -60,6 +61,7 @@ class Waii:
         self.user = UserImpl(http_client)
         self.access_rules = AccessRuleImpl(http_client)
         self.settings = SettingsImpl(http_client)
+        self.semantic_layer_dump = SemanticLayerDumpImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history
@@ -69,6 +71,7 @@ class Waii:
             self.Chart = self.chart
             self.Chat = self.chat
             self.User = self.user
+            self.SemanticLayerDump = self.semantic_layer_dump
             Query.http_client = http_client
             History.http_client = http_client
             Database.http_client = http_client
@@ -76,7 +79,7 @@ class Waii:
             User.http_client = http_client
             Chat.http_client = http_client
             Chart.http_client = http_client
-
+            SemanticLayerDump.http_client = http_client
 
         conns = self.database.get_connections().connectors
         if len(conns) > 0:
