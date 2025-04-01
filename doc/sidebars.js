@@ -74,6 +74,11 @@ module.exports = {
                 },
                 {
                     type: 'doc',
+                    id: 'semantic-layer-dump-module',
+                    label: 'Semantic Layer Export & Import'
+                },
+                {
+                    type: 'doc',
                     id: 'async-client',
                     label: 'Async client'
                 },
