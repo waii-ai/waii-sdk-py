@@ -84,7 +84,7 @@ module.exports = {
                 },
                 {
                     type: 'doc',
-                    id: 'superset-rendering',
+                    id: 'superset-waii-usage',
                     label: 'Superset Usage With Waii'
                 },
                 {

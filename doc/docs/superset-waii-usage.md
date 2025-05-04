@@ -1,5 +1,5 @@
 ---
-id: superset-rendering
+id: superset-waii-usage
 title: Superset + Waii Usage 
 ---
 
