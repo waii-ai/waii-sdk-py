@@ -84,6 +84,11 @@ module.exports = {
                 },
                 {
                     type: 'doc',
+                    id: 'superset-rendering',
+                    label: 'Superset Usage With Waii'
+                },
+                {
+                    type: 'doc',
                     id: 'waii-user-roles',
                     label: 'Waii User Roles'
                 }
