@@ -117,7 +117,7 @@ statement = SemanticStatement(
 ```
 
 Note:
-- In order to add a statement to a specific user, or a tenant which you are not part of. You must impersonate as the user (or the user belongs to the tenant). You can do this by setting the `impersonate_user` field in the request object. For example, if you want to add a statement to user `user_id_1` (refer to [user-module.md](user-module.md) impersonate as `user_id_1`), you can do like this:
+- In order to add a statement to a specific user, or a tenant which you are not part of. You must impersonate as the user (or the user belongs to the tenant). You can do this by setting the `impersonate_user` field in the request object. For example, if you want to add a statement to user `user_id_1` (refer to [user-module](user-module) impersonate as `user_id_1`), you can do like this:
 
 ```python
 client1_sdk.initialize(url='...', api_key="<your-api-key>")
