@@ -1,6 +1,10 @@
 from enum import Enum
 from typing import Optional, List
 
+from waii_sdk_py.database import SearchContext
+
+from waii_sdk_py.semantic_context import SemanticStatement
+
 from ..my_pydantic import WaiiBaseModel
 
 from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
@@ -41,6 +45,11 @@ class ChatRequest(LLMBasedRequest):
 
     # optional by default there is no limit
     module_limit_in_response: Optional[int]
+
+    additional_context: Optional[List[SemanticStatement]] = None
+
+    search_context: Optional[List[SearchContext]] = None
+
 
 
 class ChatResponseData(WaiiBaseModel):

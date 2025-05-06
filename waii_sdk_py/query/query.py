@@ -75,6 +75,7 @@ class QueryGenerationRequest(LLMBasedRequest):
     flags: Optional[Dict[str, Any]] = {}
     # do we want to use example queries during query generation
     use_example_queries: Optional[bool] = True
+    additional_context: Optional[List[SemanticStatement]] = None
 
 
 class DescribeQueryResponse(WaiiBaseModel):
