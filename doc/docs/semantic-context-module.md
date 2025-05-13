@@ -47,7 +47,7 @@ For `updated`, you should include a list of `SemanticStatement` object, which in
 - `scope`: (str), the scope of the statement, such as `*` (which means it applies to all queries), or `db.schema.table.column` (which means it applies to specific column of specific table of specific schema of specific database). This is optional, if not specified, it will be `*`. When `always_include` is False, `scope` will be ignored.
 - `always_include`: should we always include this statement during query generation? True/False. Default is True. This is optional. When it is False, we will use embedding/LLM to do a RAG process and match statements during query generation.
 - `critical`: This is optional parameter whose default value is False.If set to True it checks the application of the rule in a second step after query generation if the rule is within scope
-- `lookup_summaries`: (List[str]) Only take effect when `always_include=False`, you can specify a list of search keys for this statement, if not specified, then use statement as search key. This is optional.
+- `lookup_summaries`: (List[str]) Only take effect when `always_include=False`, you can specify a list of search keys for this statement, if not specified, thenuse statement as search key. This is optional.
 - `summarization_prompt`: extract prompt from the statement, if not specified, then use statement as extract prompt. This is optional.
 
 For each semantic context, it can be applied to a specific set of users, which are determined by the `user_id`, `tenant_id`, and `org_id` fields. If you don't specify them, it will apply to all users.
