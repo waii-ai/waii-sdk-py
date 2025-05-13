@@ -54,6 +54,9 @@ Parameter fields:
   - `PUBLIC.LIKED_QUERIES.LEARNING_MODE`: String - Values: `"disabled"`, `"single"`, `"few-shot"` (default is `few-shot`)
   - `PUBLIC.DEEP_THINKING.ENABLED`: Boolean - Enable deeper thinking for complex queries, it requires configure "reasoning" model like o3-mini, deepseek-R1, etc. (default is False)
   - `PUBLIC.QUERY_GENERATION.ANALYSIS.ENABLE_ALL`: Boolean - Enable comprehensive query analysis, for example assumptions, clarify questions, etc. (default is False)
+  - `PUBLIC.GUARDRAIL.INVALID_QUESTION_CHECKER.ENABLED`: Boolean - Additional checks to prevent hallucination (default is False)
+  - `PUBLIC.REFLECTION.ENABLED`: Boolean - Additional checks on generated query to check interpretation of user question (default is False)
+- `additional_context`: (optional) List of `SemanticStatement` objects to provide additional context during query generation. These context will be treated like they are part of the system and follow all fields of the context. See [Semantic Context module](semantic-context-module) for detailed information about `SemanticStatement` fields and usage patterns.
 
 **Examples:**
     

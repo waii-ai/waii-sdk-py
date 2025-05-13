@@ -52,6 +52,7 @@ The ChatResponse contains different objects that represent the answer to the que
   - `sql`: A `GeneratedQuery` object containing the generated query to answer the question, if created
   - `data`: A `GetQueryResultResponse` object containing the result of the generated query if it was run
   - `chart_spec`: A `ChartGenerationResponse` object containing the information for the visualization
+- `additional_context`: (optional) List of `SemanticStatement` objects to provide additional context during chat. These context will be treated like they are part of the system and follow all fields of the context. See [Semantic Context module](semantic-context-module) for detailed information about `SemanticStatement` fields and usage patterns.
 
 **Examples:**
     
