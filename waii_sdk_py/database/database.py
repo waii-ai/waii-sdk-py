@@ -340,7 +340,7 @@ class UpdateTableDefinitionResponse(CommonResponse):
 
 class UpdateSchemaDescriptionRequest(WaiiBaseModel):
     schema_name: SchemaName
-    description: SchemaDescription
+    description: Optional[SchemaDescription] = None
 
 
 class UpdateTableDescriptionResponse(CommonResponse):
