@@ -172,7 +172,7 @@ class TableDefinition(WaiiBaseModel):
 class SchemaDefinition(WaiiBaseModel):
     name: SchemaName
     tables: Optional[List[TableDefinition]]
-    description: Optional[SchemaDescription]
+    description: Optional[SchemaDescription] = None
 
 
 class CatalogDefinition(WaiiBaseModel):
@@ -338,10 +338,9 @@ class UpdateColumnDescriptionResponse(CommonResponse):
 class UpdateTableDefinitionResponse(CommonResponse):
     updated_tables: Optional[List[TableName]]
 
-
 class UpdateSchemaDescriptionRequest(WaiiBaseModel):
     schema_name: SchemaName
-    description: str
+    description: SchemaDescription
 
 
 class UpdateTableDescriptionResponse(CommonResponse):
@@ -538,7 +537,7 @@ class DatabaseImpl:
         self, params: UpdateSchemaDescriptionRequest
     ) -> UpdateSchemaDescriptionResponse:
         return self.http_client.common_fetch(
-            UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params, GetCatalogResponse
+            UPDATE_SCHEMA_DESCRIPTION_ENDPOINT, params, UpdateSchemaDescriptionResponse
         )
 
     def update_column_description(
