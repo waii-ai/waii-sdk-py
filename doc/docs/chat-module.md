@@ -39,6 +39,7 @@ This method sends a message to the chatbot based on the provided parameters.
 - `model`: Which LLM to be used to generate queries. By default system will choose a model.
 - `modules`: List of components to generate (Query, Data, Chart, Tables, Context). Default: all of them.
 - `chart_type`: Currently waii supports vegalite, superset and metabase
+- `additional_context`: (optional) List of `SemanticStatement` objects to provide additional context during chat. These context will be treated like they are part of the system and follow all fields of the context. See [Semantic Context module](semantic-context-module) for detailed information about `SemanticStatement` fields and usage patterns.
 
 The ChatResponse contains different objects that represent the answer to the question
 - `response`: A templated response representing the answer to the question. The values for the templates can be found in the chat_response_data. The possible templates will be listed in the template section
@@ -52,7 +53,6 @@ The ChatResponse contains different objects that represent the answer to the que
   - `sql`: A `GeneratedQuery` object containing the generated query to answer the question, if created
   - `data`: A `GetQueryResultResponse` object containing the result of the generated query if it was run
   - `chart_spec`: A `ChartGenerationResponse` object containing the information for the visualization
-- `additional_context`: (optional) List of `SemanticStatement` objects to provide additional context during chat. These context will be treated like they are part of the system and follow all fields of the context. See [Semantic Context module](semantic-context-module) for detailed information about `SemanticStatement` fields and usage patterns.
 
 **Examples:**
     
