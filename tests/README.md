@@ -12,7 +12,7 @@ Create DB1
 
 ```
 CREATE DATABASE waii_sdk_test;
-\c waii_sdk_test
+\c waii_sdk_test;
 CREATE table public.movies (id serial primary key, title text, year integer, runtime integer, genres text[], director text, actors text[], plot text, poster text, imdb text, production text, website text, response text, created_at timestamp, updated_at timestamp);
 INSERT INTO public.movies (title, year, runtime, genres, director, actors, plot, poster, imdb, production, website, response, created_at, updated_at)
 VALUES
@@ -28,7 +28,7 @@ GRANT ALL PRIVILEGES ON DATABASE waii_sdk_test TO waii;
 GRANT ALL PRIVILEGES ON TABLE public.movies TO waii;
 
 CREATE DATABASE waii_sdk_test_copy;
-\c waii_sdk_test_copy
+\c waii_sdk_test_copy;
 CREATE table public.movies (id serial primary key, title text, year integer, runtime integer, genres text[], director text, actors text[], plot text, poster text, imdb text, production text, website text, response text, created_at timestamp, updated_at timestamp);
 INSERT INTO public.movies (title, year, runtime, genres, director, actors, plot, poster, imdb, production, website, response, created_at, updated_at)
 VALUES
@@ -44,7 +44,7 @@ GRANT ALL PRIVILEGES ON DATABASE waii_sdk_test_copy TO waii;
 GRANT ALL PRIVILEGES ON TABLE public.movies TO waii;
 
 CREATE DATABASE waii_sdk_test2;
-\c waii_sdk_test2
+\c waii_sdk_test2;
 CREATE table public.albums (id serial primary key, title text, year integer, artist text, genre text, tracks text[], cover text, website text, created_at timestamp, updated_at timestamp);
 
 INSERT INTO public.albums (title, year, artist, genre, tracks, cover, website, created_at, updated_at)
