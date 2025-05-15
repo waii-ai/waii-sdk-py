@@ -3,6 +3,7 @@ import pytest
 
 import time
 
+from tests import constants
 from tests.common_test_utils import connect_db, load_db_conn1, check_table_existence
 from waii_sdk_py import WAII
 from waii_sdk_py.database import (
@@ -36,11 +37,12 @@ class TestDatabase(unittest.TestCase):
         connect_db(self.db_conn)
     
     def test_unknown_db_conn_fields_error(self):
+        port = constants.pg_port
         db_conn = DBConnection(
-            key="postgresql://waii@localhost:5432/waii_sdk_test",
+            key=f"postgresql://waii@localhost:{port}/waii_sdk_test",
             db_type="postgresql",
             host="localhost",
-            port=5432,
+            port=port,
             database="waii_sdk_test",
             uname="waii", # uname field doesn't exist (sub for username). Should be caught in the test
             password="password"
@@ -66,11 +68,12 @@ class TestDatabase(unittest.TestCase):
         assert str(e) == "<ExceptionInfo ValueError(\"Cannot set unknown fields: ['uname']\") tblen=5>"
 
         # test wrong field name in db.conn.db_content_filters
+        port = constants.pg_port
         db_conn = DBConnection(
-            key="postgresql://waii@localhost:5432/waii_sdk_test",
+            key=f"postgresql://waii@localhost:{port}/waii_sdk_test",
             db_type="postgresql",
             host="localhost",
-            port=5432,
+            port=port,
             database="waii_sdk_test",
             username="waii",
             password="password"
