@@ -22,6 +22,7 @@ CREATE_ORG_ENDPOINT = "create-org"
 UPDATE_ORG_ENDPOINT = "update-org"
 DELETE_ORG_ENDPOINT = "delete-org"
 LIST_ORGS_ENDPOINT = "list-orgs"
+CREATE_USER_SECRET_ENDPOINT = "create-user-secret"
 
 
 class CreateAccessKeyRequest(WaiiBaseModel):
@@ -93,6 +94,12 @@ class User(WaiiBaseModel):
     org_id: Optional[str]  # org id for the user
     variables: Optional[Dict[str, Any]]  # variables for the user
     roles: Optional[List[str]] = []  # roles for the user
+    
+    
+class CreateSecretRequest(CommonRequest):
+    user: User
+    secret: Dict[Any, Any]
+
 
 # Roles of the user
 class WaiiRoles:
@@ -204,6 +211,9 @@ class UserImpl:
 
     def list_users(self, params: ListUsersRequest):
         return self.http_client.common_fetch(LIST_USERS_ENDPOINT, params, ListUsersResponse, need_scope=False)
+    
+    def create_secret(self, params: CreateSecretRequest):
+        return self.http_client.common_fetch(CREATE_USER_SECRET_ENDPOINT, params, CommonResponse, need_scope=False)
 
     def create_tenant(self, params: CreateTenantRequest):
         return self.http_client.common_fetch(CREATE_TENANT_ENDPOINT, params, CommonResponse, need_scope=False)
