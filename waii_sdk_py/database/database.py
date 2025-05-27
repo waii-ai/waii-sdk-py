@@ -102,6 +102,7 @@ class RelationshipType(str, Enum):
     has_one = "has_one"
     has_many = "has_many"
     many_to_one = "many_to_one"
+    unknown = "unknown"
 
 
 class Constraint(WaiiBaseModel):
