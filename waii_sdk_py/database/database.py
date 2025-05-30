@@ -251,6 +251,7 @@ class DBConnection(WaiiBaseModel):
     client_email: Optional[str] = None
     content_filters: Optional[List[SearchContext]] = None
     sample_filters: Optional[List[SearchContext]] = None
+    index_all_databases: bool = False
 
 class ModifyDBConnectionRequest(WaiiBaseModel):
     updated: Optional[List[DBConnection]] = None
