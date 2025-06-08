@@ -201,6 +201,7 @@ class RunQueryRequest(CommonRequest):
 class RunQueryCompilerRequest(CommonRequest):
     query: str
     search_context: Optional[List[SearchContext]]
+    additional_context: Optional[List[SemanticStatement]] = None
 
 
 class RunQueryResponse(WaiiBaseModel):

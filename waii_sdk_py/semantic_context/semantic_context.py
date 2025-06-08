@@ -48,6 +48,8 @@ class SemanticStatement(WaiiBaseModel):
     tenant_id: Optional[str] = '*'
     org_id: Optional[str] = '*'
 
+    semantic_constraint: Optional[str] = None
+
 
 class ModifySemanticContextRequest(LLMBasedRequest):
     updated: Optional[List[SemanticStatement]] = None
