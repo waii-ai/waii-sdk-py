@@ -56,6 +56,8 @@ To add connection, you need to create `DBConnection` Object, which include the f
 - `host_alias`: alias of the host.
 - `user_alias`: alias of the user.
 - `push`: Waii, by default, uses pull-based connections - it pulls table definitions from your database. Set this value to true if, instead, you want to manually give the table definitions using `Database.update_table_definition`
+- `enable_multi_db_connection`: Enables support for multiple databases within a single connection configuration. When set to True, the connection can work with multiple databases. The default is False. Note that currently, only Snowflake and BigQuery support multi-database connections. Do not use the `database` field for multi-database connections; instead, use `content_filters` to specify the list of databases to be indexed, and use `default_database` to indicate the "default database" for running queries. By default, all databases accessible to the provided credentials will be indexed.
+- `default_database`: When `enable_multi_db_connection` is True, this specifies the default database to use when no database is explicitly specified in queries. This is particularly useful for database systems that support multiple databases per connection.
 
 (Deprecated field)
 - `alias`: Alias of the connection, which can be used to refer the connection in the query. If it is not set, then we will generate a key based on the connection details. This allows you to add multiple connections to the same database with different alias, you can set different db_content_filters, etc.
@@ -321,7 +323,7 @@ DBConnection(
 
 #### BigQuery
 
-Here’s an example of how to create a `DBConnection` object for BigQuery using the service account JSON:
+Here's an example of how to create a `DBConnection` object for BigQuery using the service account JSON:
 
 ##### Step 1: Create the Service Account Key (JSON)
 To create the service account key (JSON), follow the instructions in the [Google Cloud Documentation](https://cloud.google.com/iam/docs/keys-create-delete#creating).  
@@ -407,6 +409,64 @@ You can also partially specify the alias field, for example, you can only specif
 When get the DBConnection object from `get_connections` method, it will include the alias fields. When the user (indicated by api_key) is the owner of the connection, it will include "real" fields (username, host, etc. but password is not included) in addition to alias fields.
 
 When the user is not the owner of the connection, it will only include alias fields. (for the example above, it will only include `db_alias`, `host_alias`, `user_alias`, `key`, `db_type`)
+
+#### Multi-Database Connection Support
+
+For database systems that support multiple databases per connection (like Snowflake/BigQuery), you can enable multi-database support:
+
+```python
+DBConnection(
+    key = '',
+    db_type = 'snowflake',
+    # account/username/password: ... (other required credentials for snowflake)
+    enable_multi_db_connection = True,
+)
+```
+
+When `enable_multi_db_connection` is enabled:
+- The connection can access multiple databases within the same database server instance
+- `default_database` specifies which database to use when no database is explicitly specified in queries
+
+You can also use it together with content_filters to selectively include specific databases:
+
+```python
+DBConnection(
+    key = '',
+    db_type = 'snowflake',
+    account_name = 'my-account',
+    username = 'my_username',
+    password = 'my_password',
+    warehouse = 'my_warehouse',
+    role = 'my_role',
+    # Do not specify 'database' field for multi-database connections
+    enable_multi_db_connection = True,
+    default_database = 'ANALYTICS_DB',  # Default database for queries
+    content_filters = [
+        # Include only specific databases
+        SearchContext(
+            db_name="ANALYTICS_DB",
+            schema_name="*",
+            table_name="*"
+        ),
+        SearchContext(
+            db_name="SALES_DB", 
+            schema_name="*",
+            table_name="*"
+        ),
+        SearchContext(
+            db_name="MARKETING_DB",
+            schema_name="PUBLIC",  # Only PUBLIC schema from MARKETING_DB
+            table_name="*"
+        )
+    ]
+)
+```
+
+In this example:
+- The connection can access multiple databases (ANALYTICS_DB, SALES_DB, MARKETING_DB)
+- Only the specified databases will be indexed by Waii
+- Queries without explicit database specification will use ANALYTICS_DB as the default
+- All schemas from ANALYTICS_DB and SALES_DB are included, but only the PUBLIC schema from MARKETING_DB
 
 ## Get Connections
 
@@ -667,6 +727,15 @@ Database.update_constraint(params: UpdateConstraintRequest) -> UpdateConstraintR
 - `table`: `TableName` for which constraints is getting updated.
 - `cols`: List of string representing column names of constraint.
 - `constraint_type`: Type of the constraint. it could be either ConstraintType.primary or ConstraintType.foreign
+- `relationship_type`: (Optional) Type of relationship between tables when dealing with foreign key constraints. Possible values include:
+  - `one_to_one`: One-to-one relationship
+  - `one_to_many`: One-to-many relationship  
+  - `many_to_many`: Many-to-many relationship
+  - `belongs_to`: Child table belongs to parent table
+  - `has_one`: Parent table has one child record
+  - `has_many`: Parent table has many child records
+  - `many_to_one`: Many child records relate to one parent record
+  - `unknown`: Relationship type cannot be determined or is unclear
 - `src_table`: Only applicable when you are adding ConstraintType.foreign constraint. It is `TableName` where foreign key is referenced to.
 - `src_cols`: Only applicable when you are adding ConstraintType.foreign constraint.It is list of string representing column names of constraint in src_table.
 - `comment`: Any comment you want to add for constraint(Optional)
