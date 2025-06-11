@@ -378,7 +378,7 @@ Query.like(params: LikeQueryRequest) -> LikeQueryResponse
     ask: Optional[str]
     query: Optional[str]
     liked: Optional[bool] = True
-    rewrite_question: Optional[bool] = True
+    rewrite_question: Optional[bool] = False
     detailed_steps: Optional[List[str]] = []
     
     # by default, like query request applies to the current user only, there's an option to apply to other users
@@ -393,8 +393,8 @@ You can either like an generated query by specifying `query_uuid` (the `uuid` fr
 
 Or, you can specify `ask` and `query` to like a query.
 
-Important: `rewrite_question` is optional, if you set it to True (default), the system will rewrite the ask based on query and the ask. Why we do this because sometimes the ask itself is wrong, ambiguous, etc. and we want to make sure the ask is clear. 
-However, sometimes you may want to keep the original ask, you can set it to False.
+Important: `rewrite_question` is optional, if you set it to True (default False), the system will rewrite the ask based on query and the ask. Why we do this because sometimes the ask itself is wrong, ambiguous, etc. and we want to make sure the ask is clear. 
+If you want to keep the original ask, you can leave the flag False.
 
 You can specify `detailed_steps` of generating the query in LikedQuery. This is optional.
 
