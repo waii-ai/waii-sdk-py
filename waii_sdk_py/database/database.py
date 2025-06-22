@@ -369,7 +369,9 @@ class UpdateConstraintResponse(CommonResponse):
     updated_tables: Optional[List[TableName]]
 
 
-class RefreshDBConnectionRequest(WaiiBaseModel):
+class RefreshDBConnectionRequest(CommonRequest):
+    # this is deprecated, we will remove it in the future
+    # use .scope from CommonRequest instead
     db_conn_key: str
 
 
