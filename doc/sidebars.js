@@ -59,6 +59,11 @@ module.exports = {
 				},
 				{
 					type: 'doc',
+					id: 'knowledge-graph-module',
+					label: 'Knowledge Graph'
+				},
+				{
+					type: 'doc',
 					id: 'user-module',
 					label: 'User'
 				},

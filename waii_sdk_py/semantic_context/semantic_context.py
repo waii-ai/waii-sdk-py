@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from ..common import LLMBasedRequest, CommonRequest, CommonResponse
 from ..database import SearchContext
@@ -17,6 +17,7 @@ class SemanticStatementWarning(WaiiBaseModel):
 
 
 class SemanticStatement(WaiiBaseModel):
+    entity_type: Literal['semantic_statement'] = 'semantic_statement'
     id: Optional[str]
     statement: str
     labels: Optional[List[str]]

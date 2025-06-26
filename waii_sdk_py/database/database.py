@@ -7,7 +7,7 @@ from waii_sdk_py.waii_http_client import WaiiHttpClient
 from ..common import LLMBasedRequest, CommonRequest, CheckOperationStatusResponse, CheckOperationStatusRequest
 from ..my_pydantic import WaiiBaseModel, PrivateAttr
 import re
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, List, Dict, Any, Union, Literal
 from urllib.parse import urlparse, parse_qs
 from enum import Enum
 
@@ -52,6 +52,7 @@ class ColumnSampleValues(WaiiBaseModel):
 
 
 class ColumnDefinition(WaiiBaseModel):
+    entity_type: Literal['column'] = 'column'
     name: str
     type: str
     comment: Optional[str]
@@ -106,6 +107,7 @@ class RelationshipType(str, Enum):
 
 
 class Constraint(WaiiBaseModel):
+    entity_type: Literal['constraint'] = 'constraint'
     source: Optional[ConstraintDetectorType]
     table: Optional[TableName]
     cols: Optional[List[str]]
@@ -127,6 +129,7 @@ class Constraint(WaiiBaseModel):
 
 
 class TableDefinition(WaiiBaseModel):
+    entity_type: Literal['table'] = 'table'
     name: TableName
     columns: Optional[List[ColumnDefinition]]
     comment: Optional[str]
@@ -171,6 +174,7 @@ class TableDefinition(WaiiBaseModel):
         self._refs = value
 
 class SchemaDefinition(WaiiBaseModel):
+    entity_type: Literal['schema'] = 'schema'
     name: SchemaName
     tables: Optional[List[TableDefinition]]
     description: Optional[SchemaDescription] = None
