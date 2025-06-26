@@ -15,6 +15,7 @@ from .waii_http_client import WaiiHttpClient
 import importlib.metadata
 from .my_pydantic import WaiiBaseModel
 from .semantic_layer_dump import SemanticLayerDumpImpl, SemanticLayerDump
+from .kg import KnowledgeGraphImpl, AsyncKnowledgeGraphImpl
 
 GET_MODELS_ENDPOINT = "get-models"
 
@@ -45,6 +46,7 @@ class Waii:
         self.user = None
         self.access_rules = None
         self.settings = None
+        self.knowledge_graph = None
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
@@ -62,6 +64,7 @@ class Waii:
         self.access_rules = AccessRuleImpl(http_client)
         self.settings = SettingsImpl(http_client)
         self.semantic_layer_dump = SemanticLayerDumpImpl(http_client)
+        self.knowledge_graph = KnowledgeGraphImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history
@@ -72,6 +75,7 @@ class Waii:
             self.Chat = self.chat
             self.User = self.user
             self.SemanticLayerDump = self.semantic_layer_dump
+            self.KnowledgeGraph = self.knowledge_graph
             Query.http_client = http_client
             History.http_client = http_client
             Database.http_client = http_client
@@ -123,6 +127,7 @@ class AsyncWaii:
         self.access_rules = None
         self.settings = None
         self.history = None
+        self.knowledge_graph = None
 
 
 
@@ -139,6 +144,7 @@ class AsyncWaii:
         self.access_rules = AsyncAccessRuleImpl(http_client)
         self.settings = AsyncSettingsImpl(http_client)
         self.history = AsyncHistoryImpl(http_client)
+        self.knowledge_graph = AsyncKnowledgeGraphImpl(http_client)
         result = await self.database.get_connections()
 
         conns = result.connectors
