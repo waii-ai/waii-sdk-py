@@ -40,25 +40,39 @@ This method sends a message to the chatbot based on the provided parameters.
 - `modules`: List of components to generate (Query, Data, Chart, Tables, Context). Default: all of them.
 - `chart_type`: Currently waii supports vegalite, superset and metabase
 - `additional_context`: (optional) List of `SemanticStatement` objects to provide additional context during chat. These context will be treated like they are part of the system and follow all fields of the context. See [Semantic Context module](semantic-context-module) for detailed information about `SemanticStatement` fields and usage patterns.
+- `mode`: The chat mode to use. Options are:
+  - `ChatRequestMode.single_turn` (default): Standard single question-answer interaction
+  - `ChatRequestMode.multi_turn`: Enhanced multi-turn conversation with clarification and follow-up capabilities  
+  - `ChatRequestMode.deep_research`: Advanced research mode for complex analytical queries
+  - `ChatRequestMode.automatic`: System automatically chooses the best mode
 
 The ChatResponse contains different objects that represent the answer to the question
 - `response`: A templated response representing the answer to the question. The values for the templates can be found in the chat_response_data. The possible templates will be listed in the template section
 - `chat_uuid`: The uuid of the message, use this uuid as the parent uuid to continue the conversation
 - `is_new`: If sql was generated to answer this question, this field is true if the sql has been identified as a new query, not a tweak of the previous query that was maintained during the conversation
-- `timestamp`: The timestamp of the chat response
-- `response_data`: A `ChatResponseData` object containing the generated info for the question. A `ChatResponseData` object looks like
+- `timestamp_ms`: The timestamp of the chat response
+- `elapsed_time_ms`: Time elapsed for the chat response generation
+- `session_title`: Optional title for the chat session
+- `response_data`: A `ChatResponseData` or `ChatResponseDataV2` object containing the generated info for the question. A `ChatResponseData` object looks like
   - `semantic_context`: A `GetSemanticContextResponse` object containing the semantic context from the database related to the ask and generated query
   - `tables`: A `CatalogDefinition` object containing the related tables to the question
   - `catalog`: A `CatalogDefinition` object containing the related tables to the question, if created
   - `sql`: A `GeneratedQuery` object containing the generated query to answer the question, if created
   - `data`: A `GetQueryResultResponse` object containing the result of the generated query if it was run
   - `chart_spec`: A `ChartGenerationResponse` object containing the information for the visualization
+- `status_update_events`: List of `ChatStatusUpdateEvent` objects providing real-time status updates during processing
 
 **Examples:**
     
 Ask a new question:
 ```python
 >>> response = WAII.Chat.chat_message(ChatRequest(ask = "How many tables are there?"))
+```
+
+**Use multi-turn mode** for enhanced conversation:
+```python
+>>> response = WAII.Chat.chat_message(ChatRequest(ask = "Analyze our sales performance", 
+                                                 mode=ChatRequestMode.multi_turn))
 ```
 
 **Restrict response components** (only get SQL):
