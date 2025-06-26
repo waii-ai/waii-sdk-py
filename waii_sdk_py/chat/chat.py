@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Dict, Union
 
 from waii_sdk_py.database import SearchContext
 
@@ -44,6 +44,13 @@ class ChatModule(str, Enum):
     CONTEXT = "context"
 
 
+class ChatRequestMode(str, Enum):
+    automatic = "automatic"
+    single_turn = "single_turn"
+    multi_turn = "multi_turn"
+    deep_research = "deep_research"
+
+
 class ChatRequest(LLMBasedRequest):
     ask: str
 
@@ -66,6 +73,7 @@ class ChatRequest(LLMBasedRequest):
 
     search_context: Optional[List[SearchContext]] = None
 
+    mode: ChatRequestMode = ChatRequestMode.single_turn
 
 
 class ChatResponseData(WaiiBaseModel):
@@ -74,6 +82,17 @@ class ChatResponseData(WaiiBaseModel):
     chart: Optional[ChartGenerationResponse]
     semantic_context: Optional[GetSemanticContextResponse]
     tables: Optional[CatalogDefinition]
+
+
+class ChatResponseDataV2(WaiiBaseModel):
+    data: Optional[Dict[str, GetQueryResultResponse]] = None
+    query: Optional[Dict[str, GeneratedQuery]] = None
+    chart: Optional[Dict[str, ChartGenerationResponse]] = None
+    semantic_context: Optional[Dict[str, SemanticStatement]] = None
+    tables: Optional[CatalogDefinition] = None
+
+    error_info: Optional[dict] = None
+
 
 class ChatResponseStep(str, Enum):
     routing_request = "Routing Request"
@@ -86,15 +105,34 @@ class ChatResponseStep(str, Enum):
     completed = "Completed"
 
 
+class ChatStatusUpdateEvent(WaiiBaseModel):
+    title: Optional[str]
+    summary: Optional[str]
+    timestamp: Optional[int]
+    step_status: Optional[str]  # in-progress and completed
+    percentage: Optional[float]
+
+
 class ChatResponse(WaiiBaseModel):
     # template response
     response: Optional[str] = None
-    current_step: Optional[ChatResponseStep] = None
-    response_data: Optional[ChatResponseData]
-    response_selected_fields: Optional[List[ChatModule]]
+
+    # use union for the two
+    response_data: Optional[Union[ChatResponseData, ChatResponseDataV2]] = None
     is_new: Optional[bool] = False
-    timestamp_ms: Optional[int]
+    timestamp_ms: Optional[int] = None
     chat_uuid: str
+    elapsed_time_ms: Optional[int] = None
+    session_title: Optional[str] = None
+    research_plan: Optional[str] = None
+
+    # old way to display status, routing info, we have to keep it
+    current_step: Optional[ChatResponseStep] = None
+    routing_info: Optional[Dict[str, str]] = None
+    response_selected_fields: Optional[List[ChatModule]] = None
+
+    # newly added status update
+    status_update_events: Optional[List[ChatStatusUpdateEvent]] = None
 
 
 class ChatImpl:
