@@ -684,6 +684,84 @@ update_table_req = UpdateTableDefinitionRequest(updated_tables = [table_definiti
 result = WAII.Database.update_table_definition(update_table_req)
 ```
 
+### Adding Column Sample Values
+
+You can add sample values to columns to help Waii better understand the data and generate more accurate queries. This feature is only supported for string and JSON columns where the data type alone doesn't provide enough context about the actual values stored.
+
+To add sample values to a column, use the `sample_values` field in the `ColumnDefinition`. The `sample_values` field takes a `ColumnSampleValues` object with a `values` dictionary that maps each value to its count. The count is used to highlight commonly used values but does not need to be exact:
+
+```python
+from waii_sdk_py.database import ColumnSampleValues
+
+table_definition = TableDefinition(
+    name=TableName(
+        database_name="db1", schema_name="schema2", table_name="user_profiles"
+    ),
+    columns=[
+        ColumnDefinition(
+            name="status", 
+            type="string",
+            sample_values=ColumnSampleValues(values={
+                "active": 1500,
+                "inactive": 300,
+                "pending": 50,
+                "suspended": 25
+            })
+        ),
+        ColumnDefinition(
+            name="user_type", 
+            type="string",
+            sample_values=ColumnSampleValues(values={
+                "user": 2000,
+                "admin": 50,
+                "moderator": 25,
+                "guest": 100
+            })
+        ),
+        ColumnDefinition(
+            name="preferences", 
+            type="json",
+            sample_values=ColumnSampleValues(values={
+                '{"theme": "dark", "notifications": true}': 800,
+                '{"theme": "light", "notifications": false}': 600,
+                '{"theme": "auto", "notifications": true, "language": "en"}': 400
+            })
+        ),
+        ColumnDefinition(
+            name="country_code", 
+            type="string",
+            sample_values=ColumnSampleValues(values={
+                "US": 1200,
+                "CA": 300,
+                "UK": 250,
+                "DE": 200,
+                "FR": 150,
+                "JP": 100
+            })
+        )
+    ]
+)
+
+update_table_req = UpdateTableDefinitionRequest(updated_tables=[table_definition])
+result = WAII.Database.update_table_definition(update_table_req)
+```
+
+**Best Practices for Sample Values:**
+
+1. **String Columns**: Include common values with their approximate counts
+   - Status fields: `{"active": 1500, "inactive": 300, "pending": 50}`
+   - Country codes: `{"US": 1200, "CA": 300, "UK": 250}`
+   - User roles: `{"user": 2000, "admin": 50, "moderator": 25}`
+
+2. **JSON Columns**: Include representative JSON structures with their counts
+   - Configuration objects: `{'{"enabled": true, "timeout": 30}': 500}`
+   - Nested structures: `{'{"user": {"id": 123, "name": "John"}}': 300}`
+
+3. **Sample Size**: Include 3-10 representative values that cover the most common cases
+4. **Count Accuracy**: Provide approximate counts that reflect the relative frequency of each value.
+5. **Data Privacy**: Avoid including sensitive or personally identifiable information in sample values
+
+
 ## Remove Tables
 
 You can use the following method to remove tables from push based database
