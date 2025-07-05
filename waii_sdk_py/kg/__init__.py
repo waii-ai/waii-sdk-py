@@ -14,9 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .waii_sdk_py import WAII
-
-# Add these two imports to avoid you have to from waii_sdk_py.waii_sdk_py import AsyncWaii
-# (which is ugly).
-from .waii_sdk_py import AsyncWaii
-from .waii_sdk_py import Waii
+from .kg import (
+    GetKnowledgeGraphRequest,
+    GetKnowledgeGraphResponse,
+    KnowledgeGraph,
+    KnowledgeGraphNode,
+    KnowledgeGraphEdge,
+    KnowlegeGraphNodeType,
+    KnowledgeGraphEdgeType,
+    KnowledgeGraphImpl,
+    AsyncKnowledgeGraphImpl,
+    KnowledgeGraphClient
+) 
