@@ -94,6 +94,7 @@ class ChatStatusUpdateEvent(WaiiBaseModel):
     summary: Optional[str]
     timestamp: Optional[int]
     step_status: Optional[str]  # in-progress and completed
+    percentage: Optional[float]
 
 
 class ChatResponse(WaiiBaseModel):
@@ -107,6 +108,7 @@ class ChatResponse(WaiiBaseModel):
     chat_uuid: str
     elapsed_time_ms: Optional[int] = None
     session_title: Optional[str] = None
+    research_plan: Optional[str] = None
 
     # old way to display status, routing info, we have to keep it
     current_step: Optional[ChatResponseStep] = None
