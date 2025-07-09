@@ -444,7 +444,7 @@ Response templates use placeholders to dynamically insert generated content. Ava
 
 *User question:* "Show me total sales last month"
 ```text
-Last month's total sales were ${data[0].total_sales}
+Last month's total sales were {data[0].total_sales}
 ```
 
 *User question:* "Visualize revenue trends by year"
