@@ -38,6 +38,9 @@ class SemanticStatement(WaiiBaseModel):
     # extract prompt from the statement, if not specified, then use statement as extract prompt
     summarization_prompt: Optional[str] = None
 
+    # additional info for the semantic statement, only to be used with summarization prompt
+    additional_info: Optional[str] = None
+
     # Whether this semantic statement is enabled
     enabled: Optional[bool] = True
 
