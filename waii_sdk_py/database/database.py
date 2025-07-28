@@ -19,6 +19,14 @@ import inspect
 import json
 import warnings
 
+try:
+    from pydantic.v1 import Field
+except ImportError:
+    try:
+        from pydantic import Field
+    except ImportError as e:
+        raise ImportError(f"Cannot find pydantic module. Please install pydantic. You can use >= 1.10.x or >= 2.7.x; {e}")
+
 from waii_sdk_py.waii_http_client import WaiiHttpClient
 from ..common import LLMBasedRequest, CommonRequest, CheckOperationStatusResponse, CheckOperationStatusRequest
 from ..my_pydantic import WaiiBaseModel, PrivateAttr
@@ -225,7 +233,7 @@ class FilterType(str, Enum):
 class SearchContext(WaiiBaseModel):
     type: Optional[FilterType] = FilterType.INCLUSION
     db_name: Optional[str] = '*'
-    schema_name: Optional[str] = '*'
+    schema_name: Optional[str] = '*'  # cannot use schema because it is an internal keyword of fastapi
     table_name: Optional[str] = '*'
     column_name: Optional[str] = '*'
     ignore_case: Optional[bool] = True
@@ -380,13 +388,50 @@ class TableConstraints(WaiiBaseModel):
     constraint_type: ConstraintType
 
 
-class UpdateConstraintRequest(WaiiBaseModel):
+class BulkDeleteConstraintsFilter(WaiiBaseModel):
+    table_filters: Optional[List[SearchContext]] = Field(
+        default=None,
+        description=(
+            "Delete all constraints that match 1 or more of these filters; "
+            "For foreign key constraints, only source tables/columns are matched against the filters; "
+            "None or empty array means match everything"
+        )
+    )
+    constraint_type: Optional[ConstraintType] = Field(
+        default=None,
+        description=(
+            "Delete all constraints of constraint type equal to this if other conditions match; "
+            "AND-ed with other conditions; "
+            "None means always match"
+        )
+    )
+    constraint_source: Optional[ConstraintDetectorType] = Field(
+        default=None,
+        description=(
+            "Delete all constraints of constraint detector type equal to this; "
+            "OR-ed with other conditions; "
+            "None means always match"
+        )
+    )
+    constraint_source_all: Optional[ConstraintDetectorType] = Field(
+        default=None,
+        description=(
+            "Delete all constraints of constraint detector type lesser or equal than this; "
+            "OR-ed with other conditions; "
+            "None means always match"
+        )
+    )
+
+
+class UpdateConstraintRequest(CommonRequest):
     # updated constraints, it will replace the existing constraints
-    updated_constraints: Optional[List[TableConstraints]]
+    updated_constraints: Optional[List[TableConstraints]] = Field(default=None)
+    # this will bulk delete constraints, see BulkDeleteConstraintsFilter pydantic docs
+    bulk_delete_constraints_filters: Optional[List[BulkDeleteConstraintsFilter]] = Field(default=None)
 
 
 class UpdateConstraintResponse(CommonResponse):
-    updated_tables: Optional[List[TableName]]
+    updated_tables: Optional[List[TableName]] = Field(default=[])
 
 
 class RefreshDBConnectionRequest(CommonRequest):
