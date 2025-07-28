@@ -409,7 +409,7 @@ class BulkDeleteConstraintsFilter(WaiiBaseModel):
         default=None,
         description=(
             "Delete all constraints of constraint detector type equal to this; "
-            "OR-ed with other conditions; "
+            "AND-ed with other conditions; "
             "None means always match"
         )
     )
@@ -417,7 +417,7 @@ class BulkDeleteConstraintsFilter(WaiiBaseModel):
         default=None,
         description=(
             "Delete all constraints of constraint detector type lesser or equal than this; "
-            "OR-ed with other conditions; "
+            "AND-ed with other conditions; "
             "None means always match"
         )
     )
@@ -427,7 +427,10 @@ class UpdateConstraintRequest(CommonRequest):
     # updated constraints, it will replace the existing constraints
     updated_constraints: Optional[List[TableConstraints]] = Field(default=None)
     # this will bulk delete constraints, see BulkDeleteConstraintsFilter pydantic docs
-    bulk_delete_constraints_filters: Optional[List[BulkDeleteConstraintsFilter]] = Field(default=None)
+    bulk_delete_constraints_filters: Optional[List[BulkDeleteConstraintsFilter]] = Field(
+        default=None,
+        description="Individual filter objects are OR-ed with each other"
+    )
 
 
 class UpdateConstraintResponse(CommonResponse):
