@@ -142,6 +142,119 @@ while True:
 # analyze the completed chat response here
 ```
 
+### Research Template Management
+
+The Chat module provides methods to manage research templates that can be used to standardize and reuse common research patterns.
+
+#### Create Research Template
+
+```python
+WAII.Chat.create_research_template(params: CreateResearchTemplateRequest) -> CommonResponse
+```
+
+This method creates a new research template.
+
+**Parameters:**
+- `research_template`: A `ResearchTemplate` object containing:
+  - `title`: The title of the template
+  - `template`: The template content/pattern
+  - `template_id`: Optional ID (auto-generated if not provided)
+
+**Example:**
+```python
+template = ResearchTemplate(
+    title="Sales Analysis Template",
+    template="Analyze sales performance by region and time period"
+)
+
+request = CreateResearchTemplateRequest(research_template=template)
+response = WAII.Chat.create_research_template(request)
+```
+
+#### Get Research Template
+
+```python
+WAII.Chat.get_research_template(params: GetResearchTemplateRequest) -> GetResearchTemplateResponse
+```
+
+This method retrieves a specific research template by ID.
+
+**Parameters:**
+- `template_id`: The ID of the template to retrieve
+
+**Response:**
+- `research_template`: The requested `ResearchTemplate` object or `None` if not found
+
+**Example:**
+```python
+request = GetResearchTemplateRequest(template_id="template_123")
+response = WAII.Chat.get_research_template(request)
+print(f"Template: {response.research_template.title}")
+```
+
+#### List Research Templates
+
+```python
+WAII.Chat.list_research_templates(params: ListResearchTemplatesRequest) -> ListResearchTemplatesResponse
+```
+
+This method retrieves a list of available research templates.
+
+**Parameters:**
+- `limit`: Optional limit on the number of templates to return (default: 10)
+- `search_text`: Optional search text to filter templates (will use for similarity search through embedding match, not a direct text match)
+
+**Response:**
+- `research_templates`: List of `ResearchTemplate` objects
+
+**Example:**
+```python
+request = ListResearchTemplatesRequest(limit=20, search_text="sales")
+response = WAII.Chat.list_research_templates(request)
+for template in response.research_templates:
+    print(f"- {template.title}: {template.template}")
+```
+
+#### Update Research Template
+
+```python
+WAII.Chat.update_research_template(params: UpdateResearchTemplateRequest) -> CommonResponse
+```
+
+This method updates an existing research template.
+
+**Parameters:**
+- `research_template`: A `ResearchTemplate` object with the updated information (must include `template_id`)
+
+**Example:**
+```python
+template = ResearchTemplate(
+    template_id="template_123",
+    title="Updated Sales Analysis Template",
+    template="Enhanced sales performance analysis with additional metrics"
+)
+
+request = UpdateResearchTemplateRequest(research_template=template)
+response = WAII.Chat.update_research_template(request)
+```
+
+#### Delete Research Template
+
+```python
+WAII.Chat.delete_research_template(params: DeleteResearchTemplateRequest) -> CommonResponse
+```
+
+This method deletes a research template.
+
+**Parameters:**
+- `template_id`: The ID of the template to delete
+
+**Example:**
+```python
+request = DeleteResearchTemplateRequest(template_id="template_123")
+response = WAII.Chat.delete_research_template(request)
+```
+
 ### Module Configuration Tips
 1. Use `modules` to limit response generation for faster responses
 2. Start with `[ChatModule.QUERY]` for simple SQL generation

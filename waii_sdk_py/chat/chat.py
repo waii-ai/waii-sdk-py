@@ -23,7 +23,7 @@ from waii_sdk_py.semantic_context import SemanticStatement
 
 from ..my_pydantic import WaiiBaseModel
 
-from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse
+from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse, CommonRequest, CommonResponse
 from ..query import GetQueryResultResponse, GeneratedQuery
 from ..database import CatalogDefinition
 from ..semantic_context import GetSemanticContextResponse
@@ -34,6 +34,13 @@ from ..waii_http_client import WaiiHttpClient
 CHAT_MESSAGE_ENDPOINT = "chat-message"
 SUBMIT_CHAT_MESSAGE_ENDPOINT = "submit-chat-message"
 GET_CHAT_RESPONSE_ENDPOINT = "get-chat-response"
+
+# Research template endpoints
+CREATE_RESEARCH_TEMPLATE_ENDPOINT = "create-research-template"
+GET_RESEARCH_TEMPLATE_ENDPOINT = "get-research-template"
+LIST_RESEARCH_TEMPLATES_ENDPOINT = "list-research-templates"
+UPDATE_RESEARCH_TEMPLATE_ENDPOINT = "update-research-template"
+DELETE_RESEARCH_TEMPLATE_ENDPOINT = "delete-research-template"
 
 
 class ChatModule(str, Enum):
@@ -135,6 +142,40 @@ class ChatResponse(WaiiBaseModel):
     status_update_events: Optional[List[ChatStatusUpdateEvent]] = None
 
 
+class ResearchTemplate(WaiiBaseModel):
+    template_id: Optional[str] = None
+    title: str
+    template: str
+
+
+class CreateResearchTemplateRequest(CommonRequest):
+    research_template: ResearchTemplate
+
+
+class GetResearchTemplateRequest(CommonRequest):
+    template_id: str
+
+
+class ListResearchTemplatesRequest(CommonRequest):
+    limit: Optional[int] = 10
+    search_text: Optional[str] = None
+
+
+class GetResearchTemplateResponse(CommonResponse):
+    research_template: Optional[ResearchTemplate] = None
+
+
+class ListResearchTemplatesResponse(CommonResponse):
+    research_templates: List[ResearchTemplate] = []
+
+
+class UpdateResearchTemplateRequest(CommonRequest):
+    research_template: ResearchTemplate
+
+
+class DeleteResearchTemplateRequest(CommonRequest):
+    template_id: str
+
 class ChatImpl:
 
     def __init__(self, http_client: WaiiHttpClient):
@@ -156,6 +197,33 @@ class ChatImpl:
         return self.http_client.common_fetch(
             GET_CHAT_RESPONSE_ENDPOINT, params, ChatResponse
         )
+
+    # Research Template Methods
+    def create_research_template(self, params: CreateResearchTemplateRequest) -> CommonResponse:
+        return self.http_client.common_fetch(
+            CREATE_RESEARCH_TEMPLATE_ENDPOINT, params, CommonResponse
+        )
+
+    def get_research_template(self, params: GetResearchTemplateRequest) -> GetResearchTemplateResponse:
+        return self.http_client.common_fetch(
+            GET_RESEARCH_TEMPLATE_ENDPOINT, params, GetResearchTemplateResponse
+        )
+
+    def list_research_templates(self, params: ListResearchTemplatesRequest) -> ListResearchTemplatesResponse:
+        return self.http_client.common_fetch(
+            LIST_RESEARCH_TEMPLATES_ENDPOINT, params, ListResearchTemplatesResponse
+        )
+
+    def update_research_template(self, params: UpdateResearchTemplateRequest) -> CommonResponse:
+        return self.http_client.common_fetch(
+            UPDATE_RESEARCH_TEMPLATE_ENDPOINT, params, CommonResponse
+        )
+
+    def delete_research_template(self, params: DeleteResearchTemplateRequest) -> CommonResponse:
+        return self.http_client.common_fetch(
+            DELETE_RESEARCH_TEMPLATE_ENDPOINT, params, CommonResponse
+        )
+
 
 
 class AsyncChatImpl:
