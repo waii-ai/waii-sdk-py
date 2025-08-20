@@ -277,6 +277,8 @@ class DBConnection(WaiiBaseModel):
     user_alias: Optional[str] = None
     db_alias: Optional[str] = None
     client_email: Optional[str] = None
+    client_id: Optional[str] = None
+    client_secret: Optional[str] = None
     content_filters: Optional[List[SearchContext]] = None
     sample_filters: Optional[List[SearchContext]] = None
     enable_multi_db_connection: bool = False
