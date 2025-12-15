@@ -32,6 +32,7 @@ import importlib.metadata
 from .my_pydantic import WaiiBaseModel
 from .semantic_layer_dump import SemanticLayerDumpImpl, SemanticLayerDump
 from .kg import KnowledgeGraphImpl, AsyncKnowledgeGraphImpl
+from .sdm import SdmImpl, Sdm, AsyncSdmImpl
 
 GET_MODELS_ENDPOINT = "get-models"
 
@@ -63,6 +64,7 @@ class Waii:
         self.access_rules = None
         self.settings = None
         self.knowledge_graph = None
+        self.sdm = None
         self.initialize_legacy_fields = initialize_legacy_fields
         self.http_client = None
 
@@ -81,6 +83,7 @@ class Waii:
         self.settings = SettingsImpl(http_client)
         self.semantic_layer_dump = SemanticLayerDumpImpl(http_client)
         self.knowledge_graph = KnowledgeGraphImpl(http_client)
+        self.sdm = SdmImpl(http_client)
 
         if self.initialize_legacy_fields:
             self.History = self.history
@@ -92,6 +95,7 @@ class Waii:
             self.User = self.user
             self.SemanticLayerDump = self.semantic_layer_dump
             self.KnowledgeGraph = self.knowledge_graph
+            self.Sdm = self.sdm
             Query.http_client = http_client
             History.http_client = http_client
             Database.http_client = http_client
@@ -100,6 +104,7 @@ class Waii:
             Chat.http_client = http_client
             Chart.http_client = http_client
             SemanticLayerDump.http_client = http_client
+            Sdm.http_client = http_client
 
         conns = self.database.get_connections().connectors
         if len(conns) > 0:
@@ -144,6 +149,7 @@ class AsyncWaii:
         self.settings = None
         self.history = None
         self.knowledge_graph = None
+        self.sdm = None
 
 
 
@@ -161,6 +167,7 @@ class AsyncWaii:
         self.settings = AsyncSettingsImpl(http_client)
         self.history = AsyncHistoryImpl(http_client)
         self.knowledge_graph = AsyncKnowledgeGraphImpl(http_client)
+        self.sdm = AsyncSdmImpl(http_client)
         result = await self.database.get_connections()
 
         conns = result.connectors
