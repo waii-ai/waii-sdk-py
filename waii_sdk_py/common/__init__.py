@@ -24,6 +24,11 @@ class CommonRequest(WaiiBaseModel):
     parameters: Optional[Dict[str, Any]] = None
 
 
+class SDM(WaiiBaseModel):
+    name: str  # API name, used by Waii to uniquely identify an SDM for the org
+    content: str  # JSON dump of the SDM content
+
+
 class LLMBasedRequest(WaiiBaseModel):
     tags: Optional[List[str]] = None
     parameters: Optional[Dict[str, Any]] = None
