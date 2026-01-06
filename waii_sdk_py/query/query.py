@@ -25,7 +25,7 @@ from enum import Enum, IntEnum
 
 from ..my_pydantic import WaiiBaseModel, Field
 
-from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest, AsyncObjectResponse, CommonResponse
+from ..common import CommonRequest, LLMBasedRequest, GetObjectRequest, AsyncObjectResponse, CommonResponse, SDM
 from ..database import SearchContext, TableName, ColumnDefinition, SchemaName
 from ..semantic_context import SemanticStatement
 from ..waii_http_client import WaiiHttpClient
@@ -92,6 +92,7 @@ class QueryGenerationRequest(LLMBasedRequest):
     # do we want to use example queries during query generation
     use_example_queries: Optional[bool] = True
     additional_context: Optional[List[SemanticStatement]] = None
+    governed_sdms: Optional[List[SDM]] = None
 
 
 class DescribeQueryResponse(WaiiBaseModel):

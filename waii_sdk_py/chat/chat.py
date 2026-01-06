@@ -23,7 +23,7 @@ from waii_sdk_py.semantic_context import SemanticStatement
 
 from ..my_pydantic import WaiiBaseModel
 
-from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse, CommonRequest, CommonResponse
+from ..common import LLMBasedRequest, GetObjectRequest, AsyncObjectResponse, CommonRequest, CommonResponse, SDM
 from ..query import GetQueryResultResponse, GeneratedQuery
 from ..database import CatalogDefinition
 from ..semantic_context import GetSemanticContextResponse
@@ -81,6 +81,8 @@ class ChatRequest(LLMBasedRequest):
     search_context: Optional[List[SearchContext]] = None
 
     mode: ChatRequestMode = ChatRequestMode.single_turn
+
+    governed_sdms: Optional[List[SDM]] = None
 
 
 class ChatResponseData(WaiiBaseModel):
